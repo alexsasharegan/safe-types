@@ -1,0 +1,45 @@
+{
+  "name": "safe-types",
+  "version": "1.0.0",
+  "description": "Type safe utils for writing better JavaScript.",
+  "main": "lib/index.js",
+  "scripts": {
+    "prebuild": "rm -Rf lib",
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
+    "release": "standard-version",
+    "postrelease": "git push --follow-tags origin master && npm publish",
+    "test": "jest --verbose --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexsasharegan/safe-types.git"
+  },
+  "author": "Alex Regan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/alexsasharegan/safe-types/issues"
+  },
+  "homepage": "https://github.com/alexsasharegan/safe-types#readme",
+  "files": ["lib"],
+  "jest": {
+    "moduleFileExtensions": ["ts", "js"],
+    "transform": {
+      "\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testMatch": [
+      "**/__tests__/?(*.)(spec|test).(ts|js)",
+      "**/?(*.)(spec|test).(js|ts)"
+    ],
+    "collectCoverageFrom": ["!src/**/*.types.{js,ts}", "src/**/*.{js,ts}"],
+    "mapCoverage": true
+  },
+  "devDependencies": {
+    "@types/jest": "^22.1.2",
+    "jest": "^22.2.2",
+    "standard": "^10.0.3",
+    "ts-jest": "^22.0.3",
+    "typescript": "^2.7.1",
+    "version": "^0.1.2"
+  }
+}
