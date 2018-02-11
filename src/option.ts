@@ -1,6 +1,11 @@
-import { None, Some, Variant, is_void } from ".";
+import { None, Some, Variant, is_void, is_never } from ".";
 
 export type Option<T> = Some<T> | None;
+
+export type OptionMatcher<T, U> = {
+  [Variant.None](): U;
+  [Variant.Some](val: T): U;
+};
 
 export interface OptionMethods<T> {
   is_none(): this is None;
@@ -12,6 +17,8 @@ export interface OptionMethods<T> {
   map<U>(fn: (val: T) => U): Option<U>;
   map_or<U>(def: U, fn: (val: T) => U): U;
   map_or_else<U>(def: () => U, fn: (val: T) => U): U;
+
+  match<U>(matcher: OptionMatcher<T, U>): U;
 }
 
 export type OptionChainable<T> = Option<T> & OptionMethods<T>;
@@ -84,6 +91,22 @@ export function map_or_else<T, U>(
   return fn(option.value);
 }
 
+export function match<T, U>(
+  option: Option<T>,
+  matcher: OptionMatcher<T, U>
+): U {
+  switch (option.variant) {
+    case Variant.None:
+      return matcher[Variant.None]();
+
+    case Variant.Some:
+      return matcher[Variant.Some](option.value);
+
+    default:
+      return is_never(option);
+  }
+}
+
 export function from<T>(val?: T): OptionChainable<T> {
   let o: Option<T> = is_void(val) ? None() : Some(val);
 
@@ -98,6 +121,7 @@ export function from<T>(val?: T): OptionChainable<T> {
     map_or: <U>(def: U, fn: (val: T) => U): U => map_or(o, def, fn),
     map_or_else: <U>(def: () => U, fn: (val: T) => U): U =>
       map_or_else(o, def, fn),
+    match: <U>(matcher: OptionMatcher<T, U>) => match(o, matcher),
   };
 
   return Object.assign({}, o, m);

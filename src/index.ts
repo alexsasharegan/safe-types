@@ -6,6 +6,6 @@ import {} from "./err";
 import {} from "./ok";
 import {} from "./result";
 
-export { is_void } from "./utils";
+export { is_void, is_never } from "./utils";
 
 export { Some, None, Variant, Option };
