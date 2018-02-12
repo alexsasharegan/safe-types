@@ -12,12 +12,11 @@ import {
   match,
   OptionMatcher,
   Nullable,
-  Mapper,
   expect,
 } from "./option.core";
 import { None } from "./none";
 import { Some } from "./some";
-import { is_void } from ".";
+import { is_void, Mapper } from "./utils";
 
 export class Option<T> implements OptionInterface<T> {
   constructor(private readonly option: OptionType<T>) {}

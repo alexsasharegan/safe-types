@@ -1,5 +1,5 @@
 import { Option } from "./option.class";
-import { Mapper } from "./option.core";
+import { Mapper } from "./utils";
 
 describe("Option.from", () => {
   it("should be None when given undefined value", () => {

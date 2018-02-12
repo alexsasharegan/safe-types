@@ -3,6 +3,6 @@ export enum OptionVariant {
   Some = "some",
 }
 export enum ResultVariant {
-  Ok = "ok",
   Err = "err",
+  Ok = "ok",
 }

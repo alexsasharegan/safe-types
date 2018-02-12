@@ -1,31 +1,70 @@
 import { Some } from "./some";
 import { None } from "./none";
 import { OptionVariant } from "./variant";
-import { is_never } from "./utils";
+import { is_never, Mapper } from "./utils";
 import { Option } from "./option.class";
+import { Result } from "./result.class";
 
 export type Nullable<T> = T | undefined | null;
 
 export type OptionType<T> = Some<T> | None;
 
 export type OptionMatcher<T, U> = {
-  none(): U;
-  some(val: T): U;
+  [OptionVariant.None](): U;
+  [OptionVariant.Some](val: T): U;
 };
 
-export type Mapper<T, U> = (x: T) => U;
-
 export interface OptionInterface<T> {
+  /**
+   * Returns true if the option is a None value.
+   */
   is_none(): this is None;
+  /**
+   * Returns true if the option is a Some value.
+   */
   is_some(): this is Some<T>;
+  /**
+   * Unwraps an option, yielding the content of a Some.
+   */
   expect(err_msg: string): T;
+  /**
+   * Moves the value v out of the Option<T> if it is Some(v).
+   * In general, because this function may panic, its use is discouraged.
+   * Instead, prefer to use pattern matching and handle the None case explicitly.
+   */
   unwrap(): T;
+  /**
+   * Returns the contained value or a default.
+   */
   unwrap_or(def: T): T;
+  /**
+   * Returns the contained value or computes it from a closure.
+   */
   unwrap_or_else(fn: () => T): T;
+  /**
+   * Maps an Option<T> to Option<U> by applying a function to a contained value.
+   */
   map<U>(fn: Mapper<T, U>): Option<U>;
+  /**
+   * Applies a function to the contained value (if any),
+   * or computes a default (if not).
+   */
   map_or<U>(def: U, fn: Mapper<T, U>): U;
+  /**
+   * Applies a function to the contained value (if any),
+   * or returns a default (if not).
+   */
   map_or_else<U>(def: () => U, fn: Mapper<T, U>): U;
-
+  /**
+   * Transforms the Option<T> into a Result<T, E>,
+   * mapping Some(v) to Ok(v) and None to Err(err).
+   */
+  // ok_or<E>(err: E): Result<T, E>;
+  /**
+   * Transforms the Option<T> into a Result<T, E>,
+   * mapping Some(v) to Ok(v) and None to Err(err()).
+   */
+  // ok_or_else<E>(err: () => E): Result<T, E>;
   match<U>(matcher: OptionMatcher<T, U>): U;
 }
 
