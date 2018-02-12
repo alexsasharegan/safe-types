@@ -1,11 +1,11 @@
-import { Variant } from "./variant";
+import { OptionVariant } from "./variant";
 
 export type None = {
-  readonly variant: Variant.None;
+  readonly variant: OptionVariant.None;
 };
 
 export function None(): None {
   return {
-    variant: Variant.None,
+    variant: OptionVariant.None,
   };
 }

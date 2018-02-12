@@ -1,6 +1,6 @@
 import { Some } from "./some";
 import { None } from "./none";
-import { Variant } from "./variant";
+import { OptionVariant } from "./variant";
 import { is_never } from "./utils";
 import { Option } from "./option.class";
 
@@ -30,11 +30,11 @@ export interface OptionInterface<T> {
 }
 
 export function is_none<T>(option: OptionType<T>): option is None {
-  return option.variant == Variant.None;
+  return option.variant == OptionVariant.None;
 }
 
 export function is_some<T>(option: OptionType<T>): option is Some<T> {
-  return option.variant == Variant.Some;
+  return option.variant == OptionVariant.Some;
 }
 
 export function expect<T>(option: OptionType<T>, err_msg: string): T {
@@ -109,11 +109,11 @@ export function match<T, U>(
   matcher: OptionMatcher<T, U>
 ): U {
   switch (option.variant) {
-    case Variant.None:
-      return matcher[Variant.None]();
+    case OptionVariant.None:
+      return matcher[OptionVariant.None]();
 
-    case Variant.Some:
-      return matcher[Variant.Some](option.value);
+    case OptionVariant.Some:
+      return matcher[OptionVariant.Some](option.value);
 
     default:
       return is_never(option);

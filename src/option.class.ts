@@ -13,6 +13,7 @@ import {
   OptionMatcher,
   Nullable,
   Mapper,
+  expect,
 } from "./option.core";
 import { None } from "./none";
 import { Some } from "./some";
@@ -30,11 +31,7 @@ export class Option<T> implements OptionInterface<T> {
   }
 
   expect(err_msg: string): T {
-    if (is_none(this.option)) {
-      throw Error(err_msg);
-    }
-
-    return this.option.value;
+    return expect(this.option, err_msg);
   }
 
   unwrap(): T {

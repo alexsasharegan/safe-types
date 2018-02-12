@@ -1,6 +1,6 @@
 export { Some } from "./some";
 export { None } from "./none";
-export { Variant } from "./variant";
+export { OptionVariant } from "./variant";
 export { Option } from "./option.class";
 export {} from "./err";
 export {} from "./ok";
