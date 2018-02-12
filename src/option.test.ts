@@ -1,15 +1,33 @@
-import { Option } from "./option.class";
+import { Option, Some, None } from ".";
 import { Mapper } from "./utils";
 
-describe("Option.from", () => {
-  it("should be None when given undefined value", () => {
+describe("Some", async () => {
+  it("should return Option of Some", async () => {
+    let o = Some(0);
+    expect(o).toBeInstanceOf(Option);
+    expect(o.is_none()).toBe(false);
+    expect(o.is_some()).toBe(true);
+  });
+});
+
+describe("None", async () => {
+  it("should return Option of None", async () => {
+    let o = None();
+    expect(o).toBeInstanceOf(Option);
+    expect(o.is_none()).toBe(true);
+    expect(o.is_some()).toBe(false);
+  });
+});
+
+describe("Option.from", async () => {
+  it("should be None when given undefined value", async () => {
     let x: number;
     let o = Option.from(x);
     expect(o.is_none()).toBe(true);
     expect(o.is_some()).toBe(false);
   });
 
-  it("should be Some when given a value", () => {
+  it("should be Some when given a value", async () => {
     let x = 10;
     let o = Option.from(x);
     expect(o.is_none()).toBe(false);
@@ -17,15 +35,15 @@ describe("Option.from", () => {
   });
 });
 
-describe("Option.expect", () => {
-  it("should return value with Some", () => {
+describe("Option.expect", async () => {
+  it("should return value with Some", async () => {
     let x = 10;
     let o = Option.from(x);
     let err_msg = "You blew it up. 💥";
     expect(o.expect(err_msg)).toBe(10);
   });
 
-  it("should throw custom Error with message with None", () => {
+  it("should throw custom Error with message with None", async () => {
     let x: number;
     let o = Option.from(x);
     let err_msg = "You blew it up. 💥";
@@ -33,56 +51,56 @@ describe("Option.expect", () => {
   });
 });
 
-describe("Option.unwrap", () => {
-  it("should return value with Some", () => {
+describe("Option.unwrap", async () => {
+  it("should return value with Some", async () => {
     let x = 10;
     let o = Option.from(x);
     expect(o.unwrap()).toBe(10);
   });
 
-  it("should throw TypeError with None", () => {
+  it("should throw TypeError with None", async () => {
     let x: number;
     let o = Option.from(x);
     expect(o.unwrap).toThrow(TypeError);
   });
 });
 
-describe("Option.unwrap_or", () => {
-  it("should return value with Some", () => {
+describe("Option.unwrap_or", async () => {
+  it("should return value with Some", async () => {
     let x = 10;
     let o = Option.from(x);
     expect(o.unwrap_or(20)).toBe(10);
   });
 
-  it("should return default with None", () => {
+  it("should return default with None", async () => {
     let x: number;
     let o = Option.from(x);
     expect(o.unwrap_or(20)).toBe(20);
   });
 });
 
-describe("Option.unwrap_or_else", () => {
-  it("should return value with Some", () => {
+describe("Option.unwrap_or_else", async () => {
+  it("should return value with Some", async () => {
     let x = 10;
     let o = Option.from(x);
     expect(o.unwrap_or_else(() => 20)).toBe(10);
   });
 
-  it("should return default with None", () => {
+  it("should return default with None", async () => {
     let x: number;
     let o = Option.from(x);
     expect(o.unwrap_or_else(() => 20)).toBe(20);
   });
 });
 
-describe("Option.map", () => {
-  it("should map value with Some", () => {
+describe("Option.map", async () => {
+  it("should map value with Some", async () => {
     let x = 10;
     let o = Option.from(x);
     expect(o.map(x => x.toString(16)).unwrap()).toBe("a");
   });
 
-  it("should not call mapper with None", () => {
+  it("should not call mapper with None", async () => {
     let x: number;
     let o = Option.from(x);
     let map_spy: Mapper<number, string> = jest.fn(x => x.toString(16));
@@ -95,14 +113,14 @@ describe("Option.map", () => {
   });
 });
 
-describe("Option.map_or", () => {
-  it("should use mapped value with Some", () => {
+describe("Option.map_or", async () => {
+  it("should use mapped value with Some", async () => {
     let x = 10;
     let o = Option.from(x);
     expect(o.map_or("z", x => x.toString(16))).toBe("a");
   });
 
-  it("should return default value with None", () => {
+  it("should return default value with None", async () => {
     let x: number;
     let o = Option.from(x);
     let map_spy: Mapper<number, string> = jest.fn(x => x.toString(16));
@@ -111,14 +129,14 @@ describe("Option.map_or", () => {
   });
 });
 
-describe("Option.map_or_else", () => {
-  it("should use mapped value with Some", () => {
+describe("Option.map_or_else", async () => {
+  it("should use mapped value with Some", async () => {
     let x = 10;
     let o = Option.from(x);
     expect(o.map_or_else(() => "z", x => x.toString(16))).toBe("a");
   });
 
-  it("should return default value with None", () => {
+  it("should return default value with None", async () => {
     let x: number;
     let o = Option.from(x);
     let map_spy: Mapper<number, string> = jest.fn(x => x.toString(16));
@@ -127,8 +145,8 @@ describe("Option.map_or_else", () => {
   });
 });
 
-describe("Option.match", () => {
-  it("should use mapped value with Some", () => {
+describe("Option.match", async () => {
+  it("should use mapped value with Some", async () => {
     let x = 10;
     let o = Option.from(x);
     let none_match = jest.fn(() => "testing");
@@ -143,7 +161,7 @@ describe("Option.match", () => {
     expect(some_match).toHaveBeenCalled();
   });
 
-  it("should return default value with None", () => {
+  it("should return default value with None", async () => {
     let x: number;
     let o = Option.from(x);
     let none_match = jest.fn(() => "testing");

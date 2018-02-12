@@ -49,52 +49,52 @@ export interface ResultMethods<T, E> {
    * This function can be used to pass through
    * a successful result while handling an error.
    */
-  map_err<F>(op: Mapper<E, F>): Result<T, F>;
+  // map_err<F>(op: Mapper<E, F>): Result<T, F>;
   /**
    * Returns res if the result is Ok, otherwise returns the Err value of self.
    */
-  and<U>(res: Result<U, E>): Result<U, E>;
+  // and<U>(res: Result<U, E>): Result<U, E>;
   /**
    * Calls op if the result is Ok, otherwise returns the Err value of self.
    * This function can be used for control flow based on Result values.
    */
-  and_then<U>(op: Mapper<T, Result<U, E>>): Result<U, E>;
+  // and_then<U>(op: Mapper<T, Result<U, E>>): Result<U, E>;
   /**
    * Returns res if the result is Err, otherwise returns the Ok value of self.
    */
-  or<F>(res: Result<T, F>): Result<T, F>;
+  // or<F>(res: Result<T, F>): Result<T, F>;
   /**
    * Calls op if the result is Err, otherwise returns the Ok value of self.
    * This function can be used for control flow based on result values.
    */
-  or_else<F>(op: Mapper<E, Result<T, F>>): Result<T, F>;
+  // or_else<F>(op: Mapper<E, Result<T, F>>): Result<T, F>;
   /**
    * Unwraps a result, yielding the content of an Ok.
    */
-  expect(err_msg: string): T;
+  // expect(err_msg: string): T;
   /**
    * Unwraps a result, yielding the content of an Err.
    */
-  expect_err(err_msg: string): E;
+  // expect_err(err_msg: string): E;
   /**
    * Unwraps a result, yielding the content of an Ok.
    * Throws if the value is an Err,
    * with an error message provided by the Err's value.
    */
-  unwrap(): T;
+  // unwrap(): T;
   /**
    * Unwraps a result, yielding the content of an Ok. Else, it returns optb.
    */
-  unwrap_or(optb: T): T;
+  // unwrap_or(optb: T): T;
   /**
    * Unwraps a result, yielding the content of an Ok.
    * If the value is an Err then it calls op with its value.
    */
-  unwrap_or_else(op: (err: E) => T): T;
+  // unwrap_or_else(op: (err: E) => T): T;
   /**
    * Unwraps a result, yielding the content of an Err.
    */
-  unwrap_err(): E;
+  // unwrap_err(): E;
 }
 
 export function is_ok<T, E>(res: ResultType<T, E>): res is Ok<T> {
@@ -119,4 +119,15 @@ export function err<T, E>(res: ResultType<T, E>): Option<E> {
   }
 
   return new Option(Some(res.error));
+}
+
+export function map<T, E, U>(
+  res: ResultType<T, E>,
+  op: Mapper<T, U>
+): Result<U, E> {
+  if (is_err(res)) {
+    return new Result(Err(res.error));
+  }
+
+  return new Result(Ok(op(res.value)));
 }

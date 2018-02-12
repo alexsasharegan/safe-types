@@ -63,9 +63,21 @@ export class Option<T> implements OptionInterface<T> {
 
   public static from<U>(val: Nullable<U>): Option<U> {
     if (is_void(val)) {
-      return new Option(None());
+      return Option.None();
     }
 
+    return Option.Some(val);
+  }
+
+  public static of<U>(val: Nullable<U>): Option<U> {
+    return Option.from(val);
+  }
+
+  public static Some<T>(val: T): Option<T> {
     return new Option(Some(val));
+  }
+
+  public static None<T>(): Option<T> {
+    return new Option(None());
   }
 }
