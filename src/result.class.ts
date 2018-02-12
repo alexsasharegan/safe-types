@@ -60,17 +60,15 @@ export class Result<T, E> implements ResultMethods<T, E> {
     return Result.from(op);
   }
 
-  public static async from_async<T, E>(
-    op: () => Promise<T>
-  ): Promise<Result<T, E>> {
+  public static async promised<T, E>(p: Promise<T>): Promise<Result<T, E>> {
     try {
-      return new Result(Ok(await op()));
+      return new Result(Ok(await p));
     } catch (error) {
       return new Result(Err(error));
     }
   }
 
-  public static of_async<T, E>(op: () => Promise<T>): Promise<Result<T, E>> {
-    return Result.from_async<T, E>(op);
+  public static defer<T, E>(op: () => Promise<T>): Promise<Result<T, E>> {
+    return Result.promised<T, E>(op());
   }
 }
