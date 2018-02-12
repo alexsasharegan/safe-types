@@ -1,6 +1,6 @@
 {
   "name": "safe-types",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Type safe utils for writing better JavaScript.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
