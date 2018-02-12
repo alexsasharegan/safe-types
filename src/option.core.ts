@@ -3,7 +3,7 @@ import { None } from "./none";
 import { OptionVariant } from "./variant";
 import { is_never, Mapper } from "./utils";
 import { Option } from "./option.class";
-import { Result } from "./result.class";
+// import { Result } from "./result.class";
 
 export type Nullable<T> = T | undefined | null;
 
