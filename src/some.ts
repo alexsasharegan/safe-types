@@ -1,9 +1,8 @@
-import { Variant } from ".";
+import { Variant } from "./variant";
 
 export type Some<T> = {
   readonly variant: Variant.Some;
   readonly value: T;
-  [key: string]: any;
 };
 
 export function Some<T>(value: T): Some<T> {
@@ -12,8 +11,3 @@ export function Some<T>(value: T): Some<T> {
     variant: Variant.Some,
   };
 }
-
-// export class Some<T> {
-//   public variant = Variant.Some;
-//   constructor(public value: T) {}
-// }

@@ -1,4 +1,4 @@
 export enum Variant {
-  None,
-  Some,
+  None = "none",
+  Some = "some",
 }
