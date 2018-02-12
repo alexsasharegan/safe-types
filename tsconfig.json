@@ -3,8 +3,8 @@
   "compilerOptions": {
     "pretty": true,
     "target": "es2015",
-    "module": "esnext",
-    "lib": ["esnext", "dom"],
+    "module": "commonjs",
+    "lib": ["esnext"],
     "allowJs": false,
     "declaration": true,
     "sourceMap": true,
