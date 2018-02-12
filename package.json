@@ -9,7 +9,8 @@
     "prepublishOnly": "npm run build",
     "release": "standard-version",
     "postrelease": "git push --follow-tags origin master && npm publish",
-    "test": "jest --verbose --coverage"
+    "test:cov": "jest --verbose --coverage",
+    "test": "jest --verbose"
   },
   "repository": {
     "type": "git",
@@ -21,9 +22,14 @@
     "url": "https://github.com/alexsasharegan/safe-types/issues"
   },
   "homepage": "https://github.com/alexsasharegan/safe-types#readme",
-  "files": ["lib"],
+  "files": [
+    "lib"
+  ],
   "jest": {
-    "moduleFileExtensions": ["ts", "js"],
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
     "transform": {
       "\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
@@ -31,7 +37,10 @@
       "**/__tests__/?(*.)(spec|test).(ts|js)",
       "**/?(*.)(spec|test).(js|ts)"
     ],
-    "collectCoverageFrom": ["!src/**/*.types.{js,ts}", "src/**/*.{js,ts}"],
+    "collectCoverageFrom": [
+      "!src/**/*.types.{js,ts}",
+      "src/**/*.{js,ts}"
+    ],
     "mapCoverage": true
   },
   "devDependencies": {

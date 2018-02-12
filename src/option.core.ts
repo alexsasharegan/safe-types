@@ -13,6 +13,8 @@ export type OptionMatcher<T, U> = {
   some(val: T): U;
 };
 
+export type Mapper<T, U> = (x: T) => U;
+
 export interface OptionInterface<T> {
   is_none(): this is None;
   is_some(): this is Some<T>;
@@ -20,9 +22,9 @@ export interface OptionInterface<T> {
   unwrap(): T;
   unwrap_or(def: T): T;
   unwrap_or_else(fn: () => T): T;
-  map<U>(fn: (val: T) => U): Option<U>;
-  map_or<U>(def: U, fn: (val: T) => U): U;
-  map_or_else<U>(def: () => U, fn: (val: T) => U): U;
+  map<U>(fn: Mapper<T, U>): Option<U>;
+  map_or<U>(def: U, fn: Mapper<T, U>): U;
+  map_or_else<U>(def: () => U, fn: Mapper<T, U>): U;
 
   match<U>(matcher: OptionMatcher<T, U>): U;
 }
@@ -69,7 +71,7 @@ export function unwrap_or_else<T>(option: OptionType<T>, fn: () => T): T {
 
 export function map<T, U>(
   option: OptionType<T>,
-  fn: (val: T) => U
+  fn: Mapper<T, U>
 ): OptionType<U> {
   if (is_none(option)) {
     return None();

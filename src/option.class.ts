@@ -12,6 +12,7 @@ import {
   match,
   OptionMatcher,
   Nullable,
+  Mapper,
 } from "./option.core";
 import { None } from "./none";
 import { Some } from "./some";
@@ -48,15 +49,15 @@ export class Option<T> implements OptionInterface<T> {
     return unwrap_or_else(this.option, fn);
   }
 
-  map<U>(fn: (val: T) => U): Option<U> {
+  map<U>(fn: Mapper<T, U>): Option<U> {
     return new Option(map(this.option, fn));
   }
 
-  map_or<U>(def: U, fn: (val: T) => U): U {
+  map_or<U>(def: U, fn: Mapper<T, U>): U {
     return map_or(this.option, def, fn);
   }
 
-  map_or_else<U>(def: () => U, fn: (val: T) => U): U {
+  map_or_else<U>(def: () => U, fn: Mapper<T, U>): U {
     return map_or_else(this.option, def, fn);
   }
 
