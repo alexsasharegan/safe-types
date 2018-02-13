@@ -138,25 +138,25 @@ describe("Result.and_then", async () => {
 });
 
 describe("Result.or", async () => {
-  it("with Ok && Err", async () => {
+  it("with Ok || Err", async () => {
     let x = Ok(2);
     let y = Err("late error");
     expect(x.or(y)).toEqual(Ok(2));
   });
 
-  it("with Err && Ok", async () => {
+  it("with Err || Ok", async () => {
     let x = Err("early error");
     let y = Ok(2);
     expect(x.or(y)).toEqual(Ok(2));
   });
 
-  it("with Err && Err", async () => {
+  it("with Err || Err", async () => {
     let x = Err("not a 2");
     let y = Err("late error");
     expect(x.or(y)).toEqual(Err("late error"));
   });
 
-  it("with Ok && Ok", async () => {
+  it("with Ok || Ok", async () => {
     let x = Ok(2);
     let y = Ok(100);
     expect(x.or(y)).toEqual(Ok(2));
@@ -254,5 +254,98 @@ describe("Result.expect_err", async () => {
 
   it("should not throw with Err", async () => {
     expect(Err("error").expect_err("my error")).toBe("error");
+  });
+});
+
+describe("Result.from", async () => {
+  it("with Ok", async () => {
+    let op = () => 10;
+    expect(Result.from(op)).toEqual(Ok(10));
+  });
+
+  it("with Err", async () => {
+    let op = () => {
+      throw 10;
+    };
+    expect(Result.from(op)).toEqual(Err(10));
+    op = () => {
+      throw new Error();
+    };
+    expect(Result.from(op)).toEqual(Err(new Error()));
+  });
+});
+
+describe("Result.of", async () => {
+  it("should work like Result.from", async () => {
+    let op = () => 10;
+    expect(Result.of(op)).toEqual(Ok(10));
+    let err = () => {
+      throw 10;
+    };
+    expect(Result.of(err)).toEqual(Err(10));
+  });
+});
+
+describe("Result.await", async () => {
+  it("should work with Ok", async () => {
+    let fn = async () => 10;
+    expect(await Result.await(fn())).toEqual(Ok(10));
+  });
+
+  it("should work with Err", async () => {
+    let fn = async () => {
+      throw 10;
+    };
+    expect(await Result.await(fn())).toEqual(Err(10));
+  });
+});
+
+describe("Result.await_fn", async () => {
+  it("should work with Ok", async () => {
+    let fn = async () => 10;
+    expect(await Result.await_fn(fn)).toEqual(Ok(10));
+  });
+
+  it("should work with Err", async () => {
+    let fn = async () => {
+      throw 10;
+    };
+    expect(await Result.await_fn(fn)).toEqual(Err(10));
+  });
+});
+
+describe("Result.await_all", async () => {
+  it("should work with Ok", async () => {
+    let fn = async () => 10;
+    expect(await Result.await_all(Array.from({ length: 3 }, fn))).toEqual(
+      Ok([10, 10, 10])
+    );
+  });
+
+  it("should work with Err", async () => {
+    let fn = async () => {
+      throw 10;
+    };
+    expect(await Result.await_all(Array.from({ length: 3 }, fn))).toEqual(
+      Err(10)
+    );
+  });
+});
+
+describe("Result.await_all_fn", async () => {
+  it("should work with Ok", async () => {
+    let fn = async () => 10;
+    expect(
+      await Result.await_all_fn(() => Array.from({ length: 3 }, fn))
+    ).toEqual(Ok([10, 10, 10]));
+  });
+
+  it("should work with Err", async () => {
+    let fn = async () => {
+      throw 10;
+    };
+    expect(
+      await Result.await_all_fn(() => Array.from({ length: 3 }, fn))
+    ).toEqual(Err(10));
   });
 });

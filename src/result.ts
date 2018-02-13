@@ -6,7 +6,7 @@ import { ResultVariant, Option, Some, None } from ".";
 export type ResultType<T, E> = Ok<T> | Err<E>;
 
 export class Result<T, E> {
-  constructor(private readonly result: ResultType<T, E>) {}
+  constructor(readonly result: ResultType<T, E>) {}
 
   public match<U>(matcher: {
     [ResultVariant.Ok](x: T): U;
@@ -24,14 +24,14 @@ export class Result<T, E> {
     }
   }
 
-  public is_ok(): this is Ok<T> {
+  public is_ok(): this is { result: Ok<T> } {
     return this.match({
       ok: (_: T) => true,
       err: (_: E) => false,
     });
   }
 
-  public is_err(): this is Err<E> {
+  public is_err(): this is { result: Err<E> } {
     return !this.is_ok();
   }
 

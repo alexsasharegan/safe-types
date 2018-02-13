@@ -240,3 +240,81 @@ describe("Option.and", async () => {
     expect(x.and(y)).toEqual(None());
   });
 });
+
+describe("Option.and_then", async () => {
+  it("should work", async () => {
+    let sq = (x: number) => Some(x * x);
+    let nope = (_: number) => None();
+
+    expect(
+      Some(2)
+        .and_then(sq)
+        .and_then(sq)
+    ).toEqual(Some(16));
+
+    expect(
+      Some(2)
+        .and_then(sq)
+        .and_then(nope)
+    ).toEqual(None());
+
+    expect(
+      Some(2)
+        .and_then(nope)
+        .and_then(sq)
+    ).toEqual(None());
+
+    expect(
+      None()
+        .and_then(sq)
+        .and_then(sq)
+    ).toEqual(None());
+  });
+});
+
+describe("Option.filter", async () => {
+  it("should work", async () => {
+    let is_even = (n: number) => n % 2 == 0;
+
+    expect(None().filter(is_even)).toEqual(None());
+    expect(Some(3).filter(is_even)).toEqual(None());
+    expect(Some(4).filter(is_even)).toEqual(Some(4));
+  });
+});
+
+describe("Option.or", async () => {
+  it("Some || None", async () => {
+    let x = Some(2);
+    let y = None();
+    expect(x.or(y)).toEqual(Some(2));
+  });
+
+  it("None || Some", async () => {
+    let x = None();
+    let y = Some(100);
+    expect(x.or(y)).toEqual(Some(100));
+  });
+
+  it("Some || Some", async () => {
+    let x = Some(2);
+    let y = Some(100);
+    expect(x.or(y)).toEqual(Some(2));
+  });
+
+  it("None || None", async () => {
+    let x: Option<number> = None();
+    let y = None();
+    expect(x.or(y)).toEqual(None());
+  });
+});
+
+describe("Option.or_else", async () => {
+  it("should work", async () => {
+    let nobody = () => None();
+    let vikings = () => Some("vikings");
+
+    expect(Some("barbarians").or_else(vikings)).toEqual(Some("barbarians"));
+    expect(None().or_else(vikings)).toEqual(Some("vikings"));
+    expect(None().or_else(nobody)).toEqual(None());
+  });
+});

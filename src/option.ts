@@ -7,7 +7,7 @@ export type Nullable<T> = T | undefined | null;
 export type OptionType<T> = Some<T> | None;
 
 export class Option<T> {
-  constructor(private readonly option: OptionType<T>) {}
+  constructor(readonly option: OptionType<T>) {}
 
   public match<U>(matcher: {
     [OptionVariant.None](): U;
@@ -36,7 +36,7 @@ export class Option<T> {
    * expect(x.is_some()).toBe(false);
    * ```
    */
-  public is_some(): this is Some<T> {
+  public is_some(): this is { option: Some<T> } {
     return this.match({
       some: (_: T) => true,
       none: () => false,
@@ -54,7 +54,7 @@ export class Option<T> {
    * expect(x.is_some()).toBe(true);
    * ```
    */
-  public is_none(): this is None {
+  public is_none(): this is { option: None } {
     return !this.is_some();
   }
 
@@ -169,6 +169,108 @@ export class Option<T> {
     });
   }
 
+  /**
+   * Returns [`None`] if the option is [`None`], otherwise calls `f` with the
+   * wrapped value and returns the result.
+   *
+   * Some languages call this operation flatmap.
+   *
+   * ```
+   * let sq = (x: number) => Some(x * x)
+   * let nope = (_: number) => None()
+   *
+   * expect(Some(2).and_then(sq).and_then(sq)).toEqual(Some(16));
+   * expect(Some(2).and_then(sq).and_then(nope)).toEqual(None());
+   * expect(Some(2).and_then(nope).and_then(sq)).toEqual(None());
+   * expect(None().and_then(sq).and_then(sq)).toEqual(None());
+   * ```
+   */
+  public and_then<U>(fn: (t: T) => Option<U>): Option<U> {
+    return this.match({
+      some: (t: T) => fn(t),
+      none: () => Option.None(),
+    });
+  }
+
+  /**
+   * Returns `None` if the option is `None`, otherwise calls `predicate`
+   * with the wrapped value and returns:
+   * - `Some(t)` if `predicate` returns `true` (where `t` is the wrapped
+   * value), and
+   * - `None` if `predicate` returns `false`.
+   *
+   * This function works similar to `Iterator::filter()`. You can imagine
+   * the `Option<T>` being an iterator over one or zero elements. `filter()`
+   * lets you decide which elements to keep.
+   *
+   * ```
+   * let is_even = (n: number) => n % 2 == 0
+   *
+   * expect(None().filter(is_even)).toEqual(None());
+   * expect(Some(3).filter(is_even)).toEqual(None());
+   * expect(Some(4).filter(is_even)).toEqual(Some(4));
+   * ```
+   */
+  public filter(predicate: (t: T) => boolean): Option<T> {
+    if (this.is_some() && predicate(this.option.value)) {
+      return Option.Some(this.option.value);
+    }
+
+    return Option.None();
+  }
+
+  /**
+   * Returns the option if it contains a value, otherwise returns `optb`.
+   *
+   * Arguments passed to `or` are eagerly evaluated; if you are passing the
+   * result of a function call, it is recommended to use [`or_else`], which is
+   * lazily evaluated.
+   *
+   * ```
+   * let x = Some(2);
+   * let y = None();
+   * expect(x.or(y)).toEqual(Some(2));
+   *
+   * let x = None();
+   * let y = Some(100);
+   * expect(x.or(y)).toEqual(Some(100));
+   *
+   * let x = Some(2);
+   * let y = Some(100);
+   * expect(x.or(y)).toEqual(Some(2));
+   *
+   * let x: Option<number> = None();
+   * let y = None();
+   * expect(x.or(y)).toEqual(None());
+   * ```
+   */
+  public or(optb: Option<T>): Option<T> {
+    return this.match({
+      some: (t: T) => Option.Some(t),
+      none: () => optb,
+    });
+  }
+
+  /**
+   * Returns the option if it contains a value, otherwise calls `f` and
+   * returns the result.
+   *
+   * ```
+   * let nobody = () => None()
+   * let vikings = () => Some("vikings")
+   *
+   * expect(Some("barbarians").or_else(vikings)).toEqual(Some("barbarians"));
+   * expect(None().or_else(vikings)).toEqual(Some("vikings"));
+   * expect(None().or_else(nobody)).toEqual(None());
+   * ```
+   */
+  public or_else(fn: () => Option<T>): Option<T> {
+    return this.match({
+      some: (t: T) => Option.Some(t),
+      none: () => fn(),
+    });
+  }
+
   public static from<U>(val: Nullable<U>): Option<U> {
     if (is_void(val)) {
       return Option.None();
@@ -185,7 +287,7 @@ export class Option<T> {
     return new Option(Some(val));
   }
 
-  public static None<T>(): Option<T> {
+  public static None(): Option<any> {
     return new Option(None());
   }
 }
