@@ -90,15 +90,31 @@ export class Result<T, E> {
     return Result.from(op);
   }
 
-  public static async promised<T, E>(p: Promise<T>): Promise<Result<T, E>> {
+  public static async await<T, E>(p: Promise<T>): Promise<Result<T, E>> {
     try {
-      return new Result(Ok(await p));
-    } catch (error) {
-      return new Result(Err<E>(error));
+      return Result.Ok(await p);
+    } catch (e) {
+      return Result.Err(e);
     }
   }
 
-  public static defer<T, E>(op: () => Promise<T>): Promise<Result<T, E>> {
-    return Result.promised<T, E>(op());
+  public static await_fn<T, E>(op: () => Promise<T>): Promise<Result<T, E>> {
+    return Result.await<T, E>(op());
+  }
+
+  public static async await_all<T, E>(
+    ps: Array<Promise<T>>
+  ): Promise<Result<T[], E>> {
+    try {
+      return Result.Ok(await Promise.all(ps));
+    } catch (e) {
+      return Result.Err(e);
+    }
+  }
+
+  public static await_all_fn<T, E>(
+    op: () => Array<Promise<T>>
+  ): Promise<Result<T[], E>> {
+    return Result.await_all(op());
   }
 }
