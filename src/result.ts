@@ -77,6 +77,15 @@ export class Result<T, E> {
     });
   }
 
+  public and_then_await<U>(
+    op: (t: T) => Promise<Result<U, E>>
+  ): Promise<Result<U, E>> {
+    return this.match({
+      Ok: (t: T) => op(t),
+      Err: (e: E) => Promise.resolve(Result.Err(e)),
+    });
+  }
+
   /**
    * Returns `res` if the result is [`Err`],
    * otherwise returns the [`Ok`] value of `self`.
