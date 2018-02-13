@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Option.unwrap should throw Error with None 1`] = `[Error: called \`Option.unwrap()\` on a \`None\` value]`;

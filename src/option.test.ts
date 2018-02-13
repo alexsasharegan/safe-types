@@ -19,10 +19,14 @@ describe("None", async () => {
   });
 });
 
-describe("Option.from", async () => {
+describe("Option.from && Option.of", async () => {
   it("should be None when given undefined value", async () => {
     let x: number;
     let o = Option.from(x);
+    expect(o.is_none()).toBe(true);
+    expect(o.is_some()).toBe(false);
+
+    o = Option.of(x);
     expect(o.is_none()).toBe(true);
     expect(o.is_some()).toBe(false);
   });
@@ -30,6 +34,10 @@ describe("Option.from", async () => {
   it("should be Some when given a value", async () => {
     let x = 10;
     let o = Option.from(x);
+    expect(o.is_none()).toBe(false);
+    expect(o.is_some()).toBe(true);
+
+    o = Option.of(x);
     expect(o.is_none()).toBe(false);
     expect(o.is_some()).toBe(true);
   });
@@ -58,10 +66,19 @@ describe("Option.unwrap", async () => {
     expect(o.unwrap()).toBe(10);
   });
 
-  it("should throw TypeError with None", async () => {
+  it("should throw Error with None", async () => {
     let x: number;
     let o = Option.from(x);
-    expect(o.unwrap).toThrow(TypeError);
+    expect(o.unwrap).toThrow(Error);
+
+    let err;
+    try {
+      o.unwrap();
+    } catch (e) {
+      err = e;
+    }
+
+    expect(err).toMatchSnapshot();
   });
 });
 
