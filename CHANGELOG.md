@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.7.1"></a>
+## [1.7.1](https://github.com/alexsasharegan/safe-types/compare/v1.7.0...v1.7.1) (2018-02-13)
+
+
+### Bug Fixes
+
+* update some types with defaults ([66b6993](https://github.com/alexsasharegan/safe-types/commit/66b6993))
+
+
+
 <a name="1.7.0"></a>
 # [1.7.0](https://github.com/alexsasharegan/safe-types/compare/v1.6.0...v1.7.0) (2018-02-13)
 
