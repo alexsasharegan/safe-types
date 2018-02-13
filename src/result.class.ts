@@ -77,6 +77,39 @@ export class Result<T, E> {
     });
   }
 
+  /**
+   * Returns `res` if the result is [`Err`],
+   * otherwise returns the [`Ok`] value of `self`.
+   *
+   * Arguments passed to `or` are eagerly evaluated; if you are passing the
+   * result of a function call, it is recommended to use [`or_else`], which is
+   * lazily evaluated.
+   *
+   * ```
+   * let x = Ok(2);
+   * let y = Err("late error");
+   * expect(x.or(y)).toEqual(Ok(2));
+   *
+   * let x = Err("early error");
+   * let y = Ok(2);
+   * expect(x.or(y)).toEqual(Ok(2));
+   *
+   * let x = Err("not a 2");
+   * let y = Err("late error");
+   * expect(x.or(y)).toEqual(Err("late error"));
+   *
+   * let x = Ok(2);
+   * let y = Ok(100);
+   * expect(x.or(y)).toEqual(Ok(2));
+   * ```
+   */
+  public or<F>(res: Result<T, F>): Result<T, F> {
+    return this.match({
+      ok: (t: T) => Result.Ok(t),
+      err: (_: E) => res,
+    });
+  }
+
   public static Ok<T>(val: T): Result<T, any> {
     return new Result(Ok(val));
   }

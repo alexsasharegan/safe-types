@@ -136,3 +136,29 @@ describe("Result.and_then", async () => {
     ).toEqual(Err(3));
   });
 });
+
+describe("Result.or", async () => {
+  it("with Ok && Err", async () => {
+    let x = Ok(2);
+    let y = Err("late error");
+    expect(x.or(y)).toEqual(Ok(2));
+  });
+
+  it("with Err && Ok", async () => {
+    let x = Err("early error");
+    let y = Ok(2);
+    expect(x.or(y)).toEqual(Ok(2));
+  });
+
+  it("with Err && Err", async () => {
+    let x = Err("not a 2");
+    let y = Err("late error");
+    expect(x.or(y)).toEqual(Err("late error"));
+  });
+
+  it("with Ok && Ok", async () => {
+    let x = Ok(2);
+    let y = Ok(100);
+    expect(x.or(y)).toEqual(Ok(2));
+  });
+});
