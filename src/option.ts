@@ -38,8 +38,8 @@ export class Option<T> {
    */
   public is_some(): this is { option: Some<T> } {
     return this.match({
-      some: (_: T) => true,
-      none: () => false,
+      Some: (_: T) => true,
+      None: () => false,
     });
   }
 
@@ -60,8 +60,8 @@ export class Option<T> {
 
   public expect(msg: string): T {
     return this.match({
-      some: (x: T) => x,
-      none: () => {
+      Some: (x: T) => x,
+      None: () => {
         throw new Error(msg);
       },
     });
@@ -69,8 +69,8 @@ export class Option<T> {
 
   public unwrap(): T {
     return this.match({
-      some: (x: T) => x,
-      none: () => {
+      Some: (x: T) => x,
+      None: () => {
         throw new Error("called `Option.unwrap()` on a `None` value");
       },
     });
@@ -78,36 +78,36 @@ export class Option<T> {
 
   public unwrap_or(def: T): T {
     return this.match({
-      some: (x: T) => x,
-      none: () => def,
+      Some: (x: T) => x,
+      None: () => def,
     });
   }
 
   public unwrap_or_else(fn: () => T): T {
     return this.match({
-      some: (x: T) => x,
-      none: () => fn(),
+      Some: (x: T) => x,
+      None: () => fn(),
     });
   }
 
   public map<U>(fn: Mapper<T, U>): Option<U> {
     return this.match({
-      some: (x: T) => Option.Some(fn(x)),
-      none: () => Option.None(),
+      Some: (x: T) => Option.Some(fn(x)),
+      None: () => Option.None(),
     });
   }
 
   public map_or<U>(def: U, fn: Mapper<T, U>): U {
     return this.match({
-      some: (x: T) => fn(x),
-      none: () => def,
+      Some: (x: T) => fn(x),
+      None: () => def,
     });
   }
 
   public map_or_else<U>(def: () => U, fn: Mapper<T, U>): U {
     return this.match({
-      some: (x: T) => fn(x),
-      none: () => def(),
+      Some: (x: T) => fn(x),
+      None: () => def(),
     });
   }
 
@@ -129,15 +129,15 @@ export class Option<T> {
    */
   public ok_or<E>(err: E): Result<T, E> {
     return this.match({
-      some: (t: T) => Ok(t),
-      none: () => Err(err),
+      Some: (t: T) => Ok(t),
+      None: () => Err(err),
     });
   }
 
   public ok_or_else<E>(err: () => E): Result<T, E> {
     return this.match({
-      some: (t: T) => Ok(t),
-      none: () => Err(err()),
+      Some: (t: T) => Ok(t),
+      None: () => Err(err()),
     });
   }
 
@@ -164,8 +164,8 @@ export class Option<T> {
    */
   public and<U>(optb: Option<U>): Option<U> {
     return this.match({
-      some: (_: T) => optb,
-      none: () => Option.None(),
+      Some: (_: T) => optb,
+      None: () => Option.None(),
     });
   }
 
@@ -187,8 +187,8 @@ export class Option<T> {
    */
   public and_then<U>(fn: (t: T) => Option<U>): Option<U> {
     return this.match({
-      some: (t: T) => fn(t),
-      none: () => Option.None(),
+      Some: (t: T) => fn(t),
+      None: () => Option.None(),
     });
   }
 
@@ -246,8 +246,8 @@ export class Option<T> {
    */
   public or(optb: Option<T>): Option<T> {
     return this.match({
-      some: (t: T) => Option.Some(t),
-      none: () => optb,
+      Some: (t: T) => Option.Some(t),
+      None: () => optb,
     });
   }
 
@@ -266,8 +266,8 @@ export class Option<T> {
    */
   public or_else(fn: () => Option<T>): Option<T> {
     return this.match({
-      some: (t: T) => Option.Some(t),
-      none: () => fn(),
+      Some: (t: T) => Option.Some(t),
+      None: () => fn(),
     });
   }
 

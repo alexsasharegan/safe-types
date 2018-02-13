@@ -170,8 +170,8 @@ describe("Option.match", async () => {
     let some_match = jest.fn(num => num.toString(16));
     expect(
       o.match({
-        none: none_match,
-        some: some_match,
+        None: none_match,
+        Some: some_match,
       })
     ).toBe("a");
     expect(none_match).not.toHaveBeenCalled();
@@ -185,8 +185,8 @@ describe("Option.match", async () => {
     let some_match = jest.fn(num => num.toString(16));
     expect(
       o.match({
-        none: none_match,
-        some: some_match,
+        None: none_match,
+        Some: some_match,
       })
     ).toBe("testing");
     expect(none_match).toHaveBeenCalled();

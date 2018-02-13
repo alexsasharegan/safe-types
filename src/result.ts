@@ -26,8 +26,8 @@ export class Result<T, E> {
 
   public is_ok(): this is { result: Ok<T> } {
     return this.match({
-      ok: (_: T) => true,
-      err: (_: E) => false,
+      Ok: (_: T) => true,
+      Err: (_: E) => false,
     });
   }
 
@@ -37,43 +37,43 @@ export class Result<T, E> {
 
   public ok(): Option<T> {
     return this.match({
-      ok: (x: T) => Some(x),
-      err: (_: E) => None(),
+      Ok: (x: T) => Some(x),
+      Err: (_: E) => None(),
     });
   }
 
   public err(): Option<E> {
     return this.match({
-      ok: (_: T) => None(),
-      err: (e: E) => Some(e),
+      Ok: (_: T) => None(),
+      Err: (e: E) => Some(e),
     });
   }
 
   public map<U>(op: Mapper<T, U>): Result<U, E> {
     return this.match({
-      ok: (t: T) => Result.Ok(op(t)),
-      err: (e: E) => Result.Err(e),
+      Ok: (t: T) => Result.Ok(op(t)),
+      Err: (e: E) => Result.Err(e),
     });
   }
 
   public map_err<F>(op: Mapper<E, F>): Result<T, F> {
     return this.match({
-      ok: (t: T) => Result.Ok(t),
-      err: (e: E) => Result.Err(op(e)),
+      Ok: (t: T) => Result.Ok(t),
+      Err: (e: E) => Result.Err(op(e)),
     });
   }
 
   public and<U>(res: Result<U, E>): Result<U, E> {
     return this.match({
-      ok: (_: T) => res,
-      err: (e: E) => Result.Err(e),
+      Ok: (_: T) => res,
+      Err: (e: E) => Result.Err(e),
     });
   }
 
   public and_then<U>(op: (t: T) => Result<U, E>): Result<U, E> {
     return this.match({
-      ok: (t: T) => op(t),
-      err: (e: E) => Result.Err(e),
+      Ok: (t: T) => op(t),
+      Err: (e: E) => Result.Err(e),
     });
   }
 
@@ -105,8 +105,8 @@ export class Result<T, E> {
    */
   public or<F>(res: Result<T, F>): Result<T, F> {
     return this.match({
-      ok: (t: T) => Result.Ok(t),
-      err: (_: E) => res,
+      Ok: (t: T) => Result.Ok(t),
+      Err: (_: E) => res,
     });
   }
 
@@ -128,8 +128,8 @@ export class Result<T, E> {
    */
   public or_else<F>(op: (e: E) => Result<T, F>): Result<T, F> {
     return this.match({
-      ok: (t: T) => Result.Ok(t),
-      err: (e: E) => op(e),
+      Ok: (t: T) => Result.Ok(t),
+      Err: (e: E) => op(e),
     });
   }
 
@@ -152,8 +152,8 @@ export class Result<T, E> {
    */
   public unwrap_or(optb: T): T {
     return this.match({
-      ok: (t: T) => t,
-      err: (_: E) => optb,
+      Ok: (t: T) => t,
+      Err: (_: E) => optb,
     });
   }
 
@@ -170,15 +170,15 @@ export class Result<T, E> {
    */
   public unwrap_or_else(op: (e: E) => T): T {
     return this.match({
-      ok: (t: T) => t,
-      err: (e: E) => op(e),
+      Ok: (t: T) => t,
+      Err: (e: E) => op(e),
     });
   }
 
   public unwrap(): T {
     return this.match({
-      ok: (t: T) => t,
-      err: (_: E) => {
+      Ok: (t: T) => t,
+      Err: (_: E) => {
         throw new Error("called `Result.unwrap()` on an `Err` value");
       },
     });
@@ -186,17 +186,17 @@ export class Result<T, E> {
 
   public unwrap_err(): E {
     return this.match({
-      ok: (_: T) => {
+      Ok: (_: T) => {
         throw new Error("called `Result.unwrap_err()` on an `Ok` value");
       },
-      err: (e: E) => e,
+      Err: (e: E) => e,
     });
   }
 
   public expect(msg: string): T {
     return this.match({
-      ok: (t: T) => t,
-      err: (_: E) => {
+      Ok: (t: T) => t,
+      Err: (_: E) => {
         throw new Error(msg);
       },
     });
@@ -204,10 +204,10 @@ export class Result<T, E> {
 
   public expect_err(msg: string): E {
     return this.match({
-      ok: (_: T) => {
+      Ok: (_: T) => {
         throw new Error(msg);
       },
-      err: (e: E) => e,
+      Err: (e: E) => e,
     });
   }
 
