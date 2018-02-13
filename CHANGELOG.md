@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.6.0"></a>
+# [1.6.0](https://github.com/alexsasharegan/safe-types/compare/v1.5.0...v1.6.0) (2018-02-13)
+
+
+### Features
+
+* **option:** `and` impl ([979a17f](https://github.com/alexsasharegan/safe-types/commit/979a17f))
+* **result:** `expect_err` impl ([2dd4be0](https://github.com/alexsasharegan/safe-types/commit/2dd4be0))
+* **result:** `expect` impl ([8719c5f](https://github.com/alexsasharegan/safe-types/commit/8719c5f))
+* **result:** `unwrap_err` impl ([2286789](https://github.com/alexsasharegan/safe-types/commit/2286789))
+* **result:** `unwrap_or_else` impl ([a2360fc](https://github.com/alexsasharegan/safe-types/commit/a2360fc))
+* **result:** `unwrap_or` impl ([9189c9a](https://github.com/alexsasharegan/safe-types/commit/9189c9a))
+* **result:** `unwrap` imp ([55d873b](https://github.com/alexsasharegan/safe-types/commit/55d873b))
+* finish option methods and result tests ([0b76bc2](https://github.com/alexsasharegan/safe-types/commit/0b76bc2))
+
+
+
 <a name="1.5.0"></a>
 # [1.5.0](https://github.com/alexsasharegan/safe-types/compare/v1.4.0...v1.5.0) (2018-02-13)
 
