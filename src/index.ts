@@ -1,8 +1,8 @@
-import { Option } from "./option.class";
+import { Option } from "./option";
 const Some = Option.Some;
 const None = Option.None;
 
-import { Result } from "./result.class";
+import { Result } from "./result";
 const Ok = Result.Ok;
 const Err = Result.Err;
 
