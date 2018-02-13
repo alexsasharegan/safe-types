@@ -77,15 +77,6 @@ export class Result<T, E> {
     });
   }
 
-  public async and_then_await<U>(
-    op: (t: T) => Promise<Result<U, E>>
-  ): Promise<Result<U, E>> {
-    return this.match({
-      ok: (t: T) => op(t),
-      err: async (e: E) => Result.Err(e),
-    });
-  }
-
   /**
    * Returns `res` if the result is [`Err`],
    * otherwise returns the [`Ok`] value of `self`.
@@ -220,11 +211,11 @@ export class Result<T, E> {
     });
   }
 
-  public static Ok<T>(val: T): Result<T, any> {
+  public static Ok<T, E = any>(val: T): Result<T, E> {
     return new Result(Ok(val));
   }
 
-  public static Err<E>(err: E): Result<any, E> {
+  public static Err<E, T = any>(err: E): Result<T, E> {
     return new Result(Err(err));
   }
 
