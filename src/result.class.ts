@@ -157,6 +157,24 @@ export class Result<T, E> {
     });
   }
 
+  /**
+   * Unwraps a result, yielding the content of an [`Ok`].
+   * If the value is an [`Err`] then it calls `op` with its value.
+   *
+   * ```
+   * let count = (x: string) => x.length;
+   *
+   * expect(Ok(2).unwrap_or_else(count)).toEqual(2);
+   * expect(Err("foo").unwrap_or_else(count)).toEqual(3);
+   * ```
+   */
+  public unwrap_or_else(op: (e: E) => T): T {
+    return this.match({
+      ok: (t: T) => t,
+      err: (e: E) => op(e),
+    });
+  }
+
   public static Ok<T>(val: T): Result<T, any> {
     return new Result(Ok(val));
   }

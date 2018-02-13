@@ -207,3 +207,12 @@ describe("Result.unwrap_or", async () => {
     expect(x.unwrap_or(optb)).toEqual(optb);
   });
 });
+
+describe("Result.unwrap_or_else", async () => {
+  it("should work", async () => {
+    let count = (x: string) => x.length;
+
+    expect(Ok(2).unwrap_or_else(count)).toEqual(2);
+    expect(Err("foo").unwrap_or_else(count)).toEqual(3);
+  });
+});
