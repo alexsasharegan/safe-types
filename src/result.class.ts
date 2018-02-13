@@ -184,6 +184,15 @@ export class Result<T, E> {
     });
   }
 
+  public expect(err_msg: string): T {
+    return this.match({
+      ok: (t: T) => t,
+      err: (_: E) => {
+        throw new Error(err_msg);
+      },
+    });
+  }
+
   public static Ok<T>(val: T): Result<T, any> {
     return new Result(Ok(val));
   }
