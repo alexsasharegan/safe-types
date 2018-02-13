@@ -8,7 +8,7 @@ export type ResultType<T, E> = Ok<T> | Err<E>;
 export class Result<T, E> {
   constructor(private readonly result: ResultType<T, E>) {}
 
-  match<U>(matcher: {
+  public match<U>(matcher: {
     [ResultVariant.Ok](x: T): U;
     [ResultVariant.Err](e: E): U;
   }): U {
@@ -24,48 +24,55 @@ export class Result<T, E> {
     }
   }
 
-  is_ok(): this is Ok<T> {
+  public is_ok(): this is Ok<T> {
     return this.match({
       ok: (_: T) => true,
       err: (_: E) => false,
     });
   }
 
-  is_err(): this is Err<E> {
+  public is_err(): this is Err<E> {
     return !this.is_ok();
   }
 
-  ok(): Option<T> {
+  public ok(): Option<T> {
     return this.match({
       ok: (x: T) => Some(x),
       err: (_: E) => None(),
     });
   }
 
-  err(): Option<E> {
+  public err(): Option<E> {
     return this.match({
       ok: (_: T) => None(),
       err: (e: E) => Some(e),
     });
   }
 
-  map<U>(op: Mapper<T, U>): Result<U, E> {
+  public map<U>(op: Mapper<T, U>): Result<U, E> {
     return this.match({
       ok: (t: T) => Result.Ok(op(t)),
       err: (e: E) => Result.Err(e),
     });
   }
 
-  map_err<F>(op: Mapper<E, F>): Result<T, F> {
+  public map_err<F>(op: Mapper<E, F>): Result<T, F> {
     return this.match({
       ok: (t: T) => Result.Ok(t),
       err: (e: E) => Result.Err(op(e)),
     });
   }
 
-  and<U>(res: Result<U, E>): Result<U, E> {
+  public and<U>(res: Result<U, E>): Result<U, E> {
     return this.match({
       ok: (_: T) => res,
+      err: (e: E) => Result.Err(e),
+    });
+  }
+
+  public and_then<U>(op: (t: T) => Result<U, E>): Result<U, E> {
+    return this.match({
+      ok: (t: T) => op(t),
       err: (e: E) => Result.Err(e),
     });
   }

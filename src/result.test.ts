@@ -1,4 +1,4 @@
-import { Result, Ok, Err } from ".";
+import { Result, Ok, Err, Some, None } from ".";
 
 describe("Result.Ok", async () => {
   it("should return Result of Ok", async () => {
@@ -18,7 +18,7 @@ describe("Result.Err", async () => {
   });
 });
 
-describe("Result.is_ok", async () => {
+describe("Result.is_ok && Result.is_err", async () => {
   it("with Ok", () => {
     let res = Ok(10);
     expect(res.is_ok()).toBe(true);
@@ -29,5 +29,110 @@ describe("Result.is_ok", async () => {
     let res = Err(10);
     expect(res.is_err()).toBe(true);
     expect(res.is_ok()).toBe(false);
+  });
+});
+
+describe("Result.ok", async () => {
+  it("should equal Some with Ok", async () => {
+    expect(Ok(2).ok()).toEqual(Some(2));
+  });
+
+  it("should equal None with Err", async () => {
+    expect(Err("Nothing here").ok()).toEqual(None());
+  });
+});
+
+describe("Result.err", async () => {
+  it("should equal None with Ok", async () => {
+    expect(Ok(2).err()).toEqual(None());
+  });
+
+  it("should equal Some with Err", async () => {
+    expect(Err("Nothing here").err()).toEqual(Some("Nothing here"));
+  });
+});
+
+describe("Result.map", async () => {
+  it("should transform with Ok", async () => {
+    let x = Ok(4);
+    expect(x.map(x => x * x)).toEqual(Ok(16));
+  });
+
+  it("should not transform with Err", async () => {
+    let x = Err(4);
+    expect(x.map(x => x * x)).toEqual(Err(4));
+  });
+});
+
+describe("Result.map_err", async () => {
+  it("should not transform with Ok", async () => {
+    let x = Ok(2);
+    expect(x.map_err(num => Object.prototype.toString.call(num))).toEqual(
+      Ok(2)
+    );
+  });
+
+  it("should transform with Err", async () => {
+    let x = Err(13);
+    expect(x.map_err(x => x.toString())).toEqual(Err("13"));
+    expect(x.map_err(x => x.toString())).not.toEqual(Err(13));
+  });
+});
+
+describe("Result.and", async () => {
+  it("with Ok && Err", async () => {
+    let x = Ok(2);
+    let y = Err("late error");
+    expect(x.and(y)).toEqual(Err("late error"));
+  });
+
+  it("with Err && Ok", async () => {
+    let x = Err("early error");
+    let y = Ok("foo");
+    expect(x.and(y)).toEqual(Err("early error"));
+  });
+
+  it("with Err && Err", async () => {
+    let x = Err("not a 2");
+    let y = Err("late error");
+    expect(x.and(y)).toEqual(Err("not a 2"));
+  });
+
+  it("with Ok && Ok", async () => {
+    let x = Ok(2);
+    let y = Ok("different result type");
+    expect(x.and(y)).toEqual(Ok("different result type"));
+  });
+});
+
+describe("Result.and_then", async () => {
+  it("should work", async () => {
+    type NumResultFn = (x: number) => Result<number, number>;
+    let sq: NumResultFn = x => Ok(x * x);
+    let err: NumResultFn = x => Err(x);
+
+    expect(
+      Ok(2)
+        .and_then(sq)
+        .and_then(sq)
+    ).toEqual(Ok(16));
+
+    expect(
+      Ok(2)
+        .and_then(sq)
+        .and_then(err)
+    ).toEqual(Err(4));
+
+    expect(
+      Ok(2)
+        .and_then(err)
+        .and_then(sq)
+    ).toEqual(Err(2));
+
+    expect(
+      Err(3)
+        .and_then(sq)
+        .and_then(sq)
+    ).toEqual(Err(3));
   });
 });
