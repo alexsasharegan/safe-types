@@ -1,7 +1,7 @@
 import { None } from "./none";
 import { Some } from "./some";
 import { is_void, Mapper } from "./utils";
-import { OptionVariant, expect_never, Ok, Err, Result } from ".";
+import { expect_never, Ok, Err, Result, OptionVariant, ErrSafeTypes } from ".";
 
 export type Nullable<T> = T | undefined | null;
 export type OptionType<T> = Some<T> | None;
@@ -271,10 +271,10 @@ export class Option<T> {
     });
   }
 
-  public into_result(): Result<T, void> {
+  public into_result(): Result<T, ErrSafeTypes.OptionNone> {
     return this.match({
       Some: (t: T) => Ok(t),
-      None: () => Err(undefined),
+      None: () => Err(ErrSafeTypes.OptionNone),
     });
   }
 

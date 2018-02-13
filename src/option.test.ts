@@ -1,4 +1,4 @@
-import { Option, Some, None, Ok, Err } from ".";
+import { Option, Some, None, Ok, Err, ErrSafeTypes } from ".";
 import { Mapper } from "./utils";
 
 describe("Some", async () => {
@@ -331,7 +331,7 @@ describe("Option.into_result", () => {
     let x = Option.of(null);
     expect(x.into_result().is_err()).toBe(true);
     expect(x.into_result().is_ok()).toBe(false);
-    expect(x.into_result()).toEqual(Err(undefined));
+    expect(x.into_result()).toEqual(Err(ErrSafeTypes.OptionNone));
   });
 });
 

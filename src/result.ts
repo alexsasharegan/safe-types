@@ -1,7 +1,7 @@
 import { Ok } from "./ok";
 import { Err } from "./err";
 import { Mapper, expect_never } from "./utils";
-import { ResultVariant, Option, Some, None } from ".";
+import { Option, Some, None, ResultVariant } from ".";
 
 export type ResultType<T, E> = Ok<T> | Err<E>;
 
