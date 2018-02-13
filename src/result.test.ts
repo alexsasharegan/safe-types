@@ -216,3 +216,13 @@ describe("Result.unwrap_or_else", async () => {
     expect(Err("foo").unwrap_or_else(count)).toEqual(3);
   });
 });
+
+describe("Result.unwrap", async () => {
+  it("should not throw with Ok", async () => {
+    expect(Ok(2).unwrap()).toBe(2);
+  });
+
+  it("should throw with Err", async () => {
+    expect(() => Err("error").unwrap()).toThrow(Error);
+  });
+});

@@ -175,6 +175,15 @@ export class Result<T, E> {
     });
   }
 
+  public unwrap(): T {
+    return this.match({
+      ok: (t: T) => t,
+      err: (_: E) => {
+        throw new Error("Called `Result.unwrap()` on an `Err` value");
+      },
+    });
+  }
+
   public static Ok<T>(val: T): Result<T, any> {
     return new Result(Ok(val));
   }
