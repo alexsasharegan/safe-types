@@ -47,10 +47,14 @@
   },
   "devDependencies": {
     "@types/jest": "^22.1.2",
+    "@types/node": "^9.4.5",
+    "axios": "^0.17.1",
     "jest": "^22.2.2",
     "standard": "^10.0.3",
     "ts-jest": "^22.0.3",
+    "ts-node": "^4.1.0",
     "typescript": "^2.7.1",
     "version": "^0.1.2"
-  }
+  },
+  "dependencies": {}
 }
