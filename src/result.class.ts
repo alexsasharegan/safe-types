@@ -133,6 +133,30 @@ export class Result<T, E> {
     });
   }
 
+  /**
+   * Unwraps a result, yielding the content of an [`Ok`].
+   * Else, it returns `optb`.
+   *
+   * Arguments passed to `unwrap_or` are eagerly evaluated; if you are passing
+   * the result of a function call, it is recommended to use [`unwrap_or_else`],
+   * which is lazily evaluated.
+   *
+   * ```
+   * let optb = 2;
+   * let x: Result<number, string> = Ok(9);
+   * expect(x.unwrap_or(optb)).toEqual(9);
+   *
+   * let x: Result<number, string> = Err("error");
+   * expect(x.unwrap_or(optb)).toEqual(optb);
+   * ```
+   */
+  public unwrap_or(optb: T): T {
+    return this.match({
+      ok: (t: T) => t,
+      err: (_: E) => optb,
+    });
+  }
+
   public static Ok<T>(val: T): Result<T, any> {
     return new Result(Ok(val));
   }

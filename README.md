@@ -1,3 +1,3 @@
 # Safe Types
 
-Type safe utils for writing better JavaScript.
+ Type safe utils inspired from the Rust language for writing better JavaScript.

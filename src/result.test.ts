@@ -193,3 +193,17 @@ describe("Result.or_else", async () => {
     ).toEqual(Err(3));
   });
 });
+
+describe("Result.unwrap_or", async () => {
+  it("with Ok", async () => {
+    let optb = 2;
+    let x: Result<number, string> = Ok(9);
+    expect(x.unwrap_or(optb)).toEqual(9);
+  });
+
+  it("with Err", async () => {
+    let optb = 2;
+    let x: Result<number, string> = Err("error");
+    expect(x.unwrap_or(optb)).toEqual(optb);
+  });
+});
