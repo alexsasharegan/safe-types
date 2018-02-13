@@ -21,7 +21,7 @@ export class Option<T> {
         return matcher[OptionVariant.Some](this.option.value);
 
       default:
-        return expect_never(this.option, "Invalid Option variant.");
+        return expect_never(this.option, "invalid Option variant");
     }
   }
 

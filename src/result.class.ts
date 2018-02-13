@@ -20,7 +20,7 @@ export class Result<T, E> {
         return matcher[ResultVariant.Err](this.result.error);
 
       default:
-        return expect_never(this.result, "Invalid Result variant.");
+        return expect_never(this.result, "invalid `Result` variant");
     }
   }
 
@@ -179,8 +179,17 @@ export class Result<T, E> {
     return this.match({
       ok: (t: T) => t,
       err: (_: E) => {
-        throw new Error("Called `Result.unwrap()` on an `Err` value");
+        throw new Error("called `Result.unwrap()` on an `Err` value");
       },
+    });
+  }
+
+  public unwrap_err(): E {
+    return this.match({
+      ok: (_: T) => {
+        throw new Error("called `Result.unwrap_err()` on an `Ok` value");
+      },
+      err: (e: E) => e,
     });
   }
 

@@ -236,3 +236,13 @@ describe("Result.expect", async () => {
     expect(() => Err("error").expect("my error")).toThrow("my error");
   });
 });
+
+describe("Result.unwrap_err", async () => {
+  it("should throw with Ok", async () => {
+    expect(() => Ok(2).unwrap_err()).toThrow(Error);
+  });
+
+  it("should not throw with Err", async () => {
+    expect(Err("error").unwrap_err()).toBe("error");
+  });
+});
