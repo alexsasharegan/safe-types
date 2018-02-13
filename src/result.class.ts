@@ -193,12 +193,21 @@ export class Result<T, E> {
     });
   }
 
-  public expect(err_msg: string): T {
+  public expect(msg: string): T {
     return this.match({
       ok: (t: T) => t,
       err: (_: E) => {
-        throw new Error(err_msg);
+        throw new Error(msg);
       },
+    });
+  }
+
+  public expect_err(msg: string): E {
+    return this.match({
+      ok: (_: T) => {
+        throw new Error(msg);
+      },
+      err: (e: E) => e,
     });
   }
 

@@ -36,11 +36,11 @@ export class Option<T> {
     return !this.is_some();
   }
 
-  public expect(err_msg: string): T {
+  public expect(msg: string): T {
     return this.match({
       some: (x: T) => x,
       none: () => {
-        throw new Error(err_msg);
+        throw new Error(msg);
       },
     });
   }
