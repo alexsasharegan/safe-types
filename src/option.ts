@@ -271,6 +271,20 @@ export class Option<T> {
     });
   }
 
+  public into_result(): Result<T, void> {
+    return this.match({
+      Some: (t: T) => Ok(t),
+      None: () => Err(undefined),
+    });
+  }
+
+  public inverse_result(): Result<void, T> {
+    return this.match({
+      Some: (t: T) => Err(t),
+      None: () => Ok(undefined),
+    });
+  }
+
   public static from<U>(val: Nullable<U>): Option<U> {
     if (is_void(val)) {
       return Option.None();

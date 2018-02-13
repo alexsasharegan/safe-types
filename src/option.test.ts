@@ -318,3 +318,35 @@ describe("Option.or_else", async () => {
     expect(None().or_else(nobody)).toEqual(None());
   });
 });
+
+describe("Option.into_result", () => {
+  it("should Ok with Some", async () => {
+    let x = Option.of(2);
+    expect(x.into_result().is_ok()).toBe(true);
+    expect(x.into_result().is_err()).toBe(false);
+    expect(x.into_result()).toEqual(Ok(2));
+  });
+
+  it("should Err with None", async () => {
+    let x = Option.of(null);
+    expect(x.into_result().is_err()).toBe(true);
+    expect(x.into_result().is_ok()).toBe(false);
+    expect(x.into_result()).toEqual(Err(undefined));
+  });
+});
+
+describe("Option.inverse_result", () => {
+  it("should Err with Some", async () => {
+    let x = Option.of(2);
+    expect(x.inverse_result().is_ok()).toBe(false);
+    expect(x.inverse_result().is_err()).toBe(true);
+    expect(x.inverse_result()).toEqual(Err(2));
+  });
+
+  it("should Ok with None", async () => {
+    let x = Option.of(null);
+    expect(x.inverse_result().is_err()).toBe(false);
+    expect(x.inverse_result().is_ok()).toBe(true);
+    expect(x.inverse_result()).toEqual(Ok(undefined));
+  });
+});
