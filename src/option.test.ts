@@ -1,4 +1,4 @@
-import { Option, Some, None } from ".";
+import { Option, Some, None, Ok, Err } from ".";
 import { Mapper } from "./utils";
 
 describe("Some", async () => {
@@ -191,5 +191,52 @@ describe("Option.match", async () => {
     ).toBe("testing");
     expect(none_match).toHaveBeenCalled();
     expect(some_match).not.toHaveBeenCalled();
+  });
+});
+
+describe("Option.ok_or", async () => {
+  it("with Some", async () => {
+    let x = Some("foo");
+    expect(x.ok_or(0)).toEqual(Ok("foo"));
+  });
+
+  it("with None", async () => {
+    let x: Option<string> = None();
+    expect(x.ok_or(0)).toEqual(Err(0));
+  });
+});
+
+describe("Option.ok_or_else", async () => {
+  it("with Some", async () => {
+    let x = Some("foo");
+    expect(x.ok_or_else(() => 0)).toEqual(Ok("foo"));
+  });
+
+  it("with None", async () => {
+    let x: Option<string> = None();
+    expect(x.ok_or_else(() => 0)).toEqual(Err(0));
+  });
+});
+
+describe("Option.and", async () => {
+  it("Some && None", async () => {
+    let x = Some(2);
+    let y: Option<string> = None();
+    expect(x.and(y)).toEqual(None());
+  });
+  it("None && Some", async () => {
+    let x: Option<number> = None();
+    let y = Some("foo");
+    expect(x.and(y)).toEqual(None());
+  });
+  it("Some && Some", async () => {
+    let x = Some(2);
+    let y = Some("foo");
+    expect(x.and(y)).toEqual(Some("foo"));
+  });
+  it("None && None", async () => {
+    let x: Option<number> = None();
+    let y: Option<string> = None();
+    expect(x.and(y)).toEqual(None());
   });
 });

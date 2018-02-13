@@ -1,7 +1,7 @@
 import { None } from "./none";
 import { Some } from "./some";
 import { is_void, Mapper } from "./utils";
-import { OptionVariant, expect_never } from ".";
+import { OptionVariant, expect_never, Ok, Err, Result } from ".";
 
 export type Nullable<T> = T | undefined | null;
 export type OptionType<T> = Some<T> | None;
@@ -25,6 +25,17 @@ export class Option<T> {
     }
   }
 
+  /**
+   * Returns `true` if the option is a [`Some`] value.
+   *
+   * ```
+   * let x: Option<number> = Some(2);
+   * expect(x.is_some()).toBe(true);
+   *
+   * let x: Option<number> = None();
+   * expect(x.is_some()).toBe(false);
+   * ```
+   */
   public is_some(): this is Some<T> {
     return this.match({
       some: (_: T) => true,
@@ -32,6 +43,17 @@ export class Option<T> {
     });
   }
 
+  /**
+   * Returns `true` if the option is a [`None`] value.
+   *
+   * ```
+   * let x: Option<number> = Some(2);
+   * expect(x.is_some()).toBe(false);
+   *
+   * let x: Option<number> = None();
+   * expect(x.is_some()).toBe(true);
+   * ```
+   */
   public is_none(): this is None {
     return !this.is_some();
   }
@@ -71,7 +93,7 @@ export class Option<T> {
   public map<U>(fn: Mapper<T, U>): Option<U> {
     return this.match({
       some: (x: T) => Option.Some(fn(x)),
-      none: () => Option.None<U>(),
+      none: () => Option.None(),
     });
   }
 
@@ -86,6 +108,64 @@ export class Option<T> {
     return this.match({
       some: (x: T) => fn(x),
       none: () => def(),
+    });
+  }
+
+  /**
+   * Transforms the `Option<T>` into a [`Result<T, E>`], mapping [`Some(v)`] to
+   * [`Ok(v)`] and [`None`] to [`Err(err)`].
+   *
+   * Arguments passed to `ok_or` are eagerly evaluated; if you are passing the
+   * result of a function call, it is recommended to use [`ok_or_else`], which is
+   * lazily evaluated.
+   *
+   * ```
+   * let x = Some("foo");
+   * expect(x.ok_or(0)).toEqual(Ok("foo"));
+   *
+   * let x: Option<string> = None();
+   * expect(x.ok_or(0)).toEqual(Err(0));
+   * ```
+   */
+  public ok_or<E>(err: E): Result<T, E> {
+    return this.match({
+      some: (t: T) => Ok(t),
+      none: () => Err(err),
+    });
+  }
+
+  public ok_or_else<E>(err: () => E): Result<T, E> {
+    return this.match({
+      some: (t: T) => Ok(t),
+      none: () => Err(err()),
+    });
+  }
+
+  /**
+   * Returns [`None`] if the option is [`None`], otherwise returns `optb`.
+   *
+   * ```
+   * let x = Some(2);
+   * let y: Option<string> = None();
+   * expect(x.and(y)).toEqual(None());
+   *
+   * let x: Option<number> = None();
+   * let y = Some("foo");
+   * expect(x.and(y)).toEqual(None());
+   *
+   * let x = Some(2);
+   * let y = Some("foo");
+   * expect(x.and(y)).toEqual(Some("foo"));
+   *
+   * let x: Option<number> = None();
+   * let y: Option<string> = None();
+   * expect(x.and(y)).toEqual(None());
+   * ```
+   */
+  public and<U>(optb: Option<U>): Option<U> {
+    return this.match({
+      some: (_: T) => optb,
+      none: () => Option.None(),
     });
   }
 
