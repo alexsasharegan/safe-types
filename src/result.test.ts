@@ -162,3 +162,34 @@ describe("Result.or", async () => {
     expect(x.or(y)).toEqual(Ok(2));
   });
 });
+
+describe("Result.or_else", async () => {
+  it("should work", async () => {
+    let sq = (x: number) => Ok(x * x);
+    let err = (x: number) => Err(x);
+
+    expect(
+      Ok(2)
+        .or_else(sq)
+        .or_else(sq)
+    ).toEqual(Ok(2));
+
+    expect(
+      Ok(2)
+        .or_else(err)
+        .or_else(sq)
+    ).toEqual(Ok(2));
+
+    expect(
+      Err(3)
+        .or_else(sq)
+        .or_else(err)
+    ).toEqual(Ok(9));
+
+    expect(
+      Err(3)
+        .or_else(err)
+        .or_else(err)
+    ).toEqual(Err(3));
+  });
+});

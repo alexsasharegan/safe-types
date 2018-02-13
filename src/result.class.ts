@@ -110,6 +110,29 @@ export class Result<T, E> {
     });
   }
 
+  /**
+   * Calls `op` if the result is [`Err`],
+   * otherwise returns the [`Ok`] value of `self`.
+   *
+   * This function can be used for control flow based on result values.
+   *
+   * ```
+   * let sq = (x: number) => Ok(x * x)
+   * let err = (x: number) => Err(x)
+   *
+   * expect(Ok(2).or_else(sq).or_else(sq)).toEqual(Ok(2));
+   * expect(Ok(2).or_else(err).or_else(sq)).toEqual(Ok(2));
+   * expect(Err(3).or_else(sq).or_else(err)).toEqual(Ok(9));
+   * expect(Err(3).or_else(err).or_else(err)).toEqual(Err(3));
+   * ```
+   */
+  public or_else<F>(op: (e: E) => Result<T, F>): Result<T, F> {
+    return this.match({
+      ok: (t: T) => Result.Ok(t),
+      err: (e: E) => op(e),
+    });
+  }
+
   public static Ok<T>(val: T): Result<T, any> {
     return new Result(Ok(val));
   }
@@ -120,9 +143,9 @@ export class Result<T, E> {
 
   public static from<T, E>(op: () => T): Result<T, E> {
     try {
-      return new Result(Ok(op()));
-    } catch (error) {
-      return new Result(Err(error));
+      return Result.Ok(op());
+    } catch (e) {
+      return Result.Err(e);
     }
   }
 
