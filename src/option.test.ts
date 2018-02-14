@@ -192,6 +192,11 @@ describe("Option.match", async () => {
     expect(none_match).toHaveBeenCalled();
     expect(some_match).not.toHaveBeenCalled();
   });
+
+  it("should go 💥 with never", async () => {
+    let opt = new Option(<any>{});
+    expect(opt.is_some.bind(opt)).toThrowErrorMatchingSnapshot();
+  });
 });
 
 describe("Option.ok_or", async () => {

@@ -32,6 +32,13 @@ describe("Result.is_ok && Result.is_err", async () => {
   });
 });
 
+describe("Result.match", () => {
+  it("should go 💥 with never", async () => {
+    let res = new Result(<any>{});
+    expect(res.is_ok.bind(res)).toThrowErrorMatchingSnapshot();
+  });
+});
+
 describe("Result.ok", async () => {
   it("should equal Some with Ok", async () => {
     expect(Ok(2).ok()).toEqual(Some(2));
