@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.2.1"></a>
+## [2.2.1](https://github.com/alexsasharegan/safe-types/compare/v2.2.0...v2.2.1) (2018-02-14)
+
+
+### Bug Fixes
+
+* bolster testing for new methods ([0d35925](https://github.com/alexsasharegan/safe-types/commit/0d35925))
+
+
+
 <a name="2.2.0"></a>
 # [2.2.0](https://github.com/alexsasharegan/safe-types/compare/v2.1.1...v2.2.0) (2018-02-13)
 
