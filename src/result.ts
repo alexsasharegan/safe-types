@@ -70,6 +70,13 @@ export class Result<T, E> {
     });
   }
 
+  public and_await<U>(res: Promise<Result<U, E>>): Promise<Result<U, E>> {
+    return this.match({
+      Ok: (_: T) => res,
+      Err: (e: E) => Promise.resolve(Result.Err(e)),
+    });
+  }
+
   public and_then<U>(op: (t: T) => Result<U, E>): Result<U, E> {
     return this.match({
       Ok: (t: T) => op(t),

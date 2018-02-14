@@ -105,6 +105,32 @@ describe("Result.and", async () => {
   });
 });
 
+describe("Result.and_await", async () => {
+  it("with Ok && Err", async () => {
+    let x = Ok(2);
+    let y = Promise.resolve(Err("late error"));
+    expect(await x.and_await(y)).toEqual(Err("late error"));
+  });
+
+  it("with Err && Ok", async () => {
+    let x = Err("early error");
+    let y = Promise.resolve(Ok("foo"));
+    expect(await x.and_await(y)).toEqual(Err("early error"));
+  });
+
+  it("with Err && Err", async () => {
+    let x = Err("not a 2");
+    let y = Promise.resolve(Err("late error"));
+    expect(await x.and_await(y)).toEqual(Err("not a 2"));
+  });
+
+  it("with Ok && Ok", async () => {
+    let x = Ok(2);
+    let y = Promise.resolve(Ok("different result type"));
+    expect(await x.and_await(y)).toEqual(Ok("different result type"));
+  });
+});
+
 describe("Result.and_then", async () => {
   it("should work", async () => {
     type NumResultFn = (x: number) => Result<number, number>;
@@ -133,6 +159,38 @@ describe("Result.and_then", async () => {
       Err(3)
         .and_then(sq)
         .and_then(sq)
+    ).toEqual(Err(3));
+  });
+});
+
+describe("Result.and_then_await", async () => {
+  it("should work", async () => {
+    type NumResultFn = (x: number) => Promise<Result<number, number>>;
+    let sq: NumResultFn = x => Promise.resolve(Ok(x * x));
+    let err: NumResultFn = x => Promise.resolve(Err(x));
+
+    expect(
+      await Ok(2)
+        .and_then_await(sq)
+        .then(r => r.and_then_await(sq))
+    ).toEqual(Ok(16));
+
+    expect(
+      await Ok(2)
+        .and_then_await(sq)
+        .then(r => r.and_then_await(err))
+    ).toEqual(Err(4));
+
+    expect(
+      await Ok(2)
+        .and_then_await(err)
+        .then(r => r.and_then_await(sq))
+    ).toEqual(Err(2));
+
+    expect(
+      await Err(3)
+        .and_then_await(sq)
+        .then(r => r.and_then_await(sq))
     ).toEqual(Err(3));
   });
 });

@@ -271,6 +271,16 @@ export class Option<T> {
     });
   }
 
+  /**
+   * Maps the option type to a Result type.
+   * A Some value is considered an Ok,
+   * while a None value is considered an Err.
+   *
+   * ```
+   * Some(T) => Ok(T)
+   * None() => Err("ErrOptionNone")
+   * ```
+   */
   public into_result(): Result<T, ErrSafeTypes.OptionNone> {
     return this.match({
       Some: (t: T) => Ok(t),
@@ -278,6 +288,34 @@ export class Option<T> {
     });
   }
 
+  /**
+   * Maps the option type to the opposite Result of `Option.into_result`.
+   * A None value is considered an Ok,
+   * while a Some value is considered an Err.
+   *
+   * This is used most commonly with a NodeJS style callback
+   * containing `Error | null` as the first argument.
+   *
+   * ```
+   * Some(T) => Err(T)
+   * None() => Ok(void)
+   *
+   * // Promisify fs.readFile, but only resolve
+   * // using the Result type.
+   * // Start by consuming the err
+   * // in the option to determine it's existence,
+   * // then map it to an inverse Result
+   * // (where Some(err) is an Err(err)),
+   * // and finally map the Ok from
+   * // Ok(void) => Ok(data: string)
+   * let read_result = await new Promise(resolve =>
+   *  fs.readFile("file.txt", "utf8", (err, data) => {
+   *    resolve(Option.of(err).inverse_result().map(_ => data))
+   *  })
+   * )
+   * // => Result<string, ErrnoException>
+   * ```
+   */
   public inverse_result(): Result<void, T> {
     return this.match({
       Some: (t: T) => Err(t),
