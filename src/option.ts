@@ -199,10 +199,6 @@ export class Option<T> {
    * value), and
    * - `None` if `predicate` returns `false`.
    *
-   * This function works similar to `Iterator::filter()`. You can imagine
-   * the `Option<T>` being an iterator over one or zero elements. `filter()`
-   * lets you decide which elements to keep.
-   *
    * ```
    * let is_even = (n: number) => n % 2 == 0
    *

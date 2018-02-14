@@ -79,6 +79,19 @@ describe("Result.map_err", async () => {
   });
 });
 
+describe("Result.map_both", async () => {
+  let sq = x => x * x;
+  it("should transform with Ok", async () => {
+    let x = Ok(4);
+    expect(x.map_both(sq, sq)).toEqual(Ok(16));
+  });
+
+  it("should not transform with Err", async () => {
+    let x = Err(4);
+    expect(x.map_both(sq, sq)).toEqual(Err(16));
+  });
+});
+
 describe("Result.and", async () => {
   it("with Ok && Err", async () => {
     let x = Ok(2);

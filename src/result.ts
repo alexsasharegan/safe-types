@@ -63,6 +63,16 @@ export class Result<T, E> {
     });
   }
 
+  public map_both<U, F>(
+    ok_op: Mapper<T, U>,
+    err_op: Mapper<E, F>
+  ): Result<U, F> {
+    return this.match({
+      Ok: (t: T) => Result.Ok(ok_op(t)),
+      Err: (e: E) => Result.Err(err_op(e)),
+    });
+  }
+
   public and<U>(res: Result<U, E>): Result<U, E> {
     return this.match({
       Ok: (_: T) => res,
