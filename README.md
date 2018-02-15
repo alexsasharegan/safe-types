@@ -10,6 +10,19 @@
 
 Type safe utils inspired from the Rust language for writing better JavaScript.
 
+## Purpose
+
+Currently, this library is an experiment both to learn Rust concepts as well as
+to determine whether some of Rust's types can be mapped to TypeScript and
+improve the safety of TypeScript/JavaScript. It's my opinion that a library like
+this requires a 100% TypeScript environment to provide security of JS types.
+Without the TypeScript compiler and tooling, these primitives may make your data
+more opaque rather than provide insight and clarity into the many states
+application data can be in.
+
+More documentation to come as I learn how this library best applies to
+real-world JavaScript applications!
+
 ![option inverse for nodejs callback with error first](./examples/option-inverse-result.png)
 ![readfile nodejs](./examples/readFile.png)
 ![database insert nodejs](./examples/db-insert-after.png)
