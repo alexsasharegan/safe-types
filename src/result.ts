@@ -5,9 +5,20 @@ import { Option, Some, None, ResultVariant } from ".";
 
 export type ResultType<T, E> = Ok<T> | Err<E>;
 
+/**
+ * Result is a wrapper type for operations that can succeed or fail.
+ * Not all operations throw errors in failure cases. Any value can be an Err.
+ * Result simultaneously holds either an `Ok` that holds any type
+ * and and `Err` that also can hold any type.
+ */
 export class Result<T, E> {
   constructor(readonly result: ResultType<T, E>) {}
 
+  /**
+   * Perform a pseudo pattern match on the underlying Ok or Err type.
+   * Matches the type and then returns the value of calling the matcher's
+   * function with the value.
+   */
   public match<U>(matcher: {
     [ResultVariant.Ok](x: T): U;
     [ResultVariant.Err](e: E): U;
@@ -24,6 +35,15 @@ export class Result<T, E> {
     }
   }
 
+  /**
+   * Returns true if the underlying type is an Ok.
+   *
+   * ```
+   * let result = Ok(2)
+   * result.is_ok()
+   * // => true
+   * ```
+   */
   public is_ok(): this is { result: Ok<T> } {
     return this.match({
       Ok: (_: T) => true,
@@ -31,10 +51,28 @@ export class Result<T, E> {
     });
   }
 
+  /**
+   * Returns true if the underlying type is an Err.
+   *
+   * ```
+   * let result = Ok(2)
+   * result.is_err()
+   * // => false
+   * ```
+   */
   public is_err(): this is { result: Err<E> } {
     return !this.is_ok();
   }
 
+  /**
+   * Returns an Option of the Ok type.
+   *
+   * ```
+   * let read_result: Result<string, Error> = readFileSync("foo.txt")
+   * read_result.ok()
+   * // => Option<string>
+   * ```
+   */
   public ok(): Option<T> {
     return this.match({
       Ok: (x: T) => Some(x),
@@ -42,6 +80,15 @@ export class Result<T, E> {
     });
   }
 
+  /**
+   * Returns an Option of the Err type.
+   *
+   * ```
+   * let read_result: Result<string, Error> = readFileSync("foo.txt")
+   * read_result.err()
+   * // => Option<Error>
+   * ```
+   */
   public err(): Option<E> {
     return this.match({
       Ok: (_: T) => None(),
@@ -49,6 +96,15 @@ export class Result<T, E> {
     });
   }
 
+  /**
+   * Perform a transformation on the possible Ok type.
+   *
+   * ```
+   * let read_result: Result<string, Error> = readFileSync("foo.txt")
+   * read_result.map(str => str.length)
+   * // => Result<number, Error>
+   * ```
+   */
   public map<U>(op: Mapper<T, U>): Result<U, E> {
     return this.match({
       Ok: (t: T) => Result.Ok(op(t)),
@@ -56,6 +112,15 @@ export class Result<T, E> {
     });
   }
 
+  /**
+   * Perform a transformation on the possible Err type.
+   *
+   * ```
+   * let read_result: Result<string, Error> = readFileSync("foo.txt")
+   * read_result.map_err(err => err.message)
+   * // => Result<string, string>
+   * ```
+   */
   public map_err<F>(op: Mapper<E, F>): Result<T, F> {
     return this.match({
       Ok: (t: T) => Result.Ok(t),
@@ -63,6 +128,16 @@ export class Result<T, E> {
     });
   }
 
+  /**
+   * Perform transformations on both of the possible types.
+   *
+   * ```
+   * let read_result: Result<string, Error> = readFileSync("foo.txt")
+   * read_result.map_both(console.log, console.error)
+   * // => Result<void, void>
+   * // => prints to stdout/stderr
+   * ```
+   */
   public map_both<U, F>(
     ok_op: Mapper<T, U>,
     err_op: Mapper<E, F>
@@ -73,6 +148,15 @@ export class Result<T, E> {
     });
   }
 
+  /**
+   * Swaps the result's Ok type with the given result if Ok.
+   *
+   * ```
+   * let read_result: Result<string, Error> = readFileSync("foo.txt")
+   * read_result.and(readFileSync("bar.txt"))
+   * // => Result<string, Error>
+   * ```
+   */
   public and<U>(res: Result<U, E>): Result<U, E> {
     return this.match({
       Ok: (_: T) => res,
@@ -80,6 +164,16 @@ export class Result<T, E> {
     });
   }
 
+  /**
+   * Swaps the result's Ok type with the given Promised result if Ok
+   * and normalizes the possible Err type to a Promised Err.
+   *
+   * ```
+   * let read_result: Result<string, Error> = readFileSync("foo.txt")
+   * read_result.and_await(readFile("bar.txt"))
+   * // => Promise<Result<string, Error>>
+   * ```
+   */
   public and_await<U>(res: Promise<Result<U, E>>): Promise<Result<U, E>> {
     return this.match({
       Ok: (_: T) => res,
@@ -87,6 +181,15 @@ export class Result<T, E> {
     });
   }
 
+  /**
+   * Calls the given operation and swaps the Ok type if Ok.
+   *
+   * ```
+   * let read_result: Result<string, Error> = readFileSync("foo.txt")
+   * read_result.and_then(contents => readFileSync(contents.match(/\.txt$/)[1]))
+   * // => Result<string, Error>
+   * ```
+   */
   public and_then<U>(op: (t: T) => Result<U, E>): Result<U, E> {
     return this.match({
       Ok: (t: T) => op(t),
@@ -94,6 +197,17 @@ export class Result<T, E> {
     });
   }
 
+  /**
+   * Calls the given operation and swaps the Ok type with the promised Ok.
+   * Err type is converted to a Promised Err.
+   *
+   *
+   * ```
+   * let read_result: Result<string, Error> = readFileSync("foo.txt")
+   * read_result.and_then(contents => readFile(contents.match(/\.txt$/)[1]))
+   * // => Promise<Result<string, Error>>
+   * ```
+   */
   public and_then_await<U>(
     op: (t: T) => Promise<Result<U, E>>
   ): Promise<Result<U, E>> {
@@ -201,6 +315,9 @@ export class Result<T, E> {
     });
   }
 
+  /**
+   * Returns the Ok type, or throws an Error.
+   */
   public unwrap(): T {
     return this.match({
       Ok: (t: T) => t,
@@ -210,6 +327,9 @@ export class Result<T, E> {
     });
   }
 
+  /**
+   * Returns the Err type, or throws an Error.
+   */
   public unwrap_err(): E {
     return this.match({
       Ok: (_: T) => {
@@ -219,6 +339,9 @@ export class Result<T, E> {
     });
   }
 
+  /**
+   * Returns the Ok type, or throws an Error with the given message.
+   */
   public expect(msg: string): T {
     return this.match({
       Ok: (t: T) => t,
@@ -228,6 +351,9 @@ export class Result<T, E> {
     });
   }
 
+  /**
+   * Returns the Err type, or throws an Error with the given message.
+   */
   public expect_err(msg: string): E {
     return this.match({
       Ok: (_: T) => {
@@ -237,14 +363,24 @@ export class Result<T, E> {
     });
   }
 
+  /**
+   * Returns an Ok result of the given type.
+   */
   public static Ok<T, E = any>(val: T): Result<T, E> {
     return new Result(Ok(val));
   }
 
+  /**
+   * Returns an Err result of the given type.
+   */
   public static Err<E, T = any>(err: E): Result<T, E> {
     return new Result(Err(err));
   }
 
+  /**
+   * Calls the operation and returns an Ok result
+   * or an Err result if an Error is thrown.
+   */
   public static from<T, E>(op: () => T): Result<T, E> {
     try {
       return Result.Ok(op());
@@ -253,10 +389,18 @@ export class Result<T, E> {
     }
   }
 
+  /**
+   * Calls the operation and returns an Ok result
+   * or an Err result if an Error is thrown.
+   */
   public static of<T, E>(op: () => T): Result<T, E> {
     return Result.from(op);
   }
 
+  /**
+   * Awaits the Promise and returns a Promised Ok result
+   * or a Promised Err result if an Error is thrown.
+   */
   public static async await<T, E>(p: Promise<T>): Promise<Result<T, E>> {
     try {
       return Result.Ok(await p);
@@ -265,10 +409,18 @@ export class Result<T, E> {
     }
   }
 
+  /**
+   * Calls the async operation and returns a Promised Ok result
+   * or a Promised Err result if an Error is thrown.
+   */
   public static await_fn<T, E>(op: () => Promise<T>): Promise<Result<T, E>> {
     return Result.await<T, E>(op());
   }
 
+  /**
+   * Awaits an array of Promises and returns a Promised Ok result
+   * or a Promised Err result if an Error is thrown.
+   */
   public static async await_all<T, E>(
     ps: Array<Promise<T>>
   ): Promise<Result<T[], E>> {
@@ -279,6 +431,10 @@ export class Result<T, E> {
     }
   }
 
+  /**
+   * Calls the async operation and returns a Promised Ok result
+   * or a Promised Err result if an Error is thrown.
+   */
   public static await_all_fn<T, E>(
     op: () => Array<Promise<T>>
   ): Promise<Result<T[], E>> {
