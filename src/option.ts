@@ -58,6 +58,10 @@ export class Option<T> {
     return !this.is_some();
   }
 
+  /**
+   * Returns the wrapped Some value or throws an Error
+   * with the given message.
+   */
   public expect(msg: string): T {
     return this.match({
       Some: (x: T) => x,
@@ -67,6 +71,9 @@ export class Option<T> {
     });
   }
 
+  /**
+   * Returns the wrapped Some value or throws an Error.
+   */
   public unwrap(): T {
     return this.match({
       Some: (x: T) => x,
@@ -76,6 +83,9 @@ export class Option<T> {
     });
   }
 
+  /**
+   * Returns the wrapped Some value or the given default.
+   */
   public unwrap_or(def: T): T {
     return this.match({
       Some: (x: T) => x,
@@ -83,6 +93,10 @@ export class Option<T> {
     });
   }
 
+  /**
+   * Returns the wrapped Some value
+   * or calls and returns the result of the given func.
+   */
   public unwrap_or_else(fn: () => T): T {
     return this.match({
       Some: (x: T) => x,
@@ -90,6 +104,14 @@ export class Option<T> {
     });
   }
 
+  /**
+   * Safely transform the wrapped Some value from `T` => `U`.
+   *
+   * ```
+   * // Transform Option<string> => Option<number>
+   * Option.of(maybeStr).map(str => str.trim().length)
+   * ```
+   */
   public map<U>(fn: Mapper<T, U>): Option<U> {
     return this.match({
       Some: (x: T) => Option.Some(fn(x)),
@@ -97,6 +119,10 @@ export class Option<T> {
     });
   }
 
+  /**
+   * Safely transform the wrapped Some value from `T` => `U`
+   * and return the transformed value or a default if wrapped value is None.
+   */
   public map_or<U>(def: U, fn: Mapper<T, U>): U {
     return this.match({
       Some: (x: T) => fn(x),
@@ -104,6 +130,11 @@ export class Option<T> {
     });
   }
 
+  /**
+   * Safely transform the wrapped Some value from `T` => `U`
+   * and return the transformed value
+   * or call a func to return a default if wrapped value is None.
+   */
   public map_or_else<U>(def: () => U, fn: Mapper<T, U>): U {
     return this.match({
       Some: (x: T) => fn(x),
@@ -134,6 +165,18 @@ export class Option<T> {
     });
   }
 
+  /**
+   * Transforms the `Option<T>` into a [`Result<T, E>`], mapping [`Some(v)`] to
+   * [`Ok(v)`] and [`None`] to [`Err(err())`].
+   *
+   * ```
+   * let x = Some("foo");
+   * expect(x.ok_or_else(() => Err(0))).toEqual(Ok("foo"));
+   *
+   * let x: Option<string> = None;
+   * expect(x.ok_or_else(() => Err(0)).toEqual(Err(0));
+   * ```
+   */
   public ok_or_else<E>(err: () => E): Result<T, E> {
     return this.match({
       Some: (t: T) => Ok(t),
@@ -319,6 +362,10 @@ export class Option<T> {
     });
   }
 
+  /**
+   * Given a nullable value of T (`T | undefined | null`),
+   * returns an Option<T>
+   */
   public static from<U>(val: Nullable<U>): Option<U> {
     if (is_void(val)) {
       return Option.None();
@@ -327,14 +374,24 @@ export class Option<T> {
     return Option.Some(val);
   }
 
+  /**
+   * Given a nullable value of T (`T | undefined | null`),
+   * returns an Option<T>
+   */
   public static of<U>(val: Nullable<U>): Option<U> {
     return Option.from(val);
   }
 
+  /**
+   * Creates an Option<T> from a known value T.
+   */
   public static Some<T>(val: T): Option<T> {
     return new Option(Some(val));
   }
 
+  /**
+   * Creates an Option<any> from nothing.
+   */
   public static None(): Option<any> {
     return new Option(None());
   }
