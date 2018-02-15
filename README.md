@@ -26,4 +26,5 @@ real-world JavaScript applications!
 ![option inverse for nodejs callback with error first](./examples/option-inverse-result.png)
 ![readfile nodejs](./examples/readFile.png)
 ![database insert nodejs](./examples/db-insert-after.png)
+![option use cases](./examples/option-use-cases.png)
 ![github example code](./examples/github-example.png)
