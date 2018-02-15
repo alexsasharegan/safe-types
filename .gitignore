@@ -1,5 +1,8 @@
 .*
 !.gitignore
+!.travis.yml
+!.prettierrc
+!.editorconfig
 node_modules
 lib
 coverage
