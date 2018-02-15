@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.5.0"></a>
+# [2.5.0](https://github.com/alexsasharegan/safe-types/compare/v2.4.0...v2.5.0) (2018-02-15)
+
+
+### Features
+
+* **result:** added doc blocks for intellisense ([faef764](https://github.com/alexsasharegan/safe-types/commit/faef764))
+
+
+
 <a name="2.4.0"></a>
 # [2.4.0](https://github.com/alexsasharegan/safe-types/compare/v2.3.1...v2.4.0) (2018-02-14)
 
