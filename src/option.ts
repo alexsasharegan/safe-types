@@ -363,7 +363,7 @@ export class Option<T> {
    * Given a nullable value of T (`T | undefined | null`),
    * returns an Option<T>
    */
-  public static from<U>(val: Nullable<U>): Option<U> {
+  public static from<T>(val: Nullable<T>): Option<T> {
     if (is_void(val)) {
       return Option.None();
     }
@@ -375,8 +375,51 @@ export class Option<T> {
    * Given a nullable value of T (`T | undefined | null`),
    * returns an Option<T>
    */
-  public static of<U>(val: Nullable<U>): Option<U> {
+  public static of<T>(val: Nullable<T>): Option<T> {
     return Option.from(val);
+  }
+
+  /**
+   * Given an array shaped `Option<T>[]`, returns a Result of all the unwrapped
+   * values or an Err with the number of None values (the length of the option
+   * array). Eager return (returns upon first None case).
+   */
+  public static every<T>(options: Option<T>[]): Result<T[], number> {
+    let ok: T[] = [];
+    let opt: Option<T>;
+
+    for (opt of options) {
+      if (
+        -1 ==
+        opt.match({
+          Some: (t: T) => ok.push(t),
+          None: () => -1,
+        })
+      ) {
+        return Err(options.length);
+      }
+    }
+
+    return Ok(ok);
+  }
+
+  /**
+   * Given an array shaped `Option<T>[]`, returns a Result of any the unwrapped
+   * values or an Err with the number of None values (the length of the option
+   * array).
+   */
+  public static some<T>(options: Option<T>[]): Result<T[], number> {
+    let ok: T[] = [];
+    let opt: Option<T>;
+
+    for (opt of options) {
+      opt.match({
+        Some: (t: T) => ok.push(t),
+        None: () => {},
+      });
+    }
+
+    return ok.length > 0 ? Ok(ok) : Err(options.length);
   }
 
   /**

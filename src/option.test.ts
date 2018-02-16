@@ -387,3 +387,33 @@ describe("Option use cases", () => {
     expect(obj_has(obj2, path)).toBe(false);
   });
 });
+
+describe("Option.every", () => {
+  let length = 10;
+  it("should return Ok Result with all Some<T>", async () => {
+    let options = Array.from({ length }, (_, i) => Option.of(i));
+    let values = Array.from({ length }, (_, i) => i);
+    expect(Option.every(options)).toEqual(Ok(values));
+  });
+
+  it("should return Err Result with any None", async () => {
+    let options = Array.from({ length }, (_, i) => Option.of(i ? i : null));
+    let values = Array.from({ length }, (_, i) => (i ? i : null));
+    expect(Option.every(options)).toEqual(Err(length));
+  });
+});
+
+describe("Option.some", () => {
+  let length = 10;
+  it("should return Ok with even 1 Some<T>", async () => {
+    let options = Array.from({ length }, (_, i) =>
+      Option.of(i == 0 ? i : null)
+    );
+    expect(Option.some(options)).toEqual(Ok([0]));
+  });
+
+  it("should return Err with all None", async () => {
+    let options = Array.from({ length }, (_, i) => None());
+    expect(Option.some(options)).toEqual(Err(length));
+  });
+});
