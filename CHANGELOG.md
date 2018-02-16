@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.1.0"></a>
+# [3.1.0](https://github.com/alexsasharegan/safe-types/compare/v3.0.0...v3.1.0) (2018-02-16)
+
+
+### Features
+
+* **option:** adds `Option.every` and `Option.some` ([ce0e351](https://github.com/alexsasharegan/safe-types/commit/ce0e351))
+
+
+
 <a name="3.0.0"></a>
 # [3.0.0](https://github.com/alexsasharegan/safe-types/compare/v2.5.1...v3.0.0) (2018-02-16)
 
