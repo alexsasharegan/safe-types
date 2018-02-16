@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.0.0"></a>
+# [3.0.0](https://github.com/alexsasharegan/safe-types/compare/v2.5.1...v3.0.0) (2018-02-16)
+
+
+### Features
+
+* adds better semantic methods for inverting result ([75353d4](https://github.com/alexsasharegan/safe-types/commit/75353d4))
+
+
+### BREAKING CHANGES
+
+* `Option.inverse_result` has been renamed to
+`Option.into_result_err`
+
+adds `Result.invert`
+
+
+
 <a name="2.5.1"></a>
 ## [2.5.1](https://github.com/alexsasharegan/safe-types/compare/v2.5.0...v2.5.1) (2018-02-15)
 
