@@ -81,8 +81,8 @@ from generating an Error without writing a handful of `if` statements or awkward
 ((document.querySelector("#password") || {}).value || "").length;
 ```
 
-![option inverse for nodejs callback with error first](./examples/option-inverse-result.png)
-![readfile nodejs](./examples/readFile.png)
-![database insert nodejs](./examples/db-insert-after.png)
+![option inverse for nodejs callback with error first](./examples/option-into-result-err.png)
+![readFile nodejs](./examples/readFile.png)
+![database insert rethinkdb](./examples/db-insert.png)
 ![option use cases](./examples/option-use-cases.png)
-![github example code](./examples/github-example.png)
+![github fetch example](./examples/fetch.png)

@@ -1,11 +1,6 @@
 import axios, { AxiosResponse, AxiosError } from "axios";
 import { Result, Ok, Err } from "../src";
 
-process.on("unhandledRejection", err => {
-  console.error(err);
-  process.exit(1);
-});
-
 main();
 
 async function get<T>(
@@ -27,15 +22,22 @@ namespace Github {
   }
 }
 
+/**
+ * Perform a complex chain of dependent actions.
+ *
+ * 1. Query the user for existence
+ * 2. Query the user's repos if the exist
+ * 3. Query a specific repo if the repos call succeeded
+ * 4. Log the success or failure of the sequence
+ */
 async function main() {
-  let user_res = await get<Github.User>("/users/alexsasharegan");
-  let repos_res = await user_res.and(
-    await get<Github.Repo[]>("/users/alexsasharegan/repos")
-  );
-  let safe_types_res = await repos_res.and(
-    await get("/repos/alexsasharegan/safe-types")
-  );
+  let repo_result = await get<Github.User>("/users/alexsasharegan")
+    .then(result =>
+      result.and_await(get<Github.Repo[]>("/users/alexsasharegan/repos"))
+    )
+    .then(result => result.and_await(get("/repos/alexsasharegan/safe-types")));
 
-  safe_types_res.err().map(err => console.error(err.message));
-  safe_types_res.ok().map(res => console.log(res.data));
+  repo_result
+    .map_both(res => res.data, err => err.message)
+    .map_both(console.log, console.error);
 }

@@ -1,7 +1,7 @@
 import { None } from "./none";
 import { Some } from "./some";
 import { is_void, Mapper } from "./utils";
-import { expect_never, Ok, Err, Result, OptionVariant, ErrSafeTypes } from ".";
+import { expect_never, Ok, Err, Result, OptionVariant } from ".";
 
 export type Nullable<T> = T | undefined | null;
 export type OptionType<T> = Some<T> | None;
@@ -317,13 +317,13 @@ export class Option<T> {
    *
    * ```
    * Some(T) => Ok(T)
-   * None() => Err("ErrOptionNone")
+   * None() => Err(undefined)
    * ```
    */
-  public into_result(): Result<T, ErrSafeTypes.OptionNone> {
+  public into_result(): Result<T, void> {
     return this.match({
       Some: (t: T) => Ok(t),
-      None: () => Err(ErrSafeTypes.OptionNone),
+      None: () => Err(undefined),
     });
   }
 
@@ -349,17 +349,14 @@ export class Option<T> {
    * // Ok(void) => Ok(data: string)
    * let read_result = await new Promise(resolve =>
    *  fs.readFile("file.txt", "utf8", (err, data) => {
-   *    resolve(Option.of(err).inverse_result().map(_ => data))
+   *    resolve(Option.of(err).into_result_err().map(_ => data))
    *  })
    * )
    * // => Result<string, ErrnoException>
    * ```
    */
-  public inverse_result(): Result<void, T> {
-    return this.match({
-      Some: (t: T) => Err(t),
-      None: () => Ok(undefined),
-    });
+  public into_result_err(): Result<void, T> {
+    return this.into_result().invert();
   }
 
   /**

@@ -364,6 +364,17 @@ export class Result<T, E> {
   }
 
   /**
+   * Remaps the result types so the `Ok<T>` becomes `Err<T>`
+   * and the `Err<E>` becomes `Ok<E>`
+   */
+  public invert(): Result<E, T> {
+    return this.match({
+      Ok: (t: T) => Result.Err(t),
+      Err: (e: E) => Result.Ok(e),
+    });
+  }
+
+  /**
    * Returns an Ok result of the given type.
    */
   public static Ok<T, E = any>(val: T): Result<T, E> {

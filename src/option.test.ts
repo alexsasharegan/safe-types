@@ -1,4 +1,4 @@
-import { Option, Some, None, Ok, Err, ErrSafeTypes } from ".";
+import { Option, Some, None, Ok, Err } from ".";
 import { Mapper } from "./utils";
 
 describe("Some", async () => {
@@ -336,23 +336,23 @@ describe("Option.into_result", () => {
     let x = Option.of(null);
     expect(x.into_result().is_err()).toBe(true);
     expect(x.into_result().is_ok()).toBe(false);
-    expect(x.into_result()).toEqual(Err(ErrSafeTypes.OptionNone));
+    expect(x.into_result()).toEqual(Err(undefined));
   });
 });
 
-describe("Option.inverse_result", () => {
+describe("Option.into_result_err", () => {
   it("should Err with Some", async () => {
     let x = Option.of(2);
-    expect(x.inverse_result().is_ok()).toBe(false);
-    expect(x.inverse_result().is_err()).toBe(true);
-    expect(x.inverse_result()).toEqual(Err(2));
+    expect(x.into_result_err().is_ok()).toBe(false);
+    expect(x.into_result_err().is_err()).toBe(true);
+    expect(x.into_result_err()).toEqual(Err(2));
   });
 
   it("should Ok with None", async () => {
     let x = Option.of(null);
-    expect(x.inverse_result().is_err()).toBe(false);
-    expect(x.inverse_result().is_ok()).toBe(true);
-    expect(x.inverse_result()).toEqual(Ok(undefined));
+    expect(x.into_result_err().is_err()).toBe(false);
+    expect(x.into_result_err().is_ok()).toBe(true);
+    expect(x.into_result_err()).toEqual(Ok(undefined));
   });
 });
 

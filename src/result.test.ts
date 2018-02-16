@@ -335,6 +335,13 @@ describe("Result.expect_err", async () => {
   });
 });
 
+describe("Result.invert", () => {
+  it("should invert types", async () => {
+    expect(Ok(2).invert()).toEqual(Err(2));
+    expect(Err(2).invert()).toEqual(Ok(2));
+  });
+});
+
 describe("Result.from", async () => {
   it("with Ok", async () => {
     let op = () => 10;
