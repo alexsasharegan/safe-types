@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import { Option, Result } from "safe-types";
 
-export async function readFile(
+export async function rename(
   old_path: fs.PathLike,
   new_path: fs.PathLike
 ): Promise<Result<void, NodeJS.ErrnoException>> {
