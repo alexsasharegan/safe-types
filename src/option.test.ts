@@ -1,5 +1,4 @@
-import { Option, Some, None, Ok, Err } from ".";
-import { Mapper } from "./utils";
+import { Option, Some, None, Ok, Err, Mapper } from ".";
 
 describe("Some", async () => {
   it("should return Option of Some", async () => {
@@ -353,38 +352,6 @@ describe("Option.into_result_err", () => {
     expect(x.into_result_err().is_err()).toBe(false);
     expect(x.into_result_err().is_ok()).toBe(true);
     expect(x.into_result_err()).toEqual(Ok(undefined));
-  });
-});
-
-describe("Option use cases", () => {
-  function get_nested(
-    obj: { [key: string]: any },
-    path: string[]
-  ): Option<any> {
-    return path.reduce(
-      (opt: Option<any>, key: string) =>
-        opt.and_then(obj => Option.of(obj[key])),
-      Option.of(obj)
-    );
-  }
-
-  function obj_has(obj: { [key: string]: any }, path: string[]): boolean {
-    return get_nested(obj, path).is_some();
-  }
-
-  it("should safely get nested properties", async () => {
-    let obj1 = {
-      a: { b: { c: { d: { e: { f: { g: { h: { i: { j: "foo" } } } } } } } } },
-    };
-    let obj2 = {};
-    /* spell-checker: disable */
-    let path = "abcdefghij".split("");
-
-    expect(get_nested(obj1, path)).toEqual(Some("foo"));
-    expect(get_nested(obj2, path)).toEqual(None());
-
-    expect(obj_has(obj1, path)).toBe(true);
-    expect(obj_has(obj2, path)).toBe(false);
   });
 });
 

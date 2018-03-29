@@ -10,4 +10,11 @@ export { OptionVariant, ResultVariant } from "./variant";
 
 export { Option, Some, None, Result, Ok, Err };
 
-export { is_void, is_never, expect_never } from "./utils";
+export {
+  is_void,
+  is_never,
+  expect_never,
+  get_at_path,
+  has_at_path,
+  Mapper,
+} from "./utils";

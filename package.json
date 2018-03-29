@@ -35,28 +35,20 @@
       "js"
     ],
     "transform": {
-      "\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+      "^.+\\.ts$": "ts-jest"
     },
-    "testMatch": [
-      "**/__tests__/?(*.)(spec|test).(ts|js)",
-      "**/?(*.)(spec|test).(js|ts)"
-    ],
-    "collectCoverageFrom": [
-      "!src/**/*.types.{js,ts}",
-      "src/**/*.{js,ts}"
-    ],
-    "mapCoverage": true
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)$"
   },
   "devDependencies": {
-    "@types/jest": "^22.1.3",
-    "@types/node": "^9.4.6",
+    "@types/jest": "^22.2.2",
+    "@types/node": "^9.6.1",
     "axios": "^0.17.1",
     "coveralls": "^3.0.0",
-    "jest": "^22.4.0",
+    "jest": "^22.4.3",
     "standard-version": "^4.3.0",
-    "ts-jest": "^22.0.3",
+    "ts-jest": "^22.4.2",
     "ts-node": "^4.1.0",
-    "typescript": "^2.7.2"
+    "typescript": "^2.8.1"
   },
   "dependencies": {}
 }
