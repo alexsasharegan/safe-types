@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.3.0"></a>
+# [3.3.0](https://github.com/alexsasharegan/safe-types/compare/v3.2.1...v3.3.0) (2018-05-26)
+
+
+### Features
+
+* **types:** adds flow type defs ([9c51cdc](https://github.com/alexsasharegan/safe-types/commit/9c51cdc))
+
+
+
 <a name="3.2.1"></a>
 ## [3.2.1](https://github.com/alexsasharegan/safe-types/compare/v3.2.0...v3.2.1) (2018-03-29)
 
