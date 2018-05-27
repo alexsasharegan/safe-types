@@ -6,7 +6,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "prebuild": "rm -Rf lib",
-    "build": "tsc",
+    "build": "tsc && cp flow-typed/index.js lib/index.js.flow",
     "prepublishOnly": "npm run build",
     "prerelease": "npm run test:cov",
     "release": "standard-version",
@@ -27,8 +27,7 @@
   },
   "homepage": "https://github.com/alexsasharegan/safe-types#readme",
   "files": [
-    "lib",
-    "flow-typed"
+    "lib"
   ],
   "jest": {
     "moduleFileExtensions": [
