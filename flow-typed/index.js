@@ -1,9 +1,5 @@
 // @flow
-// @ts-nocheck
 declare type Mapper<T, U> = (x: T) => U;
-
-declare type $OptionVariant = "None" | "Some";
-declare type $ResultVariant = "Err" | "Ok";
 
 declare type $None = {
   +variant: "None",
@@ -27,25 +23,6 @@ declare type $Ok<T> = {
 declare type $ResultType<T, E> = $Ok<T> | $Err<E>;
 
 declare module "safe-types" {
-  declare export type OptionVariant = $OptionVariant;
-  declare export type ResultVariant = $ResultVariant;
-
-  declare export function is_void(val: any): boolean;
-  declare export function is_never(_: empty): empty;
-  declare export function expect_never(_: empty, err_msg: string): empty;
-  declare export function get_at_path(
-    obj: {
-      [key: string]: any,
-    },
-    path: string[]
-  ): Option<any>;
-  declare export function has_at_path(
-    obj: {
-      [key: string]: any,
-    },
-    path: string[]
-  ): boolean;
-
   declare class Option<T> {
     +option: $OptionType<T>;
 
@@ -546,11 +523,11 @@ declare module "safe-types" {
     /**
      * Returns an Ok result of the given type.
      */
-    static Ok<T, E = any>(val: T): Result<T, E>;
+    static Ok<T, E: any>(val: T): Result<T, E>;
     /**
      * Returns an Err result of the given type.
      */
-    static Err<E, T = any>(err: E): Result<T, E>;
+    static Err<E, T: any>(err: E): Result<T, E>;
     /**
      * Calls the operation and returns an Ok result
      * or an Err result if an Error is thrown.
@@ -603,4 +580,20 @@ declare module "safe-types" {
     Ok: "Ok",
     Err: "Err",
   };
+
+  declare export function is_void(val: any): boolean;
+  declare export function is_never(_: empty): empty;
+  declare export function expect_never(_: empty, err_msg: string): empty;
+  declare export function get_at_path(
+    obj: {
+      [key: string]: any,
+    },
+    path: string[]
+  ): Option<any>;
+  declare export function has_at_path(
+    obj: {
+      [key: string]: any,
+    },
+    path: string[]
+  ): boolean;
 }
