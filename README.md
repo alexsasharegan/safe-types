@@ -9,7 +9,7 @@
 
 Type safe utils inspired from the Rust language for writing better JavaScript.
 
-## New
+## News
 
 `safe-types` now ships with Flow declarations! 🎉🎉🎉
 
