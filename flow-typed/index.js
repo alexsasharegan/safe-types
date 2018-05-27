@@ -23,7 +23,7 @@ declare type $Ok<T> = {
 declare type $ResultType<T, E> = $Ok<T> | $Err<E>;
 
 declare module "safe-types" {
-  declare class Option<T> {
+  declare export class Option<T> {
     +option: $OptionType<T>;
 
     constructor(option: $OptionType<T>): Option<T>;
