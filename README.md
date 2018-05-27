@@ -9,6 +9,10 @@
 
 Type safe utils inspired from the Rust language for writing better JavaScript.
 
+## New
+
+`safe-types` now ships with Flow declarations! 🎉🎉🎉
+
 ## Purpose
 
 Currently, this library is an experiment both to learn Rust concepts as well as
