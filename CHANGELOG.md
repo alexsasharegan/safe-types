@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.3.9"></a>
+## [3.3.9](https://github.com/alexsasharegan/safe-types/compare/v3.3.8...v3.3.9) (2018-05-29)
+
+
+### Bug Fixes
+
+* **flow:** not sure if default generics even works ([cd112c8](https://github.com/alexsasharegan/safe-types/commit/cd112c8))
+
+
+
 <a name="3.3.8"></a>
 ## [3.3.8](https://github.com/alexsasharegan/safe-types/compare/v3.3.7...v3.3.8) (2018-05-29)
 
