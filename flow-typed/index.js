@@ -559,14 +559,11 @@ declare export class Result<T, E> {
   ): Promise<Result<T[], E>>;
 }
 
-export type $Option<T> = typeof Option;
-export type $Result<T, E> = typeof Result;
+declare export function Some<T>(x: T): Option<T>;
+declare export function None(): Option<any>;
 
-declare export function Some<T>(x: T): $Option<T>;
-declare export function None(): $Option<any>;
-
-declare export function Ok<T, E: any>(x: T): Result<T, E>;
-declare export function Err<E, T: any>(e: E): Result<T, E>;
+declare export function Ok<T, E = any>(x: T): Result<T, E>;
+declare export function Err<E, T = any>(e: E): Result<T, E>;
 
 declare export var OptionVariant: {
   Some: "Some",
