@@ -562,8 +562,8 @@ declare export class Result<T, E> {
 declare export function Some<T>(x: T): Option<T>;
 declare export function None(): Option<any>;
 
-declare export function Ok<T, E = any>(x: T): Result<T, E>;
-declare export function Err<E, T = any>(e: E): Result<T, E>;
+declare export function Ok<T, E: any = any>(x: T): Result<T, E>;
+declare export function Err<E, T: any = any>(e: E): Result<T, E>;
 
 declare export var OptionVariant: {
   Some: "Some",
