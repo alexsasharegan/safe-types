@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="4.0.0"></a>
+# [4.0.0](https://github.com/alexsasharegan/safe-types/compare/v3.3.9...v4.0.0) (2018-06-18)
+
+
+### Features
+
+* adds Result.some && Result.every helpers ([2cc07a0](https://github.com/alexsasharegan/safe-types/commit/2cc07a0))
+
+
+### BREAKING CHANGES
+
+* Option.some return signature has changed to return Option<T[]>
+* Option.every return signature has changed to return Option<T[]>
+
+
+
 <a name="3.3.9"></a>
 ## [3.3.9](https://github.com/alexsasharegan/safe-types/compare/v3.3.8...v3.3.9) (2018-05-29)
 
