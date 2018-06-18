@@ -380,46 +380,45 @@ export class Option<T> {
   }
 
   /**
-   * Given an array shaped `Option<T>[]`, returns a Result of all the unwrapped
-   * values or an Err with the number of None values (the length of the option
-   * array). Eager return (returns upon first None case).
+   * Given an array shaped `Option<T>[]`, returns an Option of all the unwrapped
+   * values or None.
+   * Eager return (returns upon first None case).
    */
-  public static every<T>(options: Option<T>[]): Result<T[], number> {
+  public static every<T>(options: Option<T>[]): Option<T[]> {
     let ok: T[] = [];
-    let opt: Option<T>;
+    let o: Option<T>;
 
-    for (opt of options) {
+    for (o of options) {
       if (
-        -1 ==
-        opt.match({
+        0 ==
+        o.match({
           Some: (t: T) => ok.push(t),
-          None: () => -1,
+          None: () => 0,
         })
       ) {
-        return Err(options.length);
+        return Option.None();
       }
     }
 
-    return Ok(ok);
+    return Option.Some(ok);
   }
 
   /**
-   * Given an array shaped `Option<T>[]`, returns a Result of any the unwrapped
-   * values or an Err with the number of None values (the length of the option
-   * array).
+   * Given an array shaped `Option<T>[]`, returns an Option of any the unwrapped
+   * values or None.
    */
-  public static some<T>(options: Option<T>[]): Result<T[], number> {
+  public static some<T>(options: Option<T>[]): Option<T[]> {
     let ok: T[] = [];
-    let opt: Option<T>;
+    let o: Option<T>;
 
-    for (opt of options) {
-      opt.match({
+    for (o of options) {
+      o.match({
         Some: (t: T) => ok.push(t),
         None: () => {},
       });
     }
 
-    return ok.length > 0 ? Ok(ok) : Err(options.length);
+    return ok.length > 0 ? Option.Some(ok) : Option.None();
   }
 
   /**

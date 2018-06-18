@@ -269,17 +269,16 @@ declare export class Option<T> {
    */
   static of<T>(val: ?T): Option<T>;
   /**
-   * Given an array shaped `Option<T>[]`, returns a Result of all the unwrapped
-   * values or an Err with the number of None values (the length of the option
-   * array). Eager return (returns upon first None case).
+   * Given an array shaped `Option<T>[]`, returns an Option of all the unwrapped
+   * values or None.
+   * Eager return (returns upon first None case).
    */
-  static every<T>(options: Option<T>[]): Result<T[], number>;
+  static every<T>(options: Option<T>[]): Option<T[]>;
   /**
-   * Given an array shaped `Option<T>[]`, returns a Result of any the unwrapped
-   * values or an Err with the number of None values (the length of the option
-   * array).
+   * Given an array shaped `Option<T>[]`, returns an Option of any the unwrapped
+   * values or None.
    */
-  static some<T>(options: Option<T>[]): Result<T[], number>;
+  static some<T>(options: Option<T>[]): Option<T[]>;
   /**
    * Creates an Option<T> from a known value T.
    */
@@ -535,6 +534,17 @@ declare export class Result<T, E> {
    * or an Err result if an Error is thrown.
    */
   static of<T, E>(op: () => T): Result<T, E>;
+  /**
+   * Given an array shaped `Result<T, E>[]`, returns a Result of all the
+   * unwrapped values or the first Err.
+   * Eager return (returns upon first Err case).
+   */
+  static every<T, E>(results: Result<T, E>[]): Result<T[], E>;
+  /**
+   * Given an array shaped `Result<T, E>[]`, returns a Result of any the
+   * unwrapped values or an Err with the all of the Err values.
+   */
+  static some<T, E>(results: Result<T, E>[]): Result<T[], E[]>;
   /**
    * Awaits the Promise and returns a Promised Ok result
    * or a Promised Err result if an Error is thrown.

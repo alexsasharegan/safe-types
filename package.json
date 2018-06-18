@@ -40,15 +40,15 @@
     "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)$"
   },
   "devDependencies": {
-    "@types/jest": "^22.2.3",
-    "@types/node": "^10.1.2",
+    "@types/jest": "^23.1.0",
+    "@types/node": "^10.3.3",
     "axios": "^0.18.0",
     "coveralls": "^3.0.1",
-    "jest": "^23.0.0",
+    "jest": "^23.1.0",
     "standard-version": "^4.4.0",
     "ts-jest": "^22.4.6",
-    "ts-node": "^6.0.5",
-    "typescript": "^2.8.3"
+    "ts-node": "^6.1.1",
+    "typescript": "^2.9.2"
   },
   "dependencies": {}
 }

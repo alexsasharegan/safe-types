@@ -409,6 +409,53 @@ export class Result<T, E> {
   }
 
   /**
+   * Given an array shaped `Result<T, E>[]`, returns a Result of all the
+   * unwrapped values or the first Err.
+   * Eager return (returns upon first Err case).
+   */
+  public static every<T, E>(results: Result<T, E>[]): Result<T[], E> {
+    let ok: T[] = [];
+    let r: Result<T, E>;
+    let error: E;
+
+    for (r of results) {
+      if (
+        0 ==
+        r.match({
+          Ok: (t: T) => ok.push(t),
+          Err: err => {
+            error = err;
+            return 0;
+          },
+        })
+      ) {
+        return Result.Err(error!);
+      }
+    }
+
+    return Result.Ok(ok);
+  }
+
+  /**
+   * Given an array shaped `Result<T, E>[]`, returns a Result of any the
+   * unwrapped values or an Err with the all of the Err values.
+   */
+  public static some<T, E>(results: Result<T, E>[]): Result<T[], E[]> {
+    let ok: T[] = [];
+    let err: E[] = [];
+    let r: Result<T, E>;
+
+    for (r of results) {
+      r.match({
+        Ok: t => ok.push(t),
+        Err: e => err.push(e),
+      });
+    }
+
+    return ok.length > 0 ? Result.Ok(ok) : Result.Err(err);
+  }
+
+  /**
    * Awaits the Promise and returns a Promised Ok result
    * or a Promised Err result if an Error is thrown.
    */

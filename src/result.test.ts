@@ -371,6 +371,42 @@ describe("Result.of", async () => {
   });
 });
 
+describe("Result.every", () => {
+  let length = 10;
+  it("should return Ok Result with all Ok<T>", async () => {
+    let results = Array.from({ length }, (_, i) => Ok(i));
+    let values = Array.from({ length }, (_, i) => i);
+    expect(Result.every(results)).toEqual(Ok(values));
+  });
+
+  it("should return Err Result with even 1 Err<E>", async () => {
+    // Use literal zero to ensure early return
+    let results: Result<number, number>[] = Array.from(
+      { length },
+      (_, i) => (i == 0 ? Err(i) : Ok(i))
+    );
+    expect(Result.every(results)).toEqual(Err(0));
+  });
+});
+
+describe("Result.some", () => {
+  let length = 10;
+  it("should return Ok with even 1 Ok<T>", async () => {
+    // use last index to ensure full array traversal
+    let results: Result<number, number>[] = Array.from(
+      { length },
+      (_, i) => (i < length - 1 ? Err(i) : Ok(i))
+    );
+    expect(Result.some(results)).toEqual(Ok([9]));
+  });
+
+  it("should return Err<E[]> with all Err<E>", async () => {
+    let results = Array.from({ length }, (_, i) => Err(i));
+    let values = Array.from({ length }, (_, i) => i);
+    expect(Result.some(results)).toEqual(Err(values));
+  });
+});
+
 describe("Result.await", async () => {
   it("should work with Ok", async () => {
     let fn = async () => 10;
