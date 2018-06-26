@@ -6,6 +6,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "prebuild": "rm -Rf lib",
+    "build:docs": "typedoc --options typedoc.js",
     "build": "tsc && cp flow-typed/index.js lib/index.js.flow",
     "prepublishOnly": "npm run build",
     "prerelease": "npm run test:cov",
@@ -40,14 +41,15 @@
     "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)$"
   },
   "devDependencies": {
-    "@types/jest": "^23.1.0",
-    "@types/node": "^10.3.3",
+    "@types/jest": "^23.1.2",
+    "@types/node": "^10.3.6",
     "axios": "^0.18.0",
     "coveralls": "^3.0.1",
-    "jest": "^23.1.0",
+    "jest": "^23.2.0",
     "standard-version": "^4.4.0",
     "ts-jest": "^22.4.6",
-    "ts-node": "^6.1.1",
+    "ts-node": "^7.0.0",
+    "typedoc": "^0.11.1",
     "typescript": "^2.9.2"
   },
   "dependencies": {}
