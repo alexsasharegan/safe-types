@@ -8,24 +8,27 @@
 [![GitHub license](https://img.shields.io/github/license/alexsasharegan/safe-types.svg?style=for-the-badge)](https://github.com/alexsasharegan/safe-types/blob/master/LICENSE.md)
 
 Type safe utils inspired from the Rust language for writing better JavaScript.
-[View documentation here.](https://sad-saha-4a5616.netlify.com/)
+Written in typescript with support for flow definitions.
 
 ## News
 
 `safe-types` now ships with Flow declarations! 🎉🎉🎉
 
+## API Documentation
+
+[https://sad-saha-4a5616.netlify.com/](https://sad-saha-4a5616.netlify.com/)
+
 ## Purpose
 
-Currently, this library is an experiment both to learn Rust concepts as well as
+This library started out as an experiment both to learn Rust concepts as well as
 to determine whether some of Rust's types can be mapped to TypeScript and
 improve the safety of TypeScript/JavaScript. It's my opinion that a library like
 this requires a 100% TypeScript environment to provide security of JS types.
 Without the TypeScript compiler and tooling, these primitives may make your data
 more opaque rather than provide insight and clarity into the many states
-application data can be in.
-
-More documentation to come as I learn how this library best applies to
-real-world JavaScript applications!
+application data can be in. Using an editor like vscode can bridge that gap
+somewhat since it provides built in intellisense via the typescript language
+server.
 
 ## Concepts
 
