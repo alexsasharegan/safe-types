@@ -8,6 +8,7 @@
 [![GitHub license](https://img.shields.io/github/license/alexsasharegan/safe-types.svg?style=for-the-badge)](https://github.com/alexsasharegan/safe-types/blob/master/LICENSE.md)
 
 Type safe utils inspired from the Rust language for writing better JavaScript.
+[View documentation here.](https://sad-saha-4a5616.netlify.com/)
 
 ## News
 
