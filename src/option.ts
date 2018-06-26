@@ -6,6 +6,11 @@ import { expect_never, Ok, Err, Result, OptionVariant } from ".";
 export type Nullable<T> = T | undefined | null;
 export type OptionType<T> = Some<T> | None;
 
+/**
+ * Option is a wrapper type for nullable values (`undefined|null`). `Option.of`
+ * will consume a nullable value `T` into an `Option<T>` for conducting safe
+ * operations using all the class' combinators.
+ */
 export class Option<T> {
   constructor(readonly option: OptionType<T>) {}
 
