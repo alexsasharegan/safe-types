@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="4.1.0"></a>
+# [4.1.0](https://github.com/alexsasharegan/safe-types/compare/v4.0.0...v4.1.0) (2018-07-19)
+
+
+### Features
+
+* **Option:** add toJSON support for Option ([23e9935](https://github.com/alexsasharegan/safe-types/commit/23e9935))
+
+
+
 <a name="4.0.0"></a>
 # [4.0.0](https://github.com/alexsasharegan/safe-types/compare/v3.3.9...v4.0.0) (2018-06-18)
 
