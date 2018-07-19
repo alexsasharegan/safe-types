@@ -364,6 +364,13 @@ export class Option<T> {
     return this.into_result().invert();
   }
 
+  public toJSON(): T | null {
+    return this.match({
+      Some: t => t,
+      None: () => null,
+    });
+  }
+
   /**
    * Given a nullable value of T (`T | undefined | null`),
    * returns an Option<T>

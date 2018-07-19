@@ -2,4 +2,66 @@
 
 exports[`Option.match should go 💥  with never 1`] = `"invalid Option variant"`;
 
+exports[`Option.toJSON should serialize None as null: toJSON 1`] = `"null"`;
+
+exports[`Option.toJSON should serialize None as null: toJSON 2`] = `
+"{
+  \\"x\\": \\"foo\\",
+  \\"y\\": {
+    \\"bar\\": null
+  }
+}"
+`;
+
+exports[`Option.toJSON should serialize Some as itself: toJSON 1`] = `"\\"string\\""`;
+
+exports[`Option.toJSON should serialize Some as itself: toJSON 2`] = `"\\"\\""`;
+
+exports[`Option.toJSON should serialize Some as itself: toJSON 3`] = `"true"`;
+
+exports[`Option.toJSON should serialize Some as itself: toJSON 4`] = `"false"`;
+
+exports[`Option.toJSON should serialize Some as itself: toJSON 5`] = `"0"`;
+
+exports[`Option.toJSON should serialize Some as itself: toJSON 6`] = `"1"`;
+
+exports[`Option.toJSON should serialize Some as itself: toJSON 7`] = `"{}"`;
+
+exports[`Option.toJSON should serialize Some as itself: toJSON 8`] = `
+"[
+  \\"something complex\\",
+  1,
+  {
+    \\"foo\\": \\"bar\\"
+  }
+]"
+`;
+
+exports[`Option.toJSON should serialize Some as itself: toJSON 9`] = `
+"{
+  \\"array\\": [
+    1,
+    2,
+    3
+  ],
+  \\"obj\\": {
+    \\"foo\\": \\"bar\\"
+  },
+  \\"num\\": 123,
+  \\"bool\\": true,
+  \\"maybeCopy\\": {
+    \\"array\\": [
+      1,
+      2,
+      3
+    ],
+    \\"obj\\": {
+      \\"foo\\": \\"bar\\"
+    },
+    \\"num\\": 123,
+    \\"bool\\": true
+  }
+}"
+`;
+
 exports[`Option.unwrap should throw Error with None 1`] = `[Error: called \`Option.unwrap()\` on a \`None\` value]`;

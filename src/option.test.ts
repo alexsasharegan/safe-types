@@ -384,3 +384,52 @@ describe("Option.some", () => {
     expect(Option.some(options)).toEqual(None());
   });
 });
+
+describe("Option.toJSON", async () => {
+  let stringify = x => JSON.stringify(x, null, "  ");
+
+  it("should serialize None as null", async () => {
+    let none = None();
+    expect(stringify(none)).toMatchSnapshot("toJSON");
+    expect(
+      stringify({
+        x: "foo",
+        y: {
+          bar: None(),
+        },
+      })
+    ).toMatchSnapshot("toJSON");
+  });
+
+  it("should serialize Some as itself", async () => {
+    let some_things = [
+      "string",
+      "",
+      true,
+      false,
+      0,
+      1,
+      {},
+      ["something complex", 1, { foo: "bar" }],
+    ].map(Some);
+
+    for (let some of some_things) {
+      expect(stringify(some)).toMatchSnapshot("toJSON");
+    }
+
+    expect(
+      stringify({
+        array: [1, 2, 3],
+        obj: { foo: "bar" },
+        num: 123,
+        bool: true,
+        maybeCopy: Option.of({
+          array: [1, 2, 3],
+          obj: { foo: "bar" },
+          num: 123,
+          bool: true,
+        }),
+      })
+    ).toMatchSnapshot("toJSON");
+  });
+});
