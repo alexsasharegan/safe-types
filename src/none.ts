@@ -1,4 +1,4 @@
-import { OptionVariant } from ".";
+import { OptionVariant } from "./variant";
 
 export type None = {
   readonly variant: OptionVariant.None;

@@ -1,7 +1,8 @@
 import { None } from "./none";
 import { Some } from "./some";
-import { is_void, Mapper } from "./utils";
-import { expect_never, Ok, Err, Result, OptionVariant } from ".";
+import { is_void, Mapper, expect_never } from "./utils";
+import { OptionVariant } from "./variant";
+import { Result, Ok, Err } from "./index";
 
 export type Nullable<T> = T | undefined | null;
 export type OptionType<T> = Some<T> | None;

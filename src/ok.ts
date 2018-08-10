@@ -1,4 +1,4 @@
-import { ResultVariant } from ".";
+import { ResultVariant } from "./variant";
 
 export type Ok<T> = {
   readonly variant: ResultVariant.Ok;

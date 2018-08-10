@@ -1,4 +1,4 @@
-import { Result, Ok, Err, Some, None } from ".";
+import { Result, Ok, Err, Some, None } from "./index";
 
 describe("Result.Ok", async () => {
   it("should return Result of Ok", async () => {

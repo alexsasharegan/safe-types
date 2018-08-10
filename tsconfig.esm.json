@@ -1,0 +1,45 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "pretty": true,
+    "target": "es2015",
+    "module": "esnext",
+    "lib": ["esnext", "dom"],
+    "allowJs": false,
+    "declaration": true,
+    "sourceMap": true,
+    "outDir": "./esm",
+    "removeComments": false,
+    "noEmit": false,
+
+    /* Strict Type-Checking Options */
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+
+    /* Additional Checks */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+
+    /* Module Resolution Options */
+    "moduleResolution": "node",
+    // "typeRoots": ["@types"],
+    // "types": [],
+    // "allowSyntheticDefaultImports": true,
+
+    /* Source Map Options */
+    // "sourceRoot": "./",
+    // "mapRoot": "./",
+    // "inlineSourceMap": true,
+    // "inlineSources": true,
+
+    "preserveConstEnums": false
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "lib/**/*", "src/**/*.test.ts"]
+}

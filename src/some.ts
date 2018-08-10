@@ -1,4 +1,4 @@
-import { OptionVariant } from ".";
+import { OptionVariant } from "./variant";
 
 export type Some<T> = {
   readonly variant: OptionVariant.Some;

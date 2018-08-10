@@ -1,4 +1,4 @@
-import { ResultVariant } from ".";
+import { ResultVariant } from "./variant";
 
 export type Err<E> = {
   readonly variant: ResultVariant.Err;

@@ -6,7 +6,7 @@ import {
   Some,
   None,
   has_at_path,
-} from ".";
+} from "./index";
 
 describe("Utils", () => {
   it("is_never", async () => {
