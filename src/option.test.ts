@@ -291,7 +291,7 @@ describe("Option.narrow", async () => {
     let chaos = (n: number) => {
       switch (n) {
         case 0:
-          return "string";
+          return "test string";
         case 1:
           return 1;
         default:
@@ -318,10 +318,17 @@ describe("Option.narrow", async () => {
     expect(Some(chaos(2)).narrow(notBool)).toEqual(None());
 
     expect(
+      Some(chaos(0))
+        .narrow(notNumber)
+        .narrow(notBool)
+    ).toEqual(Some("test string"));
+
+    expect(
       Some(chaos(1))
         .narrow(notString)
         .narrow(notBool)
     ).toEqual(Some(1));
+
     expect(
       Some(chaos(2))
         .narrow(notString)

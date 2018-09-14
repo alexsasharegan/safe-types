@@ -1,4 +1,5 @@
 import { Option } from "./option";
+import { Result } from "./result";
 
 export function get_at_path(
   obj: { [key: string]: any },
@@ -15,4 +16,18 @@ export function has_at_path(
   path: string[]
 ): boolean {
   return get_at_path(obj, path).is_some();
+}
+
+export function err_or_ok<E, T>(
+  err: E | null | undefined,
+  ok: T
+): Result<T, E> {
+  return Option.of(err).match({
+    Some(err) {
+      return Result.Err(err);
+    },
+    None() {
+      return Result.Ok(ok);
+    },
+  });
 }

@@ -3,6 +3,10 @@ import {
   is_void,
   expect_never,
   get_at_path,
+  err_or_ok,
+  Result,
+  Ok,
+  Err,
   Some,
   None,
   has_at_path,
@@ -42,5 +46,34 @@ describe("Utils", () => {
 
     expect(has_at_path(obj1, path)).toBe(true);
     expect(has_at_path(obj2, path)).toBe(false);
+  });
+
+  it("should convert err or ok values to results", async () => {
+    function nodeStyleSuccess<T>(
+      x: T,
+      cb: (err: Error | null, value: T) => void
+    ) {
+      cb(null, x);
+    }
+
+    function nodeStyleError<T>(
+      x: T,
+      cb: (err: Error | null, value: T) => void
+    ) {
+      // @ts-ignore because
+      cb(new Error("Failed"));
+    }
+
+    for (let value of [1, "success", true]) {
+      let r: Result<typeof value, Error>;
+      nodeStyleSuccess(value, (err, ok) => (r = err_or_ok(err, ok)));
+      expect(r).toEqual(Ok(value));
+    }
+
+    for (let value of [1, "success", true]) {
+      let r: Result<typeof value, Error>;
+      nodeStyleError(value, (err, ok) => (r = err_or_ok(err, ok)));
+      expect(r).toEqual(Err(new Error("Failed")));
+    }
   });
 });
