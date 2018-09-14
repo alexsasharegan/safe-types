@@ -278,11 +278,55 @@ describe("Option.and_then", async () => {
 
 describe("Option.filter", async () => {
   it("should work", async () => {
-    let is_even = (n: number) => n % 2 == 0;
+    let is_even: (n: number) => boolean = n => n % 2 == 0;
 
     expect(None().filter(is_even)).toEqual(None());
     expect(Some(3).filter(is_even)).toEqual(None());
     expect(Some(4).filter(is_even)).toEqual(Some(4));
+  });
+});
+
+describe("Option.narrow", async () => {
+  it("should work", async () => {
+    let chaos = (n: number) => {
+      switch (n) {
+        case 0:
+          return "string";
+        case 1:
+          return 1;
+        default:
+          return true;
+      }
+    };
+
+    function notString<T>(x: T): x is Exclude<T, string> {
+      return typeof x != "string";
+    }
+
+    function notNumber<T>(x: T): x is Exclude<T, number> {
+      return typeof x != "number";
+    }
+
+    function notBool<T>(x: T): x is Exclude<T, boolean> {
+      return typeof x != "boolean";
+    }
+
+    expect(None().narrow(notString)).toEqual(None());
+
+    expect(Some(chaos(0)).narrow(notString)).toEqual(None());
+    expect(Some(chaos(1)).narrow(notNumber)).toEqual(None());
+    expect(Some(chaos(2)).narrow(notBool)).toEqual(None());
+
+    expect(
+      Some(chaos(1))
+        .narrow(notString)
+        .narrow(notBool)
+    ).toEqual(Some(1));
+    expect(
+      Some(chaos(2))
+        .narrow(notString)
+        .narrow(notNumber)
+    ).toEqual(Some(true));
   });
 });
 

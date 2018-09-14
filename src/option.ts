@@ -265,6 +265,18 @@ export class Option<T> {
   }
 
   /**
+   * `narrow` accepts a TypeScript type guard to narrow the generic type
+   * held within `Option<T>`.
+   */
+  public narrow<U extends T>(predicate: (t: T) => t is U): Option<U> {
+    if (this.is_some() && predicate(this.option.value)) {
+      return Option.Some(this.option.value);
+    }
+
+    return Option.None();
+  }
+
+  /**
    * Returns the option if it contains a value, otherwise returns `optb`.
    *
    * Arguments passed to `or` are eagerly evaluated; if you are passing the
