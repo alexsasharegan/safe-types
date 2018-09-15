@@ -219,6 +219,17 @@ export class Option<T> {
   }
 
   /**
+   * Maps an `Option<T>` to a promise of `Option<U>`, but only maps `Some` if
+   * the state of the current Option is `Some`.
+   */
+  public and_await<U>(optb: Promise<Option<U>>): Promise<Option<U>> {
+    return this.match({
+      Some: () => optb,
+      None: () => Promise.resolve(Option.None()),
+    });
+  }
+
+  /**
    * Returns [`None`] if the option is [`None`], otherwise calls `f` with the
    * wrapped value and returns the result.
    *
@@ -238,6 +249,19 @@ export class Option<T> {
     return this.match({
       Some: (t: T) => fn(t),
       None: () => Option.None(),
+    });
+  }
+
+  /**
+   * Maps an `Option<T>` to a promise of `Option<U>`, but only invokes the
+   * function `Some` if the state of the current Option is `Some`.
+   */
+  public and_then_await<U>(
+    fn: (t: T) => Promise<Option<U>>
+  ): Promise<Option<U>> {
+    return this.match({
+      Some: t => fn(t),
+      None: () => Promise.resolve(Option.None()),
     });
   }
 

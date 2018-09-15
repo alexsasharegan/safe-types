@@ -245,6 +245,29 @@ describe("Option.and", async () => {
   });
 });
 
+describe("Option.and_await", async () => {
+  it("None && None", async () => {
+    let a: Option<number> = None();
+    let b: Promise<Option<number>> = Promise.resolve(None());
+    expect(await a.and_await(b)).toEqual(None());
+  });
+  it("None && Some", async () => {
+    let a: Option<number> = None();
+    let b = Promise.resolve(Some(1));
+    expect(await a.and_await(b)).toEqual(None());
+  });
+  it("Some && None", async () => {
+    let a = Some(1);
+    let b: Promise<Option<number>> = Promise.resolve(None());
+    expect(await a.and_await(b)).toEqual(None());
+  });
+  it("Some && Some", async () => {
+    let a: Option<number> = Some(0);
+    let b = Promise.resolve(Some(1));
+    expect(await a.and_await(b)).toEqual(Some(1));
+  });
+});
+
 describe("Option.and_then", async () => {
   it("should work", async () => {
     let sq = (x: number) => Some(x * x);
@@ -273,6 +296,28 @@ describe("Option.and_then", async () => {
         .and_then(sq)
         .and_then(sq)
     ).toEqual(None());
+  });
+});
+
+describe("Option.and_then_await", async () => {
+  const async_inc = (n: number) => Promise.resolve(Some(n + 1));
+  const async_nope = () => Promise.resolve(None());
+
+  it("None && None", async () => {
+    let a: Option<number> = None();
+    expect(await a.and_then_await(async_nope)).toEqual(None());
+  });
+  it("None && Some", async () => {
+    let a: Option<number> = None();
+    expect(await a.and_then_await(async_inc)).toEqual(None());
+  });
+  it("Some && None", async () => {
+    let a = Some(1);
+    expect(await a.and_then_await(async_nope)).toEqual(None());
+  });
+  it("Some && Some", async () => {
+    let a: Option<number> = Some(1);
+    expect(await a.and_then_await(async_inc)).toEqual(Some(2));
   });
 });
 
