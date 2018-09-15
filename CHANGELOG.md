@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="4.3.0"></a>
+# [4.3.0](https://github.com/alexsasharegan/safe-types/compare/v4.2.0...v4.3.0) (2018-09-15)
+
+
+### Features
+
+* adds err_or_ok helper for node-style callback pattern ([41c0faa](https://github.com/alexsasharegan/safe-types/commit/41c0faa))
+* adds Option await methods for promise support ([7956c4c](https://github.com/alexsasharegan/safe-types/commit/7956c4c))
+* adds Option.narrow for type guard support ([747305b](https://github.com/alexsasharegan/safe-types/commit/747305b))
+
+
+
 <a name="4.2.0"></a>
 # [4.2.0](https://github.com/alexsasharegan/safe-types/compare/v4.1.0...v4.2.0) (2018-08-10)
 
