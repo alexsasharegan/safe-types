@@ -10,87 +10,146 @@
 Type safe utils inspired from the Rust language for writing better JavaScript.
 Written in typescript with support for flow definitions.
 
-## News
-
-`safe-types` now ships with Flow declarations! 🎉🎉🎉
-
 ## API Documentation
 
-[https://sad-saha-4a5616.netlify.com/](https://sad-saha-4a5616.netlify.com/)
+[Safe Types API documentation](https://sad-saha-4a5616.netlify.com/)
+
+Follow the link for method references. Below is an explanation of _why_ and
+_how_.
 
 ## Purpose
 
 This library started out as an experiment both to learn Rust concepts as well as
 to determine whether some of Rust's types can be mapped to TypeScript and
-improve the safety of TypeScript/JavaScript. It's my opinion that a library like
-this requires a 100% TypeScript environment to provide security of JS types.
-Without the TypeScript compiler and tooling, these primitives may make your data
-more opaque rather than provide insight and clarity into the many states
-application data can be in. Using an editor like vscode can bridge that gap
-somewhat since it provides built in intellisense via the typescript language
-server.
+improve the safety of TypeScript/JavaScript.
+
+**Side Note:** It's my opinion that a library like this requires a 100%
+TypeScript environment to provide security around JS types. Without the
+TypeScript compiler and tooling, these primitives may make your data more opaque
+rather than provide insight and clarity into the many states application data
+can be in. Using an editor like vscode can provide some built in intellisense
+when running in JavaScript without TypeScript, but inference is limited.
 
 ## Concepts
 
-### Option Type
+The two main exports of this library are implementations of the Maybe Monad and
+the Either Monad. I wrote this library without any formal learning in
+[category theory](https://en.wikipedia.org/wiki/Category_theory), so the Rust
+standard library was essential to guiding my implementation of these Monad
+patterns. While these functional programming concepts are notoriously arcane,
+they are much easier to learn in practice than in theory.
 
-In Rust, there is no `null` or `undefined` value type. Instead, you can
-represent the possibility of not having a value via an Option type.
+### Option Type _(Maybe Monad)_
 
-An option is a simple enum that takes the following shape:
+Imagine if you could rewrite JavaScript and remove `null` and `undefined` types.
+The dreaded error `undefined is not a function` could be gone forever!. Sounds
+great, right? But there are still many times when you need a way to represent
+nothing. What happens if your function doesn't return anything? It turns out
+that there is a pattern for doing with type safety.
 
-```rs
-enum Option<T> {
-  None,
-  Some(T)
-}
-```
+The option type is a simple type that can exist in one of two states--having
+_**some**_ value, or having _**none**_ (nothing). In a way, this is very similar
+to having a value or having `null`. However, an option carries the context of
+the type it represent regardless of it being present. Instead of calling a
+function expecting a `string` or `null`, you receive an option of a string
+`Option<string>`. That option _**may be**_ `Some<string>`, or it _**may be**_
+`None`. This is why it's known as the Maybe Monad.
 
-This declares that an Option can represent a value of an underlying type `T`. It
-can exist in one of two states: containing the value (`Some(T)`) or not
-(`None`). The powerful concept here is that we can do operations on top of this
-wrapper because it can match the underlying value and disregard our operation
-when the value is None.
-
-Think of an operation that queries the DOM for an input element (maybe a
-password input), gets the value inside, and then checks to make sure it's of
-sufficient length.
-
-```js
-let isValidLength = document.querySelector("#password").value.length > 8;
-```
-
-While this code is simple, we know that `document.querySelector` can return any
-element, or null. So we could get null, and then an Error would be thrown for
-trying to access `value` on `null`, or we could get back an element that might
-not have a `value` property, so it returns `undefined`. Here's how we can do the
-same thing safely with an Option type:
+So how does this work? We wrap the state of having a value in a box. In
+JavaScript, this box is implemented with a plain old JavaScript object (POJO).
+Let's imagine what a `Some<string>` would look like for the string
+`'typescript'`:
 
 ```ts
-let pw_len = Option.of<HTMLInputElement>(document.querySelector("#password"))
-  .and_then<string>(input => Option.of(input.value))
-  .map<number>(value => value.length);
-pw_len.unwrap();
-// number | new Error()
+type Some<T> = { value: T };
+
+let someString: Some<string> = { value: "typescript" };
 ```
 
-The extra type syntax here is for clarification (TypeScript can infer most
-types). We start by creating an Option of an `HTMLInputElement`, since
-`querySelector` can return an element or `null`. If we return
-`Some<HTMLInputElement>`, we then access the `value` property. If we
-accidentally returned an element that wasn't an input, we could get `undefined`.
-Last, we map over the value property to get it's length.
+This is fine for a simple box to hold our value, but how would we represent
+`None`? What about an empty object?
 
-There's a lot that could go wrong here, but at the end we've secured ourself
-from generating an Error without writing a handful of `if` statements or awkward
-`||` statements like:
+```ts
+type None = {};
 
-```js
-((document.querySelector("#password") || {}).value || "").length;
+let noneString: None = {};
 ```
 
-![option inverse for nodejs callback with error first](./examples/option-into-result-err.1.png)
-![readFile nodejs](./examples/readFile.png)
-![database insert rethinkdb](./examples/db-insert.png)
-![option use cases](./examples/option-use-cases.png)
-![github fetch example](./examples/fetch.png)
+Now we have a consistent object shape, so we need a way to distinguish the state
+of the option type. We want to keep our option generic, so it can't be
+implemented with any kind of value checking on the `value` property of the
+`Some` object. Instead, we can use another property that will be common to both
+states that we call a type discriminant.
+
+```ts
+type Some<T> = {
+  value: T;
+  state: "Some";
+};
+type None = {
+  state: "None";
+};
+```
+
+This is enough for us to implement the option type! But keeping track of the
+option state is tedious, and the abstraction shouldn't allow us to know the
+internal state. That's where the library comes in.
+
+#### Usage
+
+Generally, usage of the option type starts by wrapping a value of which we know
+the type, but we also know that it may return `null` or `undefined`. To do that,
+we can use the `Option.of` or `Option.from` methods (one is just an alias).
+
+```ts
+function getAtIndex(index, list) {
+  return Option.of(list[index]);
+}
+
+let list = [1, 2, 3];
+let firstElement = getAtIndex(0, list);
+// Some<1>
+let probablyNot = getAtIndex(10, list);
+// None
+```
+
+Both `Option.of` and its alias only create a `Some` type if the value is not
+`null` or `undefined`. From then on, you can make use of the methods available
+on the `Option` type to perform operations safely. Let's try another example
+like getting the input value from an HTMLInputElement.
+
+```ts
+// document.querySelector returns an element or null
+let maybeInput = Option.of(document.querySelector("input[name=email]"));
+
+// If we are certain this exists, we can unwrap the value.
+// It will throw an error if the option is a `none`
+let input = maybeInput.unwrap();
+// We can also have it throw a custom error message
+input = maybeInput.expect("expected an input element with name=email");
+
+// We can safely read a value if we provide a default
+let value = maybeInput.map_or("", element => element.value);
+
+// We can even do a chain of dependent actions without dealing with null!
+let maybeSubmitBtn = maybeInput.and_then(element =>
+  Option.of(element.parent.querySelector("button[type=submit]"))
+);
+```
+
+You can browse the set of methods known as _combinators_, but the most important
+method is `match`. The `match` method accepts an object with methods for each
+possible state of the option (`Some` and `None`) and must return the same type
+for each possibility.
+
+```ts
+let luckyNumber = Option.of(list.find(num => num > 100)).match({
+  // Called with the value.
+  Some(num) {
+    return num;
+  },
+  None() {
+    return 0;
+  },
+});
+```
