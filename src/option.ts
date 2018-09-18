@@ -1,6 +1,14 @@
 import { None } from "./none";
 import { Some } from "./some";
-import { is_void, Mapper, expect_never } from "./utils";
+import {
+  is_void,
+  Mapper,
+  expect_never,
+  always_true,
+  always_false,
+  identity,
+  always_null,
+} from "./utils";
 import { OptionVariant } from "./variant";
 import { Result, Ok, Err } from "./index";
 
@@ -13,6 +21,13 @@ export type OptionType<T> = Some<T> | None;
  * operations using all the class' combinators.
  */
 export class Option<T> {
+  /**
+   * Warning!
+   * --------
+   *
+   * You should never construct an Option object manually. Use the `Some` and
+   * `None` helpers to create an Option object from a value or nothing.
+   */
   constructor(readonly option: OptionType<T>) {}
 
   public match<U>(matcher: {
@@ -44,8 +59,8 @@ export class Option<T> {
    */
   public is_some(): this is { option: Some<T> } {
     return this.match({
-      Some: (_: T) => true,
-      None: () => false,
+      Some: always_true,
+      None: always_false,
     });
   }
 
@@ -69,9 +84,9 @@ export class Option<T> {
    * with the given message.
    */
   public expect(msg: string): T {
-    return this.match({
-      Some: (x: T) => x,
-      None: () => {
+    return this.match<T>({
+      Some: identity,
+      None() {
         throw new Error(msg);
       },
     });
@@ -81,10 +96,10 @@ export class Option<T> {
    * Returns the wrapped Some value or throws an Error.
    */
   public unwrap(): T {
-    return this.match({
-      Some: (x: T) => x,
+    return this.match<T>({
+      Some: identity,
       None: () => {
-        throw new Error("called `Option.unwrap()` on a `None` value");
+        throw new Error(`Called 'Option.unwrap()' on ${this.toString()}`);
       },
     });
   }
@@ -94,7 +109,7 @@ export class Option<T> {
    */
   public unwrap_or(def: T): T {
     return this.match({
-      Some: (x: T) => x,
+      Some: identity,
       None: () => def,
     });
   }
@@ -105,8 +120,8 @@ export class Option<T> {
    */
   public unwrap_or_else(fn: () => T): T {
     return this.match({
-      Some: (x: T) => x,
-      None: () => fn(),
+      Some: identity,
+      None: fn,
     });
   }
 
@@ -121,7 +136,7 @@ export class Option<T> {
   public map<U>(fn: Mapper<T, U>): Option<U> {
     return this.match({
       Some: (x: T) => Option.Some(fn(x)),
-      None: () => Option.None(),
+      None: Option.None,
     });
   }
 
@@ -131,7 +146,7 @@ export class Option<T> {
    */
   public map_or<U>(def: U, fn: Mapper<T, U>): U {
     return this.match({
-      Some: (x: T) => fn(x),
+      Some: fn,
       None: () => def,
     });
   }
@@ -143,8 +158,8 @@ export class Option<T> {
    */
   public map_or_else<U>(def: () => U, fn: Mapper<T, U>): U {
     return this.match({
-      Some: (x: T) => fn(x),
-      None: () => def(),
+      Some: fn,
+      None: def,
     });
   }
 
@@ -166,7 +181,7 @@ export class Option<T> {
    */
   public ok_or<E>(err: E): Result<T, E> {
     return this.match({
-      Some: (t: T) => Ok(t),
+      Some: Ok,
       None: () => Err(err),
     });
   }
@@ -185,7 +200,7 @@ export class Option<T> {
    */
   public ok_or_else<E>(err: () => E): Result<T, E> {
     return this.match({
-      Some: (t: T) => Ok(t),
+      Some: Ok,
       None: () => Err(err()),
     });
   }
@@ -213,8 +228,8 @@ export class Option<T> {
    */
   public and<U>(optb: Option<U>): Option<U> {
     return this.match({
-      Some: (_: T) => optb,
-      None: () => Option.None(),
+      Some: () => optb,
+      None: Option.None,
     });
   }
 
@@ -247,8 +262,8 @@ export class Option<T> {
    */
   public and_then<U>(fn: (t: T) => Option<U>): Option<U> {
     return this.match({
-      Some: (t: T) => fn(t),
-      None: () => Option.None(),
+      Some: fn,
+      None: Option.None,
     });
   }
 
@@ -260,7 +275,7 @@ export class Option<T> {
     fn: (t: T) => Promise<Option<U>>
   ): Promise<Option<U>> {
     return this.match({
-      Some: t => fn(t),
+      Some: fn,
       None: () => Promise.resolve(Option.None()),
     });
   }
@@ -327,7 +342,7 @@ export class Option<T> {
    */
   public or(optb: Option<T>): Option<T> {
     return this.match({
-      Some: (t: T) => Option.Some(t),
+      Some: Option.Some,
       None: () => optb,
     });
   }
@@ -347,8 +362,8 @@ export class Option<T> {
    */
   public or_else(fn: () => Option<T>): Option<T> {
     return this.match({
-      Some: (t: T) => Option.Some(t),
-      None: () => fn(),
+      Some: Option.Some,
+      None: fn,
     });
   }
 
@@ -364,7 +379,7 @@ export class Option<T> {
    */
   public into_result(): Result<T, void> {
     return this.match({
-      Some: (t: T) => Ok(t),
+      Some: Ok,
       None: () => Err(undefined),
     });
   }
@@ -401,10 +416,17 @@ export class Option<T> {
     return this.into_result().invert();
   }
 
+  public toString(): string {
+    return this.match({
+      Some: x => `Some<${JSON.stringify(x)}>`,
+      None: () => `None`,
+    });
+  }
+
   public toJSON(): T | null {
     return this.match({
-      Some: t => t,
-      None: () => null,
+      Some: identity,
+      None: always_null,
     });
   }
 
@@ -457,6 +479,10 @@ export class Option<T> {
    * values or None.
    */
   public static some<T>(options: Option<T>[]): Option<T[]> {
+    if (options.length == 0) {
+      return Option.Some([]);
+    }
+
     let ok: T[] = [];
     let o: Option<T>;
 
@@ -467,7 +493,11 @@ export class Option<T> {
       });
     }
 
-    return ok.length > 0 ? Option.Some(ok) : Option.None();
+    if (ok.length > 0) {
+      return Option.Some(ok);
+    }
+
+    return Option.None();
   }
 
   /**

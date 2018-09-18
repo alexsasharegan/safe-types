@@ -1,3 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Result.match should go 💥 with never 1`] = `"invalid \`Result\` variant"`;
+exports[`Result.match should go 💥 with never 1`] = `"Invalid \`Result\` variant"`;
+
+exports[`Result.toString with Err 1`] = `"Err<\\"error\\">"`;
+
+exports[`Result.toString with Ok 1`] = `"Ok<\\"success\\">"`;
