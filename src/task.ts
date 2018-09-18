@@ -2,11 +2,7 @@ import { Mapper } from "./utils";
 import { Result } from "./result";
 
 /**
- * `TaskResolver` is a callback object containing Ok & Err methods for resolving
- * success & failure values respectively.
- */
-/**
- * `TaskHandler` is an object that implements the `Ok` and `Err` callback
+ * `TaskResolver` is an object that implements the `Ok` and `Err` callback
  * methods. `Ok` should be called with the success value type `T`, while `Err`
  * should be called with the failure value type `E`. The handler callbacks
  * can each return different value types.
@@ -86,7 +82,8 @@ export class Task<T, E> {
 
   /**
    * `and` composes two Tasks such that `task_b` is forked only if the first
-   * task resolves with a success.
+   * task resolves with a success. `task_b` must have the same error type as the
+   * first task, but can return a new success type.
    */
   public and<U>(task_b: Task<U, E>): Task<U, E> {
     return new Task<U, E>(({ Ok, Err }) =>
@@ -97,6 +94,59 @@ export class Task<T, E> {
     );
   }
 
+  /**
+   * `and_then` accepts a function that takes the success value of the first
+   * Task and returns a new Task. This allows for sequencing tasks that depend
+   * on the output of a previous task. The new Task must have the same error
+   * type as the first task, but can return a new success type.
+   */
+  public and_then<U>(op: (ok: T) => Task<U, E>): Task<U, E> {
+    return new Task<U, E>(({ Ok, Err }) =>
+      this.executor({
+        Ok: value => op(value).fork({ Ok, Err }),
+        Err,
+      })
+    );
+  }
+
+  /**
+   * `or` composes two Tasks such that `task_b` is forked only if the first Task
+   * resolves with an error. `task_b` must have the same success type as the
+   * first task, but can return a new error type.
+   */
+  public or<F>(task_b: Task<T, F>): Task<T, F> {
+    return new Task<T, F>(({ Ok, Err }) =>
+      this.executor({
+        Ok,
+        Err: _ => task_b.fork({ Ok, Err }),
+      })
+    );
+  }
+
+  /**
+   * `or_else` accepts a function that takes the error value of the first Task
+   * and returns a new Task. This allows for sequencing tasks in the case of
+   * failure based on the output of a previous task. The new Task must have the
+   * same success type as the first task, but can return a new error type.
+   */
+  public or_else<F>(op: (ok: E) => Task<T, F>): Task<T, F> {
+    return new Task<T, F>(({ Ok, Err }) =>
+      this.executor({
+        Ok,
+        Err: err => op(err).fork({ Ok, Err }),
+      })
+    );
+  }
+
+  /**
+   * Unlike `Result` and `Option` types which know their state and stringify, `Task` cannot
+   * since it represent a future value. As such, it just behaves like a generic
+   * object for stringify behavior:
+   *
+```
+'[object Task]'
+```
+   */
   public toString(): string {
     return `[object Task]`;
   }
