@@ -4,7 +4,7 @@ import { is_void, Mapper, expect_never } from "./utils";
 import { OptionVariant } from "./variant";
 import { Result, Ok, Err } from "./index";
 
-export type Nullable<T> = T | undefined | null;
+export type Nullable<T> = T | undefined | void | null;
 export type OptionType<T> = Some<T> | None;
 
 /**

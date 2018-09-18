@@ -1,6 +1,6 @@
 export type Mapper<T, U> = (x: T) => U;
 
-export function is_void(val: any): val is null | undefined {
+export function is_void(val: any): val is null | undefined | void {
   return val == null;
 }
 
