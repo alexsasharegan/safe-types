@@ -178,6 +178,7 @@ declare export class Option<T> {
    * ```
    */
   filter(predicate: (t: T) => boolean): Option<T>;
+  narrow<U: T>(predicate: (t: T) => boolean): Option<U>;
   /**
    * Returns the option if it contains a value, otherwise returns `optb`.
    *
@@ -600,3 +601,99 @@ declare export function has_at_path(
   },
   path: string[]
 ): boolean;
+
+/**
+ * `TaskResolver` is an object that implements the `Ok` and `Err` callback
+ * methods. `Ok` should be called with the success value type `T`, while `Err`
+ * should be called with the failure value type `E`. The handler callbacks
+ * can each return different value types.
+ */
+declare export type TaskResolver<T, E, U, F> = {
+  Ok: (ok: T) => U;
+  Err: (err: E) => F;
+};
+/**
+* `TaskExecutorFunc` is the Task operation itself. It receives the
+* `TaskResolver` object as it's first argument. One of the resolver methods
+* must be called or the Task will never complete.
+*/
+declare export type TaskExecutorFunc<T, E> = (resolver: TaskResolver<T, E, any, any>) => any;
+/**
+* `Task<T, E>` represents a time-based operation that can resolve with success
+* or error value types `T` or `E` respectively.
+*/
+declare export class Task<T, E> {
+  +executor;
+  /**
+   * Construct a new Task by passing a function that performs the Task operation
+   * itself. The function receives a `TaskResolver` object as it's first
+   * argument. One of the resolver methods must be called or the Task will never
+   * complete.
+   */
+  constructor(executor: TaskExecutorFunc<T, E>): Task<T, E>;
+  /**
+   * `fork` begins execution of the Task and returns a Promise resolving with a
+   * `Result` that contains the the return value of your resolver object's
+   * corresponding callback.
+   *
+   * _`resolver.Ok<U> => Promise<Ok<U>>`_
+   *
+   * _`resolver.Err<F> => Promise<Err<F>>`_
+   */
+  fork<U, F>(resolver: TaskResolver<T, E, U, F>): Promise<Result<U, F>>;
+  /**
+   * `map` returns a new Task with the success value mapped according to the
+   * map function given. `map` should be a synchronous operation.
+   */
+  map<U>(op: Mapper<T, U>): Task<U, E>;
+  /**
+   * `map_err` returns a new Task with the error value mapped according to the
+   * map function given. `map` should be a synchronous operation.
+   */
+  map_err<F>(op: Mapper<E, F>): Task<T, F>;
+  /**
+   * `and` composes two Tasks such that `task_b` is forked only if the first
+   * task resolves with a success. `task_b` must have the same error type as the
+   * first task, but can return a new success type.
+   */
+  and<U>(task_b: Task<U, E>): Task<U, E>;
+  /**
+   * `and_then` accepts a function that takes the success value of the first
+   * Task and returns a new Task. This allows for sequencing tasks that depend
+   * on the output of a previous task. The new Task must have the same error
+   * type as the first task, but can return a new success type.
+   */
+  and_then<U>(op: (ok: T) => Task<U, E>): Task<U, E>;
+  /**
+   * `or` composes two Tasks such that `task_b` is forked only if the first Task
+   * resolves with an error. `task_b` must have the same success type as the
+   * first task, but can return a new error type.
+   */
+  or<F>(task_b: Task<T, F>): Task<T, F>;
+  /**
+   * `or_else` accepts a function that takes the error value of the first Task
+   * and returns a new Task. This allows for sequencing tasks in the case of
+   * failure based on the output of a previous task. The new Task must have the
+   * same success type as the first task, but can return a new error type.
+   */
+  or_else<F>(op: (ok: E) => Task<T, F>): Task<T, F>;
+  /**
+   * Unlike `Result` and `Option` types which know their state and stringify, `Task` cannot
+   * since it represent a future value. As such, it just behaves like a generic
+   * object for stringify behavior:
+   *
+```
+'[object Task]'
+```
+   */
+  toString(): string;
+  /**
+   * Construct a new Task by passing a function that performs the Task operation
+   * itself. The function receives a `TaskResolver` object as it's first
+   * argument. One of the resolver methods must be called or the Task will never
+   * complete.
+   */
+  static from<T, E>(executor: TaskExecutorFunc<T, E>): Task<T, E>;
+  static of_ok<T>(value: T): Task<T, void>;
+  static of_err<E>(err: E): Task<void, E>;
+}
