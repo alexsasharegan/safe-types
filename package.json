@@ -17,6 +17,7 @@
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "test:v": "jest --verbose",
     "test:cov": "jest --verbose --coverage",
+    "test:new": "jest -o --verbose --coverage",
     "test": "npm run test:cov"
   },
   "repository": {

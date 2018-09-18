@@ -6,6 +6,7 @@ import { Result } from "./result";
 const Ok = Result.Ok;
 const Err = Result.Err;
 
+export { Task, TaskExecutorFunc, TaskResolver } from "./task";
 export { OptionVariant, ResultVariant } from "./variant";
 
 export { Option, Some, None, Result, Ok, Err };
