@@ -88,7 +88,7 @@ export class Task<T, E> {
   public and<U>(task_b: Task<U, E>): Task<U, E> {
     return new Task<U, E>(({ Ok, Err }) =>
       this.executor({
-        Ok: _ => task_b.fork({ Ok, Err }),
+        Ok: () => task_b.fork({ Ok, Err }),
         Err,
       })
     );
@@ -118,7 +118,7 @@ export class Task<T, E> {
     return new Task<T, F>(({ Ok, Err }) =>
       this.executor({
         Ok,
-        Err: _ => task_b.fork({ Ok, Err }),
+        Err: () => task_b.fork({ Ok, Err }),
       })
     );
   }
