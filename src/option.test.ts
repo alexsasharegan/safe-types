@@ -475,6 +475,10 @@ describe("Option.some", () => {
     expect(Option.some(options)).toEqual(Some([0]));
   });
 
+  it("should return Some with empty list", async () => {
+    expect(Option.some([])).toEqual(Some([]));
+  });
+
   it("should return None with all None", async () => {
     let options = Array.from({ length }, (_, i) => None());
     expect(Option.some(options)).toEqual(None());
@@ -527,5 +531,15 @@ describe("Option.toJSON", async () => {
         }),
       })
     ).toMatchSnapshot("toJSON");
+  });
+});
+
+describe("Option.toString", async () => {
+  it("with None", async () => {
+    expect(None().toString()).toMatchSnapshot("toString");
+  });
+
+  it("with Some", async () => {
+    expect(Some([1, 2, 3]).toString()).toMatchSnapshot("toString");
   });
 });

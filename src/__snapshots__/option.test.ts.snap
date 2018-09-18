@@ -64,4 +64,8 @@ exports[`Option.toJSON should serialize Some as itself: toJSON 9`] = `
 }"
 `;
 
-exports[`Option.unwrap should throw Error with None 1`] = `[Error: called \`Option.unwrap()\` on a \`None\` value]`;
+exports[`Option.toString with None: toString 1`] = `"None"`;
+
+exports[`Option.toString with Some: toString 1`] = `"Some<[1,2,3]>"`;
+
+exports[`Option.unwrap should throw Error with None 1`] = `[Error: Called 'Option.unwrap()' on None]`;

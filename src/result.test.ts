@@ -400,6 +400,11 @@ describe("Result.some", () => {
     expect(Result.some(results)).toEqual(Ok([9]));
   });
 
+  it("should return Ok with an empty list", async () => {
+    let results: Result<number, number>[] = [];
+    expect(Result.some(results)).toEqual(Ok([]));
+  });
+
   it("should return Err<E[]> with all Err<E>", async () => {
     let results = Array.from({ length }, (_, i) => Err(i));
     let values = Array.from({ length }, (_, i) => i);
@@ -468,5 +473,15 @@ describe("Result.await_all_fn", async () => {
     expect(
       await Result.await_all_fn(() => Array.from({ length: 3 }, fn))
     ).toEqual(Err(10));
+  });
+});
+
+describe("Result.toString", async () => {
+  it("with Ok", async () => {
+    expect(Ok("success").toString()).toMatchSnapshot();
+  });
+
+  it("with Err", async () => {
+    expect(Err("error").toString()).toMatchSnapshot();
   });
 });
