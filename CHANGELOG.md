@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="4.4.0"></a>
+# [4.4.0](https://github.com/alexsasharegan/safe-types/compare/v4.3.0...v4.4.0) (2018-09-18)
+
+
+### Features
+
+* adds flow types for Task ([357f0c9](https://github.com/alexsasharegan/safe-types/commit/357f0c9))
+* implements a Task monad type ([#2](https://github.com/alexsasharegan/safe-types/issues/2)) ([7c8473f](https://github.com/alexsasharegan/safe-types/commit/7c8473f))
+
+
+
 <a name="4.3.0"></a>
 # [4.3.0](https://github.com/alexsasharegan/safe-types/compare/v4.2.0...v4.3.0) (2018-09-15)
 
