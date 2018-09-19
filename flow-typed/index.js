@@ -601,6 +601,7 @@ declare export function has_at_path(
   },
   path: string[]
 ): boolean;
+declare export function err_or_ok<E, T>(err: E | null | undefined, ok: T): Result<T, E>;
 
 /**
  * `TaskResolver` is an object that implements the `Ok` and `Err` callback
