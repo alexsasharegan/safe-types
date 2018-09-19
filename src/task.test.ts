@@ -42,6 +42,47 @@ describe("Task", async () => {
     expect(r).toEqual(Result.Err(value));
   });
 
+  it("task.run (success)", async () => {
+    const final = "success";
+    expect(await Task.from<string, void>(r => r.Ok(final)).run()).toEqual(
+      Result.Ok(final)
+    );
+  });
+
+  it("task.run (error)", async () => {
+    const final = "error";
+    expect(await Task.from<void, string>(r => r.Err(final)).run()).toEqual(
+      Result.Err(final)
+    );
+  });
+
+  it("task.run_sync (success)", async () => {
+    const final = "success";
+    expect(Task.from<string, void>(r => r.Ok(final)).run_sync()).toEqual(
+      Result.Ok(final)
+    );
+  });
+
+  it("task.run_sync (error)", async () => {
+    const final = "error";
+    expect(Task.from<void, string>(r => r.Err(final)).run_sync()).toEqual(
+      Result.Err(final)
+    );
+  });
+
+  it("task.run_sync (no sync callback Error)", async () => {
+    let task_bomb = Task.from<string, void>(async r => {
+      await new Promise(r => setTimeout(r, 10));
+      r.Ok("#boom");
+    });
+
+    const fn = () => {
+      task_bomb.run_sync();
+    };
+
+    expect(fn).toThrowErrorMatchingSnapshot();
+  });
+
   it("Task.map", async () => {
     const a = "a test";
     let t = Task.from<string, string>(r => r.Ok(a)).map(s => s.toUpperCase());

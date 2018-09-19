@@ -642,6 +642,18 @@ declare export class Task<T, E> {
    */
   fork<U, F>(resolver: TaskResolver<T, E, U, F>): Promise<Result<U, F>>;
   /**
+   * `run` begins execution of the Task and returns a Promise resolving with a
+   * `Result` that contains the success or error value of the Task.
+   */
+  run(): Promise<Result<T, E>>;
+  /**
+   * `run_sync` executes the Task synchronously and returns a `Result` that
+   * contains the success or error value of the Task.
+   *
+   * _NOTE: throws an Error if a callback is not invoked synchronously._
+   */
+  run_sync(): Result<T, E>;
+  /**
    * `map` returns a new Task with the success value mapped according to the
    * map function given. `map` should be a synchronous operation.
    */

@@ -1,4 +1,4 @@
-import { Mapper } from "./utils";
+import { Mapper, identity } from "./utils";
 import { Result } from "./result";
 
 /**
@@ -52,6 +52,48 @@ export class Task<T, E> {
         Err: err => r(Result.Err(map_err(err))),
       })
     );
+  }
+
+  /**
+   * `run` begins execution of the Task and returns a Promise resolving with a
+   * `Result` that contains the success or error value of the Task.
+   */
+  public run(): Promise<Result<T, E>> {
+    return this.fork({
+      Err: identity,
+      Ok: identity,
+    });
+  }
+
+  /**
+   * `run_sync` executes the Task synchronously and returns a `Result` that
+   * contains the success or error value of the Task.
+   *
+   * _NOTE: throws an Error if a callback is not invoked synchronously._
+   */
+  public run_sync(): Result<T, E> {
+    let r: Result<T, E>;
+
+    // The executor is not guaranteed to return anything.
+    // We need to use the callbacks to assign our Result.
+    this.executor({
+      Ok(value) {
+        r = Result.Ok(value);
+      },
+      Err(err) {
+        r = Result.Err(err);
+      },
+    });
+
+    // The first bang `!` is for logical not, the second for definite assignment
+    if (!r!) {
+      throw new Error(
+        `Task.run_sync expects the executor to resolve synchronously.`
+      );
+    }
+
+    // We've asserted that `r` is definitely assigned
+    return r!;
   }
 
   /**
