@@ -601,7 +601,7 @@ declare export function has_at_path(
   },
   path: string[]
 ): boolean;
-declare export function err_or_ok<E, T>(err: E | null | undefined, ok: T): Result<T, E>;
+declare export function err_or_ok<E, T>(err: ?E, ok: T): Result<T, E>;
 
 /**
  * `TaskResolver` is an object that implements the `Ok` and `Err` callback
@@ -609,22 +609,24 @@ declare export function err_or_ok<E, T>(err: E | null | undefined, ok: T): Resul
  * should be called with the failure value type `E`. The handler callbacks
  * can each return different value types.
  */
-declare export type TaskResolver<T, E, U, F> = {
-  Ok: (ok: T) => U;
-  Err: (err: E) => F;
+declare type TaskResolver<T, E, U, F> = {
+  Ok: (ok: T) => U,
+  Err: (err: E) => F,
 };
 /**
-* `TaskExecutorFunc` is the Task operation itself. It receives the
-* `TaskResolver` object as it's first argument. One of the resolver methods
-* must be called or the Task will never complete.
-*/
-declare export type TaskExecutorFunc<T, E> = (resolver: TaskResolver<T, E, any, any>) => any;
+ * `TaskExecutorFunc` is the Task operation itself. It receives the
+ * `TaskResolver` object as it's first argument. One of the resolver methods
+ * must be called or the Task will never complete.
+ */
+declare type TaskExecutorFunc<T, E> = (
+  resolver: TaskResolver<T, E, any, any>
+) => any;
 /**
-* `Task<T, E>` represents a time-based operation that can resolve with success
-* or error value types `T` or `E` respectively.
-*/
+ * `Task<T, E>` represents a time-based operation that can resolve with success
+ * or error value types `T` or `E` respectively.
+ */
 declare export class Task<T, E> {
-  +executor;
+  +executor: TaskExecutorFunc<T, E>;
   /**
    * Construct a new Task by passing a function that performs the Task operation
    * itself. The function receives a `TaskResolver` object as it's first
