@@ -31,7 +31,8 @@
   },
   "homepage": "https://github.com/alexsasharegan/safe-types#readme",
   "files": [
-    "lib"
+    "lib",
+    "esm"
   ],
   "jest": {
     "moduleFileExtensions": [
