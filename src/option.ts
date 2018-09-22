@@ -459,14 +459,13 @@ export class Option<T> {
     let ok: T[] = [];
     let o: Option<T>;
 
+    const matcher = {
+      Some: (t: T) => ok.push(t),
+      None: () => 0,
+    };
+
     for (o of options) {
-      if (
-        0 ==
-        o.match({
-          Some: (t: T) => ok.push(t),
-          None: () => 0,
-        })
-      ) {
+      if (0 == o.match(matcher)) {
         return Option.None();
       }
     }
@@ -486,11 +485,15 @@ export class Option<T> {
     let ok: T[] = [];
     let o: Option<T>;
 
+    const matcher = {
+      Some(t: T) {
+        ok.push(t);
+      },
+      None() {},
+    };
+
     for (o of options) {
-      o.match({
-        Some: (t: T) => ok.push(t),
-        None: () => {},
-      });
+      o.match(matcher);
     }
 
     if (ok.length > 0) {

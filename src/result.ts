@@ -432,21 +432,20 @@ export class Result<T, E> {
    * Eager return (returns upon first Err case).
    */
   public static every<T, E>(results: Result<T, E>[]): Result<T[], E> {
-    let ok: T[] = [];
     let r: Result<T, E>;
+    let ok: T[] = [];
     let error: E;
 
+    const matcher = {
+      Ok: (t: T) => ok.push(t),
+      Err: (e: E) => {
+        error = e;
+        return 0;
+      },
+    };
+
     for (r of results) {
-      if (
-        0 ==
-        r.match({
-          Ok: (t: T) => ok.push(t),
-          Err: err => {
-            error = err;
-            return 0;
-          },
-        })
-      ) {
+      if (0 == r.match(matcher)) {
         return Result.Err(error!);
       }
     }
@@ -467,11 +466,13 @@ export class Result<T, E> {
     let err: E[] = [];
     let r: Result<T, E>;
 
+    const matcher = {
+      Ok: (t: T) => ok.push(t),
+      Err: (e: E) => err.push(e),
+    };
+
     for (r of results) {
-      r.match({
-        Ok: t => ok.push(t),
-        Err: e => err.push(e),
-      });
+      r.match(matcher);
     }
 
     // Any Ok's triggers a success.
