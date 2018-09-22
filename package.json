@@ -1,6 +1,6 @@
 {
   "name": "safe-types",
-  "version": "4.6.2",
+  "version": "4.7.0",
   "description": " Type safe utils inspired from the Rust language for writing better JavaScript.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="4.7.0"></a>
+# [4.7.0](https://github.com/alexsasharegan/safe-types/compare/v4.6.2...v4.7.0) (2018-09-22)
+
+
+### Features
+
+* more efficient iterators in Result.every & Some.every ([954041a](https://github.com/alexsasharegan/safe-types/commit/954041a))
+
+
+
 <a name="4.6.2"></a>
 ## [4.6.2](https://github.com/alexsasharegan/safe-types/compare/v4.6.1...v4.6.2) (2018-09-20)
 
