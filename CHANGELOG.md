@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="4.8.0"></a>
+# [4.8.0](https://github.com/alexsasharegan/safe-types/compare/v4.7.0...v4.8.0) (2018-09-23)
+
+
+### Features
+
+* adds `Task.invert` method to swap success and error values ([ba637cc](https://github.com/alexsasharegan/safe-types/commit/ba637cc))
+
+
+
 <a name="4.7.0"></a>
 # [4.7.0](https://github.com/alexsasharegan/safe-types/compare/v4.6.2...v4.7.0) (2018-09-22)
 
