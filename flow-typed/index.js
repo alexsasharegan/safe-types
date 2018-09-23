@@ -693,6 +693,10 @@ declare export class Task<T, E> {
    */
   or_else<F>(op: (ok: E) => Task<T, F>): Task<T, F>;
   /**
+   * `invert` returns a new Task with the success and error cases swapped.
+   */
+  invert(): Task<E, T>;
+  /**
    * Unlike `Result` and `Option` types which know their state and stringify, `Task` cannot
    * since it represent a future value. As such, it just behaves like a generic
    * object for stringify behavior:
