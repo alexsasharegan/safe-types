@@ -115,6 +115,17 @@ describe("Task", async () => {
     expect(never).not.toHaveBeenCalled();
   });
 
+  it("Task.invert", async () => {
+    const success = "success";
+    const error = "error";
+
+    let task_ok = new Task<string, void>(r => r.Ok(success));
+    let task_err = new Task<void, string>(r => r.Err(error));
+
+    expect(await task_ok.invert().run()).toEqual(Result.Err(success));
+    expect(await task_err.invert().run()).toEqual(Result.Ok(error));
+  });
+
   it("Task.and", async () => {
     const a = "a test";
     const b = "b test";

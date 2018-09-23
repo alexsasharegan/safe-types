@@ -181,6 +181,18 @@ export class Task<T, E> {
   }
 
   /**
+   * `invert` returns a new Task with the success and error cases swapped.
+   */
+  public invert(): Task<E, T> {
+    return new Task<E, T>(({ Ok, Err }) =>
+      this.executor({
+        Ok: Err,
+        Err: Ok,
+      })
+    );
+  }
+
+  /**
    * Unlike `Result` and `Option` types which know their state and stringify, `Task` cannot
    * since it represent a future value. As such, it just behaves like a generic
    * object for stringify behavior:
