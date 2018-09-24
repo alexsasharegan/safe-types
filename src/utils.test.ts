@@ -57,7 +57,7 @@ describe("Utils", () => {
     }
 
     function nodeStyleError<T>(
-      x: T,
+      _: T,
       cb: (err: Error | null, value: T) => void
     ) {
       // @ts-ignore because
@@ -67,13 +67,13 @@ describe("Utils", () => {
     for (let value of [1, "success", true]) {
       let r: Result<typeof value, Error>;
       nodeStyleSuccess(value, (err, ok) => (r = err_or_ok(err, ok)));
-      expect(r).toEqual(Ok(value));
+      expect(r!).toEqual(Ok(value));
     }
 
     for (let value of [1, "success", true]) {
       let r: Result<typeof value, Error>;
       nodeStyleError(value, (err, ok) => (r = err_or_ok(err, ok)));
-      expect(r).toEqual(Err(new Error("Failed")));
+      expect(r!).toEqual(Err(new Error("Failed")));
     }
   });
 });

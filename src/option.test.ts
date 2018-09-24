@@ -19,13 +19,14 @@ describe("None", async () => {
 });
 
 describe("Option.from && Option.of", async () => {
-  it("should be None when given undefined value", async () => {
-    let x: number;
-    let o = Option.from(x);
+  it("should be None when given undefined or null value", async () => {
+    let x: number | null | undefined = undefined;
+    let o = Option.from<number>(x);
     expect(o.is_none()).toBe(true);
     expect(o.is_some()).toBe(false);
 
-    o = Option.of(x);
+    x = null;
+    o = Option.of<number>(x);
     expect(o.is_none()).toBe(true);
     expect(o.is_some()).toBe(false);
   });
@@ -51,7 +52,7 @@ describe("Option.expect", async () => {
   });
 
   it("should throw custom Error with message with None", async () => {
-    let x: number;
+    let x: number | undefined = undefined;
     let o = Option.from(x);
     let err_msg = "You blew it up. 💥";
     expect(() => o.expect(err_msg)).toThrow(err_msg);
@@ -66,7 +67,7 @@ describe("Option.unwrap", async () => {
   });
 
   it("should throw Error with None", async () => {
-    let x: number;
+    let x: number | null = null;
     let o = Option.from(x);
     expect(o.unwrap).toThrow(Error);
 
@@ -89,8 +90,8 @@ describe("Option.unwrap_or", async () => {
   });
 
   it("should return default with None", async () => {
-    let x: number;
-    let o = Option.from(x);
+    let x: number | null = null;
+    let o = Option.from<number>(x);
     expect(o.unwrap_or(20)).toBe(20);
   });
 });
@@ -103,8 +104,7 @@ describe("Option.unwrap_or_else", async () => {
   });
 
   it("should return default with None", async () => {
-    let x: number;
-    let o = Option.from(x);
+    let o = Option.from<number>(null);
     expect(o.unwrap_or_else(() => 20)).toBe(20);
   });
 });
@@ -117,8 +117,7 @@ describe("Option.map", async () => {
   });
 
   it("should not call mapper with None", async () => {
-    let x: number;
-    let o = Option.from(x);
+    let o = Option.from<number>(null);
     let map_spy: Mapper<number, string> = jest.fn(x => x.toString(16));
     let opt_str = o.map(map_spy);
     // because our type is None, shouldn't call the mapper
@@ -137,8 +136,7 @@ describe("Option.map_or", async () => {
   });
 
   it("should return default value with None", async () => {
-    let x: number;
-    let o = Option.from(x);
+    let o = Option.from<number>(null);
     let map_spy: Mapper<number, string> = jest.fn(x => x.toString(16));
     expect(o.map_or("z", map_spy)).toBe("z");
     expect(map_spy).not.toHaveBeenCalled();
@@ -153,8 +151,7 @@ describe("Option.map_or_else", async () => {
   });
 
   it("should return default value with None", async () => {
-    let x: number;
-    let o = Option.from(x);
+    let o = Option.from<number>(undefined);
     let map_spy: Mapper<number, string> = jest.fn(x => x.toString(16));
     expect(o.map_or_else(() => "z", map_spy)).toBe("z");
     expect(map_spy).not.toHaveBeenCalled();
@@ -178,8 +175,7 @@ describe("Option.match", async () => {
   });
 
   it("should return default value with None", async () => {
-    let x: number;
-    let o = Option.from(x);
+    let o = Option.from<number>(undefined);
     let none_match = jest.fn(() => "testing");
     let some_match = jest.fn(num => num.toString(16));
     expect(
@@ -461,7 +457,6 @@ describe("Option.every", () => {
 
   it("should return None with any None", async () => {
     let options = Array.from({ length }, (_, i) => Option.of(i ? i : null));
-    let values = Array.from({ length }, (_, i) => (i ? i : null));
     expect(Option.every(options)).toEqual(None());
   });
 });
@@ -480,13 +475,13 @@ describe("Option.some", () => {
   });
 
   it("should return None with all None", async () => {
-    let options = Array.from({ length }, (_, i) => None());
+    let options = Array.from({ length }, () => None());
     expect(Option.some(options)).toEqual(None());
   });
 });
 
 describe("Option.toJSON", async () => {
-  let stringify = x => JSON.stringify(x, null, "  ");
+  let stringify = (x: any) => JSON.stringify(x, null, "  ");
 
   it("should serialize None as null", async () => {
     let none = None();

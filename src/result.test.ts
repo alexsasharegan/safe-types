@@ -87,7 +87,7 @@ describe("Result.map_err", async () => {
 });
 
 describe("Result.map_both", async () => {
-  let sq = x => x * x;
+  let sq = (x: number) => x * x;
   it("should transform with Ok", async () => {
     let x = Ok(4);
     expect(x.map_both(sq, sq)).toEqual(Ok(16));
