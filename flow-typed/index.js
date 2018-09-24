@@ -718,6 +718,6 @@ declare export class Task<T, E> {
    * complete.
    */
   static from<T, E>(executor: TaskExecutorFunc<T, E>): Task<T, E>;
-  static of_ok<T>(value: T): Task<T, void>;
-  static of_err<E>(err: E): Task<void, E>;
+  static of_ok<T>(value: T): Task<T, any>;
+  static of_err<E>(err: E): Task<any, E>;
 }

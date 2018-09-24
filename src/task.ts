@@ -231,14 +231,14 @@ export class Task<T, E> {
   /**
    * `of_ok` constructs a Task that resolves with a success of the given value.
    */
-  public static of_ok<T>(value: T): Task<T, void> {
+  public static of_ok<T>(value: T): Task<T, any> {
     return new Task(({ Ok }) => Ok(value));
   }
 
   /**
    * `of_err` constructs a Task that resolves with an error of the given value.
    */
-  public static of_err<E>(err: E): Task<void, E> {
+  public static of_err<E>(err: E): Task<any, E> {
     return new Task(({ Err }) => Err(err));
   }
 }
