@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="4.9.0"></a>
+# [4.9.0](https://github.com/alexsasharegan/safe-types/compare/v4.8.1...v4.9.0) (2018-09-24)
+
+
+### Features
+
+* **task:** add `Task.map_both` for a bimap operation ([469f32e](https://github.com/alexsasharegan/safe-types/commit/469f32e))
+
+
+
 <a name="4.8.1"></a>
 ## [4.8.1](https://github.com/alexsasharegan/safe-types/compare/v4.8.0...v4.8.1) (2018-09-23)
 
