@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="4.9.1"></a>
+## [4.9.1](https://github.com/alexsasharegan/safe-types/compare/v4.9.0...v4.9.1) (2018-09-24)
+
+
+### Bug Fixes
+
+* **types:** `Task.of_ok` & `Task.of_err` should use `any` for opposite generic ([0f421b7](https://github.com/alexsasharegan/safe-types/commit/0f421b7))
+
+
+
 <a name="4.9.0"></a>
 # [4.9.0](https://github.com/alexsasharegan/safe-types/compare/v4.8.1...v4.9.0) (2018-09-24)
 
