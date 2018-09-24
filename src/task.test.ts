@@ -115,6 +115,23 @@ describe("Task", async () => {
     expect(never).not.toHaveBeenCalled();
   });
 
+  it("Task.map_both", async () => {
+    const success = "success";
+    const error = "error";
+
+    const toUpper = (s: string) => s.toUpperCase();
+
+    let task_ok = Task.of_ok(success);
+    let task_err = Task.of_err(error);
+
+    expect(await task_ok.map_both({ Ok: toUpper, Err: x => x }).run()).toEqual(
+      Result.Ok(success.toUpperCase())
+    );
+    expect(await task_err.map_both({ Ok: x => x, Err: toUpper }).run()).toEqual(
+      Result.Err(error.toUpperCase())
+    );
+  });
+
   it("Task.invert", async () => {
     const success = "success";
     const error = "error";

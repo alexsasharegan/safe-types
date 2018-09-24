@@ -667,6 +667,11 @@ declare export class Task<T, E> {
    */
   map_err<F>(op: Mapper<E, F>): Task<T, F>;
   /**
+   * `map_both` returns a new Task that applies the map functions to either the
+   * success case or the error case.
+   */
+  map_both<U, F>(bimap: TaskResolver<T, E, U, F>): Task<U, F>;
+  /**
    * `and` composes two Tasks such that `task_b` is forked only if the first
    * task resolves with a success. `task_b` must have the same error type as the
    * first task, but can return a new success type.
