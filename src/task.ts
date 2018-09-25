@@ -229,6 +229,52 @@ export class Task<T, E> {
   }
 
   /**
+   * Takes any number of tasks and returns a new Task that will run all tasks
+   * concurrently. The first task to fail will trigger the rest to abort.
+   */
+  public static all<T, E>(tasks: Task<T, E>[]): Task<T[], E> {
+    return new Task<T[], E>(({ Ok, Err }) => {
+      const matcher = {
+        Ok: (value: T) => Promise.resolve(value),
+        Err: (error: E) => Promise.reject(error),
+      };
+      const do_match: (r: Result<T, E>) => Promise<T> = r => r.match(matcher);
+      const run_task = (t: Task<T, E>) => t.run().then(do_match);
+
+      Promise.all(tasks.map(run_task))
+        .then(Ok)
+        .catch(Err);
+    });
+  }
+
+  /**
+   * `collect` returns a new Task that will run an array of Tasks concurrently,
+   * collecting all resolved values in a tuple of `[T[], E[]]`.
+   *
+   * Always resolves Ok.
+   */
+  public static collect<T, E>(tasks: Task<T, E>[]): Task<[T[], E[]], any> {
+    return new Task<[T[], E[]], void>(async ({ Ok }) => {
+      let oks: T[] = [];
+      let errs: E[] = [];
+
+      let resolver = {
+        Ok(value: T) {
+          oks.push(value);
+        },
+        Err(error: E) {
+          errs.push(error);
+        },
+      };
+
+      const run_task: (task: Task<T, E>) => Promise<any> = t =>
+        t.fork(resolver);
+
+      Promise.all(tasks.map(run_task)).then(() => Ok([oks, errs]));
+    });
+  }
+
+  /**
    * `of_ok` constructs a Task that resolves with a success of the given value.
    */
   public static of_ok<T>(value: T): Task<T, any> {

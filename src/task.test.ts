@@ -243,6 +243,44 @@ describe("Task", async () => {
       });
   });
 
+  it("Task.all", async () => {
+    const task_mapper = (_: any, i: number) =>
+      new Task<number, number>(({ Ok, Err }) => {
+        let n = i + 1;
+        if (n > 5) {
+          Promise.resolve(n).then(Err);
+        } else {
+          Promise.resolve(n).then(Ok);
+        }
+      });
+
+    let r = await Task.all(Array.from({ length: 5 }, task_mapper)).run();
+    expect(r).toEqual(Result.Ok([1, 2, 3, 4, 5]));
+
+    r = await Task.all(Array.from({ length: 10 }, task_mapper)).run();
+    expect(r.is_err()).toBe(true);
+    expect(r.unwrap_err()).toBeGreaterThan(5);
+  });
+
+  it("Task.collect", async () => {
+    const task_mapper = (_: any, i: number) =>
+      new Task<number, number>(({ Ok, Err }) => {
+        let n = i + 1;
+        if (n > 5) {
+          Promise.resolve(n).then(Err);
+        } else {
+          Promise.resolve(n).then(Ok);
+        }
+      });
+
+    let r = await Task.collect(Array.from({ length: 5 }, task_mapper)).run();
+    expect(r).toEqual(Result.Ok([[1, 2, 3, 4, 5], []]));
+
+    r = await Task.collect(Array.from({ length: 10 }, task_mapper)).run();
+    expect(r.is_err()).toBe(false);
+    expect(r.unwrap()).toEqual([[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]]);
+  });
+
   it("Task.of_ok", async () => {
     await Task.of_ok(1).fork({
       Ok(x) {

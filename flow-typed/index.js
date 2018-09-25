@@ -712,12 +712,30 @@ declare export class Task<T, E> {
    */
   toString(): string;
   /**
+   * Takes any number of tasks and returns a new Task that will run all tasks
+   * concurrently. The first task to fail will trigger the rest to abort.
+   */
+  static all<T, E>(tasks: Task<T, E>[]): Task<T[], E>;
+  /**
+   * `collect` returns a new Task that will run an array of Tasks concurrently,
+   * collecting all resolved values in a tuple of `[T[], E[]]`.
+   *
+   * Always resolves Ok.
+   */
+  static collect<T, E>(tasks: Task<T, E>[]): Task<[T[], E[]], any>;
+  /**
    * Construct a new Task by passing a function that performs the Task operation
    * itself. The function receives a `TaskResolver` object as it's first
    * argument. One of the resolver methods must be called or the Task will never
    * complete.
    */
   static from<T, E>(executor: TaskExecutorFunc<T, E>): Task<T, E>;
+  /**
+   * `of_ok` constructs a Task that resolves with a success of the given value.
+   */
   static of_ok<T>(value: T): Task<T, any>;
+  /**
+   * `of_err` constructs a Task that resolves with an error of the given value.
+   */
   static of_err<E>(err: E): Task<any, E>;
 }
