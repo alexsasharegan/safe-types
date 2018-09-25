@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="4.9.2"></a>
+## [4.9.2](https://github.com/alexsasharegan/safe-types/compare/v4.9.1...v4.9.2) (2018-09-25)
+
+
+
 <a name="4.9.1"></a>
 ## [4.9.1](https://github.com/alexsasharegan/safe-types/compare/v4.9.0...v4.9.1) (2018-09-24)
 
