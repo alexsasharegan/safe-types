@@ -8,9 +8,14 @@ import {
   Mapper,
 } from "./utils";
 import { ResultVariant } from "./variant";
-import { Option, Some, None } from "./index";
+import { Option } from "./index";
 
 export type ResultType<T, E> = Ok<T> | Err<E>;
+
+export interface ResultMatcher<T, E, Output> {
+  Ok(x: T): Output;
+  Err(e: E): Output;
+}
 
 /**
  * Result is a wrapper type for operations that can succeed or fail.
@@ -33,7 +38,7 @@ export class Result<T, E> {
    * Matches the type and then returns the value of calling the matcher's
    * function with the value.
    */
-  public match<U>(matcher: { Ok(x: T): U; Err(e: E): U }): U {
+  public match<Output>(matcher: ResultMatcher<T, E, Output>): Output {
     switch (this.result.variant) {
       case ResultVariant.Ok:
         return matcher.Ok(this.result.value);
@@ -86,8 +91,8 @@ export class Result<T, E> {
    */
   public ok(): Option<T> {
     return this.match({
-      Ok: Some,
-      Err: None,
+      Ok: Option.Some,
+      Err: Option.None,
     });
   }
 
@@ -102,8 +107,8 @@ export class Result<T, E> {
    */
   public err(): Option<E> {
     return this.match({
-      Ok: None,
-      Err: Some,
+      Ok: Option.None,
+      Err: Option.Some,
     });
   }
 
@@ -262,6 +267,17 @@ export class Result<T, E> {
   }
 
   /**
+   * Returns the given promised result if the result an Err, or else wraps the
+   * existing result in a promise.
+   */
+  public or_await<F>(res: Promise<Result<T, F>>): Promise<Result<T, F>> {
+    return this.match({
+      Ok: val => Promise.resolve(Result.Ok(val)),
+      Err: () => res,
+    });
+  }
+
+  /**
    * Calls `op` if the result is [`Err`],
    * otherwise returns the [`Ok`] value of `self`.
    *
@@ -280,6 +296,19 @@ export class Result<T, E> {
   public or_else<F>(op: (e: E) => Result<T, F>): Result<T, F> {
     return this.match({
       Ok: Result.Ok,
+      Err: op,
+    });
+  }
+
+  /**
+   * Calls the given function if the result an Err, or else wraps the
+   * existing result in a promise.
+   */
+  public or_else_await<F>(
+    op: (e: E) => Promise<Result<T, F>>
+  ): Promise<Result<T, F>> {
+    return this.match({
+      Ok: val => Promise.resolve(Result.Ok(val)),
       Err: op,
     });
   }
