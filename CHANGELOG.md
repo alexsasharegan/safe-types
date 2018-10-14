@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="4.11.0"></a>
+# [4.11.0](https://github.com/alexsasharegan/safe-types/compare/v4.10.0...v4.11.0) (2018-10-14)
+
+
+### Features
+
+* adds `or_await` & `or_else_await` to Option & Result ([2f0d501](https://github.com/alexsasharegan/safe-types/commit/2f0d501))
+
+
+
 <a name="4.10.0"></a>
 # [4.10.0](https://github.com/alexsasharegan/safe-types/compare/v4.9.2...v4.10.0) (2018-09-25)
 
