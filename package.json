@@ -3,6 +3,7 @@
   "version": "4.10.0",
   "description": " Type safe utils inspired from the Rust language for writing better JavaScript.",
   "main": "lib/index.js",
+  "module": "esm/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
     "prebuild": "rm -Rf lib esm",
