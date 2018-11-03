@@ -404,6 +404,34 @@ describe("Option.or", async () => {
   });
 });
 
+describe("Option.or_await", async () => {
+  const p = <T>(x: T) => Promise.resolve(x);
+
+  it("Some || None", async () => {
+    let x = Some(2);
+    let y = None();
+    expect(await x.or_await(p(y))).toEqual(Some(2));
+  });
+
+  it("None || Some", async () => {
+    let x = None();
+    let y = Some(100);
+    expect(await x.or_await(p(y))).toEqual(Some(100));
+  });
+
+  it("Some || Some", async () => {
+    let x = Some(2);
+    let y = Some(100);
+    expect(await x.or_await(p(y))).toEqual(Some(2));
+  });
+
+  it("None || None", async () => {
+    let x: Option<number> = None();
+    let y = None();
+    expect(await x.or_await(p(y))).toEqual(None());
+  });
+});
+
 describe("Option.or_else", async () => {
   it("should work", async () => {
     let nobody = () => None();
@@ -412,6 +440,17 @@ describe("Option.or_else", async () => {
     expect(Some("barbarians").or_else(vikings)).toEqual(Some("barbarians"));
     expect(None().or_else(vikings)).toEqual(Some("vikings"));
     expect(None().or_else(nobody)).toEqual(None());
+  });
+});
+
+describe("Option.or_else_await", async () => {
+  it("should work", async () => {
+    let nobody = async () => None();
+    let vikings = async () => Some("vikings");
+
+    expect(await Some("barbarians").or_else_await(vikings)).toEqual(Some("barbarians"));
+    expect(await None().or_else_await(vikings)).toEqual(Some("vikings"));
+    expect(await None().or_else_await(nobody)).toEqual(None());
   });
 });
 

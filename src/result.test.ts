@@ -241,6 +241,34 @@ describe("Result.or", async () => {
   });
 });
 
+describe("Result.or_await", async () => {
+  const p = <T>(x: T) => Promise.resolve(x);
+
+  it("with Ok || Err", async () => {
+    let x = Ok(2);
+    let y = Err("late error");
+    expect(await x.or_await(p(y))).toEqual(Ok(2));
+  });
+
+  it("with Err || Ok", async () => {
+    let x = Err("early error");
+    let y = Ok(2);
+    expect(await x.or_await(p(y))).toEqual(Ok(2));
+  });
+
+  it("with Err || Err", async () => {
+    let x = Err("not a 2");
+    let y = Err("late error");
+    expect(await x.or_await(p(y))).toEqual(Err("late error"));
+  });
+
+  it("with Ok || Ok", async () => {
+    let x = Ok(2);
+    let y = Ok(100);
+    expect(await x.or_await(p(y))).toEqual(Ok(2));
+  });
+});
+
 describe("Result.or_else", async () => {
   it("should work", async () => {
     let sq = (x: number) => Ok(x * x);
@@ -268,6 +296,37 @@ describe("Result.or_else", async () => {
       Err(3)
         .or_else(err)
         .or_else(err)
+    ).toEqual(Err(3));
+  });
+});
+
+describe("Result.or_else_await", async () => {
+  it("should work", async () => {
+    let sq = async (x: number) => Ok(x * x);
+    let err = async (x: number) => Err(x);
+
+    expect(
+      await Ok(2)
+        .or_else_await(sq)
+        .then(r => r.or_else_await(sq))
+    ).toEqual(Ok(2));
+
+    expect(
+      await Ok(2)
+        .or_else_await(err)
+        .then(r => r.or_else_await(sq))
+    ).toEqual(Ok(2));
+
+    expect(
+      await Err(3)
+        .or_else_await(sq)
+        .then(r => r.or_else_await(err))
+    ).toEqual(Ok(9));
+
+    expect(
+      await Err(3)
+        .or_else_await(err)
+        .then(r => r.or_else_await(err))
     ).toEqual(Err(3));
   });
 });

@@ -10,10 +10,15 @@ import {
   always_null,
 } from "./utils";
 import { OptionVariant } from "./variant";
-import { Result, Ok, Err } from "./index";
+import { Result } from "./index";
 
 export type Nullable<T> = T | undefined | void | null;
 export type OptionType<T> = Some<T> | None;
+
+export interface OptionMatcher<T, Output> {
+  Some(value: T): Output;
+  None(): Output;
+}
 
 /**
  * Option is a wrapper type for nullable values (`undefined|null`). `Option.of`
@@ -30,16 +35,13 @@ export class Option<T> {
    */
   constructor(readonly option: OptionType<T>) {}
 
-  public match<U>(matcher: {
-    [OptionVariant.None](): U;
-    [OptionVariant.Some](val: T): U;
-  }): U {
+  public match<Output>(matcher: OptionMatcher<T, Output>): Output {
     switch (this.option.variant) {
       case OptionVariant.None:
-        return matcher[OptionVariant.None]();
+        return matcher.None();
 
       case OptionVariant.Some:
-        return matcher[OptionVariant.Some](this.option.value);
+        return matcher.Some(this.option.value);
 
       default:
         return expect_never(this.option, "invalid Option variant");
@@ -126,6 +128,93 @@ export class Option<T> {
   }
 
   /**
+   * Returns `None` if the option is `None`, otherwise calls `predicate`
+   * with the wrapped value and returns:
+   * - `Some(t)` if `predicate` returns `true` (where `t` is the wrapped
+   * value), and
+   * - `None` if `predicate` returns `false`.
+   *
+   * ```
+   * let is_even = (n: number) => n % 2 == 0
+   *
+   * expect(None().filter(is_even)).toEqual(None());
+   * expect(Some(3).filter(is_even)).toEqual(None());
+   * expect(Some(4).filter(is_even)).toEqual(Some(4));
+   * ```
+   */
+  public filter(predicate: (t: T) => boolean): Option<T> {
+    return this.match<Option<T>>({
+      None: Option.None,
+      Some: value => {
+        if (!predicate(value)) {
+          return Option.None();
+        }
+
+        return Option.Some(value);
+      },
+    });
+  }
+
+  /**
+   * `narrow` accepts a TypeScript type guard to narrow the generic type
+   * held within `Option<T>`.
+   */
+  public narrow<U extends T>(predicate: (t: T) => t is U): Option<U> {
+    return this.match<Option<U>>({
+      None: Option.None,
+      Some: value => {
+        if (!predicate(value)) {
+          return Option.None();
+        }
+
+        return Option.Some(value);
+      },
+    });
+  }
+
+  /**
+   * Transforms the `Option<T>` into a [`Result<T, E>`], mapping [`Some(v)`] to
+   * [`Ok(v)`] and [`None`] to [`Err(err)`].
+   *
+   * Arguments passed to `ok_or` are eagerly evaluated; if you are passing the
+   * result of a function call, it is recommended to use [`ok_or_else`], which is
+   * lazily evaluated.
+   *
+   * ```
+   * let x = Some("foo");
+   * expect(x.ok_or(0)).toEqual(Ok("foo"));
+   *
+   * let x: Option<string> = None();
+   * expect(x.ok_or(0)).toEqual(Err(0));
+   * ```
+   */
+  public ok_or<E>(err: E): Result<T, E> {
+    return this.match({
+      Some: Result.Ok,
+      None: () => Result.Err(err),
+    });
+  }
+
+  /**
+   * Transforms the `Option<T>` into a [`Result<T, E>`], mapping [`Some(v)`] to
+   * [`Ok(v)`] and [`None`] to [`Err(err())`].
+   *
+   * ```
+   * let x = Some("foo");
+   * expect(x.ok_or_else(() => Err(0))).toEqual(Ok("foo"));
+   *
+   * let x: Option<string> = None;
+   * expect(x.ok_or_else(() => Err(0)).toEqual(Err(0));
+   * ```
+   */
+  public ok_or_else<E>(err: () => E): Result<T, E> {
+    return this.match({
+      Some: Result.Ok,
+      None: () => Result.Err(err()),
+    });
+  }
+
+  /**
    * Safely transform the wrapped Some value from `T` => `U`.
    *
    * ```
@@ -160,48 +249,6 @@ export class Option<T> {
     return this.match({
       Some: fn,
       None: def,
-    });
-  }
-
-  /**
-   * Transforms the `Option<T>` into a [`Result<T, E>`], mapping [`Some(v)`] to
-   * [`Ok(v)`] and [`None`] to [`Err(err)`].
-   *
-   * Arguments passed to `ok_or` are eagerly evaluated; if you are passing the
-   * result of a function call, it is recommended to use [`ok_or_else`], which is
-   * lazily evaluated.
-   *
-   * ```
-   * let x = Some("foo");
-   * expect(x.ok_or(0)).toEqual(Ok("foo"));
-   *
-   * let x: Option<string> = None();
-   * expect(x.ok_or(0)).toEqual(Err(0));
-   * ```
-   */
-  public ok_or<E>(err: E): Result<T, E> {
-    return this.match({
-      Some: Ok,
-      None: () => Err(err),
-    });
-  }
-
-  /**
-   * Transforms the `Option<T>` into a [`Result<T, E>`], mapping [`Some(v)`] to
-   * [`Ok(v)`] and [`None`] to [`Err(err())`].
-   *
-   * ```
-   * let x = Some("foo");
-   * expect(x.ok_or_else(() => Err(0))).toEqual(Ok("foo"));
-   *
-   * let x: Option<string> = None;
-   * expect(x.ok_or_else(() => Err(0)).toEqual(Err(0));
-   * ```
-   */
-  public ok_or_else<E>(err: () => E): Result<T, E> {
-    return this.match({
-      Some: Ok,
-      None: () => Err(err()),
     });
   }
 
@@ -281,41 +328,6 @@ export class Option<T> {
   }
 
   /**
-   * Returns `None` if the option is `None`, otherwise calls `predicate`
-   * with the wrapped value and returns:
-   * - `Some(t)` if `predicate` returns `true` (where `t` is the wrapped
-   * value), and
-   * - `None` if `predicate` returns `false`.
-   *
-   * ```
-   * let is_even = (n: number) => n % 2 == 0
-   *
-   * expect(None().filter(is_even)).toEqual(None());
-   * expect(Some(3).filter(is_even)).toEqual(None());
-   * expect(Some(4).filter(is_even)).toEqual(Some(4));
-   * ```
-   */
-  public filter(predicate: (t: T) => boolean): Option<T> {
-    if (this.is_some() && predicate(this.option.value)) {
-      return Option.Some(this.option.value);
-    }
-
-    return Option.None();
-  }
-
-  /**
-   * `narrow` accepts a TypeScript type guard to narrow the generic type
-   * held within `Option<T>`.
-   */
-  public narrow<U extends T>(predicate: (t: T) => t is U): Option<U> {
-    if (this.is_some() && predicate(this.option.value)) {
-      return Option.Some(this.option.value);
-    }
-
-    return Option.None();
-  }
-
-  /**
    * Returns the option if it contains a value, otherwise returns `optb`.
    *
    * Arguments passed to `or` are eagerly evaluated; if you are passing the
@@ -348,7 +360,18 @@ export class Option<T> {
   }
 
   /**
-   * Returns the option if it contains a value, otherwise calls `f` and
+   * `or_await` returns the Option wrapped in a Promise if it contains a value,
+   * or else returns the given promised Option.
+   */
+  public or_await(optb: Promise<Option<T>>): Promise<Option<T>> {
+    return this.match({
+      Some: value => Promise.resolve(Option.Some(value)),
+      None: () => optb,
+    });
+  }
+
+  /**
+   * Returns the option if it contains a value, otherwise calls `fn` and
    * returns the result.
    *
    * ```
@@ -368,6 +391,17 @@ export class Option<T> {
   }
 
   /**
+   * `or_else_await` returns the Option wrapped in a Promise if it contains a value,
+   * or else calls the given function and returns its promised Option.
+   */
+  public or_else_await(fn: () => Promise<Option<T>>): Promise<Option<T>> {
+    return this.match({
+      Some: value => Promise.resolve(Option.Some(value)),
+      None: fn,
+    });
+  }
+
+  /**
    * Maps the option type to a Result type.
    * A Some value is considered an Ok,
    * while a None value is considered an Err.
@@ -379,8 +413,8 @@ export class Option<T> {
    */
   public into_result(): Result<T, void> {
     return this.match({
-      Some: Ok,
-      None: () => Err(undefined),
+      Some: Result.Ok,
+      None: () => Result.Err(undefined),
     });
   }
 
