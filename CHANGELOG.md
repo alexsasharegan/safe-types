@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="4.11.2"></a>
+## [4.11.2](https://github.com/alexsasharegan/safe-types/compare/v4.11.1...v4.11.2) (2018-11-03)
+
+
+### Bug Fixes
+
+* adds "module" entry to pkg.json for esm ([ead4f12](https://github.com/alexsasharegan/safe-types/commit/ead4f12))
+
+
+
 <a name="4.11.1"></a>
 ## [4.11.1](https://github.com/alexsasharegan/safe-types/compare/v4.11.0...v4.11.1) (2018-10-15)
 
