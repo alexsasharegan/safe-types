@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="4.11.3"></a>
+## [4.11.3](https://github.com/alexsasharegan/safe-types/compare/v4.11.2...v4.11.3) (2018-11-20)
+
+
+
 <a name="4.11.2"></a>
 ## [4.11.2](https://github.com/alexsasharegan/safe-types/compare/v4.11.1...v4.11.2) (2018-11-03)
 
