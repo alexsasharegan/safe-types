@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="4.12.0"></a>
+# [4.12.0](https://github.com/alexsasharegan/safe-types/compare/v4.11.3...v4.12.0) (2018-12-08)
+
+
+### Features
+
+* **option:** adds `Option.tap` method for side-effects ([21d4889](https://github.com/alexsasharegan/safe-types/commit/21d4889))
+* **result:** adds `Result.tap` & `Result.tap_err` for side-effects ([2b95023](https://github.com/alexsasharegan/safe-types/commit/2b95023))
+
+
+
 <a name="4.11.3"></a>
 ## [4.11.3](https://github.com/alexsasharegan/safe-types/compare/v4.11.2...v4.11.3) (2018-11-20)
 
