@@ -1,15 +1,15 @@
 import {
-  is_never,
-  is_void,
+  Err,
+  err_or_ok,
   expect_never,
   get_at_path,
-  err_or_ok,
-  Result,
-  Ok,
-  Err,
-  Some,
-  None,
   has_at_path,
+  is_never,
+  is_void,
+  None,
+  Ok,
+  Result,
+  Some,
 } from "./index";
 
 describe("Utils", () => {

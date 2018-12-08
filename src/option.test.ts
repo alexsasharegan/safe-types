@@ -1,4 +1,4 @@
-import { Option, Some, None, Ok, Err, Mapper } from "./index";
+import { Err, Mapper, None, Ok, Option, Some } from "./index";
 
 describe("Some", async () => {
   it("should return Option of Some", async () => {

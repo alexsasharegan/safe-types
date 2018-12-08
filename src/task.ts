@@ -1,5 +1,5 @@
-import { Mapper, identity } from "./utils";
 import { Result } from "./result";
+import { identity, Mapper } from "./utils";
 
 /**
  * `TaskResolver` is an object that implements the `Ok` and `Err` callback

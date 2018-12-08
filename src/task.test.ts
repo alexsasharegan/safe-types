@@ -1,4 +1,4 @@
-import { Task, Result } from "./index";
+import { Result, Task } from "./index";
 
 describe("Task", async () => {
   it("should return Task instance", async () => {
