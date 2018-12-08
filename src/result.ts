@@ -1,14 +1,15 @@
-import { Ok } from "./ok";
 import { Err } from "./err";
+import { Option } from "./index";
+import { Ok } from "./ok";
 import {
   always_false,
   always_true,
   expect_never,
   identity,
   Mapper,
+  noop,
 } from "./utils";
 import { ResultVariant } from "./variant";
-import { Option } from "./index";
 
 export type ResultType<T, E> = Ok<T> | Err<E>;
 
@@ -110,6 +111,26 @@ export class Result<T, E> {
       Ok: Option.None,
       Err: Option.Some,
     });
+  }
+
+  /**
+   * `tap` allows you to do side-effects with the value
+   * when `Result` is `Ok<T>`.
+   */
+  public tap(fn: (x: T) => any): this {
+    this.match({ Err: noop, Ok: fn });
+
+    return this;
+  }
+
+  /**
+   * `tap_err` allows you to do side-effects with the value
+   * when `Result` is `Err<E>`.
+   */
+  public tap_err(fn: (x: E) => any): this {
+    this.match({ Err: fn, Ok: noop });
+
+    return this;
   }
 
   /**

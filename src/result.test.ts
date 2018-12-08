@@ -1,4 +1,4 @@
-import { Result, Ok, Err, Some, None } from "./index";
+import { Err, None, Ok, Result, Some } from "./index";
 
 describe("Result.Ok", async () => {
   it("should return Result of Ok", async () => {
@@ -56,6 +56,46 @@ describe("Result.err", async () => {
 
   it("should equal Some with Err", async () => {
     expect(Err("Nothing here").err()).toEqual(Some("Nothing here"));
+  });
+});
+
+describe("Result.tap", async () => {
+  it("should tap when Ok", async () => {
+    let tapped = jest.fn();
+    let instance = Ok(42);
+    instance.tap(tapped);
+    expect(tapped).toHaveBeenCalledWith(42);
+    expect(instance).toEqual(Ok(42));
+    expect(instance).toBe(instance);
+  });
+
+  it("should not tap when Err", async () => {
+    let untapped = jest.fn();
+    let instance = Err(42);
+    instance.tap(untapped);
+    expect(untapped).not.toHaveBeenCalled();
+    expect(instance).toEqual(Err(42));
+    expect(instance).toBe(instance);
+  });
+});
+
+describe("Result.tap_err", async () => {
+  it("should tap when Err", async () => {
+    let tapped = jest.fn();
+    let instance = Err(42);
+    instance.tap_err(tapped);
+    expect(tapped).toHaveBeenCalledWith(42);
+    expect(instance).toEqual(Err(42));
+    expect(instance).toBe(instance);
+  });
+
+  it("should not tap when Ok", async () => {
+    let untapped = jest.fn();
+    let instance = Ok(42);
+    instance.tap_err(untapped);
+    expect(untapped).not.toHaveBeenCalled();
+    expect(instance).toEqual(Ok(42));
+    expect(instance).toBe(instance);
   });
 });
 
@@ -440,9 +480,8 @@ describe("Result.every", () => {
 
   it("should return Err Result with even 1 Err<E>", async () => {
     // Use literal zero to ensure early return
-    let results: Result<number, number>[] = Array.from(
-      { length },
-      (_, i) => (i == 0 ? Err(i) : Ok(i))
+    let results: Result<number, number>[] = Array.from({ length }, (_, i) =>
+      i == 0 ? Err(i) : Ok(i)
     );
     expect(Result.every(results)).toEqual(Err(0));
   });
@@ -452,9 +491,8 @@ describe("Result.some", () => {
   let length = 10;
   it("should return Ok with even 1 Ok<T>", async () => {
     // use last index to ensure full array traversal
-    let results: Result<number, number>[] = Array.from(
-      { length },
-      (_, i) => (i < length - 1 ? Err(i) : Ok(i))
+    let results: Result<number, number>[] = Array.from({ length }, (_, i) =>
+      i < length - 1 ? Err(i) : Ok(i)
     );
     expect(Result.some(results)).toEqual(Ok([9]));
   });
