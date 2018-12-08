@@ -110,16 +110,22 @@ describe("Option.unwrap_or_else", async () => {
 });
 
 describe("Option.tap", async () => {
-  it("should tap the value and return the instance", async () => {
+  it("should tap the value when Some", async () => {
     let tapped = jest.fn();
-    let instance = Option.Some(42).tap(tapped);
+    let instance = Option.Some(42);
+    instance.tap(tapped);
     expect(tapped).toHaveBeenCalledWith(42);
     expect(instance).toEqual(Option.Some(42));
+    expect(instance).toBe(instance);
+  });
 
+  it("should not tap the value when None", async () => {
     let untapped = jest.fn();
-    instance = Option.None().tap(untapped);
+    let instance = Option.None();
+    instance.tap(untapped);
     expect(untapped).not.toHaveBeenCalled();
     expect(instance).toEqual(Option.None());
+    expect(instance).toBe(instance);
   });
 });
 
