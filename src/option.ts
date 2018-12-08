@@ -1,16 +1,17 @@
+import { Result } from "./index";
 import { None } from "./none";
 import { Some } from "./some";
 import {
+  always_false,
+  always_null,
+  always_true,
+  expect_never,
+  identity,
   is_void,
   Mapper,
-  expect_never,
-  always_true,
-  always_false,
-  identity,
-  always_null,
+  noop,
 } from "./utils";
 import { OptionVariant } from "./variant";
-import { Result } from "./index";
 
 export type Nullable<T> = T | undefined | void | null;
 export type OptionType<T> = Some<T> | None;
@@ -212,6 +213,16 @@ export class Option<T> {
       Some: Result.Ok,
       None: () => Result.Err(err()),
     });
+  }
+
+  /**
+   * `tap` allows you to do side-effects with the value
+   * when `Option` is `Some<T>`.
+   */
+  public tap(fn: (x: T) => any): this {
+    this.match({ None: noop, Some: fn });
+
+    return this;
   }
 
   /**

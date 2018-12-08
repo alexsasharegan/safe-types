@@ -109,6 +109,20 @@ describe("Option.unwrap_or_else", async () => {
   });
 });
 
+describe("Option.tap", async () => {
+  it("should tap the value and return the instance", async () => {
+    let tapped = jest.fn();
+    let instance = Option.Some(42).tap(tapped);
+    expect(tapped).toHaveBeenCalledWith(42);
+    expect(instance).toEqual(Option.Some(42));
+
+    let untapped = jest.fn();
+    instance = Option.None().tap(untapped);
+    expect(untapped).not.toHaveBeenCalled();
+    expect(instance).toEqual(Option.None());
+  });
+});
+
 describe("Option.map", async () => {
   it("should map value with Some", async () => {
     let x = 10;
@@ -448,7 +462,9 @@ describe("Option.or_else_await", async () => {
     let nobody = async () => None();
     let vikings = async () => Some("vikings");
 
-    expect(await Some("barbarians").or_else_await(vikings)).toEqual(Some("barbarians"));
+    expect(await Some("barbarians").or_else_await(vikings)).toEqual(
+      Some("barbarians")
+    );
     expect(await None().or_else_await(vikings)).toEqual(Some("vikings"));
     expect(await None().or_else_await(nobody)).toEqual(None());
   });

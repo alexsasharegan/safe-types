@@ -27,3 +27,5 @@ export function always_null(): null {
 export function identity<T>(t: T): T {
   return t;
 }
+
+export function noop() {}
