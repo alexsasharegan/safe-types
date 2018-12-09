@@ -74,6 +74,11 @@ declare export class Option<T> {
    */
   unwrap_or_else(fn: () => T): T;
   /**
+   * `tap` allows you to do side-effects with the value
+   * when `Option` is `Some<T>`.
+   */
+  tap(fn: (x: T) => any): this;
+  /**
    * Safely transform the wrapped Some value from `T` => `U`.
    *
    * ```
@@ -348,6 +353,16 @@ declare export class Result<T, E> {
    * ```
    */
   err(): Option<E>;
+  /**
+   * `tap` allows you to do side-effects with the value
+   * when `Result` is `Ok<T>`.
+   */
+  tap(fn: (x: T) => any): this;
+  /**
+   * `tap_err` allows you to do side-effects with the value
+   * when `Result` is `Err<E>`.
+   */
+  tap_err(fn: (x: E) => any): this;
   /**
    * Perform a transformation on the possible Ok type.
    *
