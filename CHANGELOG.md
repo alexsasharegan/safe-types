@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="4.12.1"></a>
+## [4.12.1](https://github.com/alexsasharegan/safe-types/compare/v4.12.0...v4.12.1) (2018-12-09)
+
+
+### Bug Fixes
+
+* **types:** adds flow type defs for new tap helpers ([4b2712b](https://github.com/alexsasharegan/safe-types/commit/4b2712b))
+
+
+
 <a name="4.12.0"></a>
 # [4.12.0](https://github.com/alexsasharegan/safe-types/compare/v4.11.3...v4.12.0) (2018-12-08)
 
