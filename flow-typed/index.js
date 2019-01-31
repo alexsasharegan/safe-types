@@ -672,6 +672,11 @@ declare export class Task<T, E> {
    */
   run_sync(): Result<T, E>;
   /**
+   * `exec` immediately executes the task,
+   * but discards the resolved value for both success and error cases.
+   */
+  exec(): void;
+  /**
    * `tap` allows you to do side-effects with the value
    * when the Task is executed and is on the success path.
    *
