@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="4.13.2"></a>
+## [4.13.2](https://github.com/alexsasharegan/safe-types/compare/v4.13.1...v4.13.2) (2019-01-31)
+
+
+### Bug Fixes
+
+* **flow:** adds missing def for Task.exec ([d8eb322](https://github.com/alexsasharegan/safe-types/commit/d8eb322))
+
+
+
 <a name="4.13.1"></a>
 ## [4.13.1](https://github.com/alexsasharegan/safe-types/compare/v4.13.0...v4.13.1) (2019-01-31)
 
