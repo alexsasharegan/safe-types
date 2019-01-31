@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="4.13.0"></a>
+# [4.13.0](https://github.com/alexsasharegan/safe-types/compare/v4.12.1...v4.13.0) (2019-01-31)
+
+
+### Features
+
+* **task:** adds exec method ([a98e738](https://github.com/alexsasharegan/safe-types/commit/a98e738))
+* **task:** adds Task.tap and Task.tap_err ([770e34a](https://github.com/alexsasharegan/safe-types/commit/770e34a))
+* **task:** methods for side effect tasks ([88eac2c](https://github.com/alexsasharegan/safe-types/commit/88eac2c))
+
+
+
 <a name="4.12.1"></a>
 ## [4.12.1](https://github.com/alexsasharegan/safe-types/compare/v4.12.0...v4.12.1) (2018-12-09)
 
