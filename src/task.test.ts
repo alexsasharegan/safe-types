@@ -89,6 +89,26 @@ describe("Task", async () => {
     });
   });
 
+  describe("Task.exec", async () => {
+    it("success", async () => {
+      let spy = jest.fn();
+      let task = new Task<any, any>(r => {
+        r.Ok(spy());
+      });
+      task.exec();
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it("error", async () => {
+      let spy = jest.fn();
+      let task = new Task<any, any>(r => {
+        r.Err(spy());
+      });
+      task.exec();
+      expect(spy).toHaveBeenCalled();
+    });
+  });
+
   it("Task.map", async () => {
     const a = "a test";
     let t = Task.from<string, string>(r => r.Ok(a)).map(s => s.toUpperCase());

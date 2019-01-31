@@ -1,5 +1,5 @@
 import { Result } from "./result";
-import { identity, Mapper } from "./utils";
+import { identity, Mapper, noop } from "./utils";
 
 /**
  * `TaskResolver` is an object that implements the `Ok` and `Err` callback
@@ -94,6 +94,17 @@ export class Task<T, E> {
 
     // We've asserted that `r` is definitely assigned
     return r!;
+  }
+
+  /**
+   * `exec` immediately executes the task,
+   * but discards the resolved value for both success and error cases.
+   */
+  public exec(): void {
+    this.executor({
+      Ok: noop,
+      Err: noop,
+    });
   }
 
   /**
