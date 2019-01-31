@@ -238,6 +238,30 @@ describe("Task", async () => {
     });
   });
 
+  describe("Side effect Ok tasks", async () => {
+    it("Task.and_effect", async () => {
+      let task = Task.of_ok(1);
+      let spy = jest.fn();
+      let effect = new Task<string, any>(r => {
+        spy();
+        r.Ok(`I'm a side-effect`);
+      });
+
+      let r = await task.and_effect(effect).run();
+      expect(spy).toHaveBeenCalled();
+      expect(r).toEqual(Result.Ok(1));
+    });
+
+    it("Task.and_then_effect", async () => {
+      let task = Task.of_ok(1);
+      let effect_fn = jest.fn(() => Task.of_ok(`I'm a side-effect`));
+
+      let r = await task.and_then_effect(effect_fn).run();
+      expect(effect_fn).toHaveBeenCalledWith(1);
+      expect(r).toEqual(Result.Ok(1));
+    });
+  });
+
   it("Task.or", async () => {
     const final = "Or success";
     let task_a = new Task<string, number>(r => r.Err(1));
@@ -287,6 +311,30 @@ describe("Task", async () => {
           expect(e).toBe("1");
         },
       });
+  });
+
+  describe("Side effect Err tasks", async () => {
+    it("Task.or_effect", async () => {
+      let task = Task.of_err(1);
+      let spy = jest.fn();
+      let effect = new Task<string, any>(r => {
+        spy();
+        r.Ok(`I'm a side-effect`);
+      });
+
+      let r = await task.or_effect(effect).run();
+      expect(spy).toHaveBeenCalled();
+      expect(r).toEqual(Result.Err(1));
+    });
+
+    it("Task.or_else_effect", async () => {
+      let task = Task.of_err(1);
+      let effect_fn = jest.fn(() => Task.of_ok(`I'm a side-effect`));
+
+      let r = await task.or_else_effect(effect_fn).run();
+      expect(effect_fn).toHaveBeenCalledWith(1);
+      expect(r).toEqual(Result.Err(1));
+    });
   });
 
   it("Task.all", async () => {

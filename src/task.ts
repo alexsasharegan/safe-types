@@ -193,6 +193,18 @@ export class Task<OkType, ErrType> {
   }
 
   /**
+   * `and_effect` will compose a Task such that the effect is only executed
+   * if the first task resolves with a success. It will resolve with the
+   * value of the first task and execute the effect task via `Task.exec`,
+   * discarding it's return and leaving the task chain unaffected.
+   */
+  public and_effect(effect: Task<any, any>): Task<OkType, ErrType> {
+    return this.tap(() => {
+      effect.exec();
+    });
+  }
+
+  /**
    * `and_then` accepts a function that takes the success value of the first
    * Task and returns a new Task. This allows for sequencing tasks that depend
    * on the output of a previous task. The new Task must have the same error
@@ -207,6 +219,24 @@ export class Task<OkType, ErrType> {
         Err,
       })
     );
+  }
+
+  /**
+   * `and_then_effect` will compose a Task such that the effect func is only
+   * called and executed if the first task resolves with a success.
+   * It will resolve with the value of the first task
+   * and execute the effect task via `Task.exec`,
+   * discarding it's return and leaving the task chain unaffected.
+   *
+   * **CAUTION:**
+   * Mutating the value the effect func is called with will affect the chain.
+   */
+  public and_then_effect(
+    effect_fn: (ok: OkType) => Task<any, any>
+  ): Task<OkType, ErrType> {
+    return this.tap(x => {
+      effect_fn(x).exec();
+    });
   }
 
   /**
@@ -226,6 +256,18 @@ export class Task<OkType, ErrType> {
   }
 
   /**
+   * `or_effect` will compose a Task such that the effect is only executed
+   * if the first task resolves with an error. It will resolve with the
+   * value of the first task and execute the effect task via `Task.exec`,
+   * discarding it's return and leaving the task chain unaffected.
+   */
+  public or_effect(effect: Task<any, any>): Task<OkType, ErrType> {
+    return this.tap_err(() => {
+      effect.exec();
+    });
+  }
+
+  /**
    * `or_else` accepts a function that takes the error value of the first Task
    * and returns a new Task. This allows for sequencing tasks in the case of
    * failure based on the output of a previous task. The new Task must have the
@@ -240,6 +282,24 @@ export class Task<OkType, ErrType> {
         Err: err => op(err).fork({ Ok, Err }),
       })
     );
+  }
+
+  /**
+   * `or_else_effect` will compose a Task such that the effect func is only
+   * called and executed if the first task resolves with an error.
+   * It will resolve with the value of the first task
+   * and execute the effect task via `Task.exec`,
+   * discarding it's return and leaving the task chain unaffected.
+   *
+   * **CAUTION:**
+   * Mutating the value the effect func is called with will affect the chain.
+   */
+  public or_else_effect(
+    effect_fn: (err: ErrType) => Task<any, any>
+  ): Task<OkType, ErrType> {
+    return this.tap_err(x => {
+      effect_fn(x).exec();
+    });
   }
 
   /**
