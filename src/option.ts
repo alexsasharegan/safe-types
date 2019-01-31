@@ -38,14 +38,12 @@ export class Option<T> {
 
   public match<Output>(matcher: OptionMatcher<T, Output>): Output {
     switch (this.option.variant) {
-      case OptionVariant.None:
-        return matcher.None();
-
-      case OptionVariant.Some:
-        return matcher.Some(this.option.value);
-
       default:
         return expect_never(this.option, "invalid Option variant");
+      case OptionVariant.None:
+        return matcher.None();
+      case OptionVariant.Some:
+        return matcher.Some(this.option.value);
     }
   }
 

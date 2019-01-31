@@ -41,14 +41,12 @@ export class Result<T, E> {
    */
   public match<Output>(matcher: ResultMatcher<T, E, Output>): Output {
     switch (this.result.variant) {
-      case ResultVariant.Ok:
-        return matcher.Ok(this.result.value);
-
-      case ResultVariant.Err:
-        return matcher.Err(this.result.error);
-
       default:
         return expect_never(this.result, "Invalid `Result` variant");
+      case ResultVariant.Ok:
+        return matcher.Ok(this.result.value);
+      case ResultVariant.Err:
+        return matcher.Err(this.result.error);
     }
   }
 
