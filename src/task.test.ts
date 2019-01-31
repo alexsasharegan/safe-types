@@ -109,6 +109,26 @@ describe("Task", async () => {
     });
   });
 
+  describe("Side effect mappings", async () => {
+    it("Task.tap", async () => {
+      let task = Task.of_ok(1);
+      let spy = jest.fn();
+
+      let r = await task.tap(spy).run();
+      expect(spy).toHaveBeenCalledWith(1);
+      expect(r).toEqual(Result.Ok(1));
+    });
+
+    it("Task.tap_err", async () => {
+      let task = Task.of_err(1);
+      let spy = jest.fn();
+
+      let r = await task.tap_err(spy).run();
+      expect(spy).toHaveBeenCalledWith(1);
+      expect(r).toEqual(Result.Err(1));
+    });
+  });
+
   it("Task.map", async () => {
     const a = "a test";
     let t = Task.from<string, string>(r => r.Ok(a)).map(s => s.toUpperCase());

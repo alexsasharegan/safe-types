@@ -106,6 +106,34 @@ export class Task<OkType, ErrType> {
   }
 
   /**
+   * `tap` allows you to do side-effects with the value
+   * when the Task is executed and is on the success path.
+   *
+   * Essentially a shorthand for doing a `Task.map()` that
+   * returns the value it's called with after performing a side-effect.
+   */
+  public tap(fn: (ok: OkType) => any): Task<OkType, ErrType> {
+    return this.map(ok => {
+      fn(ok);
+      return ok;
+    });
+  }
+
+  /**
+   * `tap_err` allows you to do side-effects with the value
+   * when the Task is executed and is on the error path.
+   *
+   * Essentially a shorthand for doing a `Task.map_err()` that
+   * returns the value it's called with after performing a side-effect.
+   */
+  public tap_err(fn: (err: ErrType) => any): Task<OkType, ErrType> {
+    return this.map_err(err => {
+      fn(err);
+      return err;
+    });
+  }
+
+  /**
    * `map` returns a new Task with the success value mapped according to the
    * map function given. `map` should be a synchronous operation.
    */
