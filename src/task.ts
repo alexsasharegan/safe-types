@@ -195,7 +195,7 @@ export class Task<T, E> {
    * failure based on the output of a previous task. The new Task must have the
    * same success type as the first task, but can return a new error type.
    */
-  public or_else<F>(op: (ok: E) => Task<T, F>): Task<T, F> {
+  public or_else<F>(op: (err: E) => Task<T, F>): Task<T, F> {
     return new Task<T, F>(({ Ok, Err }) =>
       this.executor({
         Ok,

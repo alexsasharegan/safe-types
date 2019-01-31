@@ -115,7 +115,7 @@ export class Result<T, E> {
    * `tap` allows you to do side-effects with the value
    * when `Result` is `Ok<T>`.
    */
-  public tap(fn: (x: T) => any): this {
+  public tap(fn: (ok: T) => any): this {
     this.match({ Err: noop, Ok: fn });
 
     return this;
@@ -125,7 +125,7 @@ export class Result<T, E> {
    * `tap_err` allows you to do side-effects with the value
    * when `Result` is `Err<E>`.
    */
-  public tap_err(fn: (x: E) => any): this {
+  public tap_err(fn: (err: E) => any): this {
     this.match({ Err: fn, Ok: noop });
 
     return this;
