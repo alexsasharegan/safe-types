@@ -672,6 +672,22 @@ declare export class Task<T, E> {
    */
   run_sync(): Result<T, E>;
   /**
+   * `tap` allows you to do side-effects with the value
+   * when the Task is executed and is on the success path.
+   *
+   * Essentially a shorthand for doing a `Task.map()` that
+   * returns the value it's called with after performing a side-effect.
+   */
+  tap(fn: (ok: T) => any): Task<T, E>;
+  /**
+   * `tap_err` allows you to do side-effects with the value
+   * when the Task is executed and is on the error path.
+   *
+   * Essentially a shorthand for doing a `Task.map_err()` that
+   * returns the value it's called with after performing a side-effect.
+   */
+  tap_err(fn: (err: E) => any): Task<T, E>;
+  /**
    * `map` returns a new Task with the success value mapped according to the
    * map function given. `map` should be a synchronous operation.
    */
@@ -693,6 +709,13 @@ declare export class Task<T, E> {
    */
   and<U>(task_b: Task<U, E>): Task<U, E>;
   /**
+   * `and_effect` will compose a Task such that the effect is only executed
+   * if the first task resolves with a success. It will resolve with the
+   * value of the first task and execute the effect task via `Task.exec`,
+   * discarding it's return and leaving the task chain unaffected.
+   */
+  and_effect(effect: Task<any, any>): Task<T, E>;
+  /**
    * `and_then` accepts a function that takes the success value of the first
    * Task and returns a new Task. This allows for sequencing tasks that depend
    * on the output of a previous task. The new Task must have the same error
@@ -700,11 +723,29 @@ declare export class Task<T, E> {
    */
   and_then<U>(op: (ok: T) => Task<U, E>): Task<U, E>;
   /**
+   * `and_then_effect` will compose a Task such that the effect func is only
+   * called and executed if the first task resolves with a success.
+   * It will resolve with the value of the first task
+   * and execute the effect task via `Task.exec`,
+   * discarding it's return and leaving the task chain unaffected.
+   *
+   * **CAUTION:**
+   * Mutating the value the effect func is called with will affect the chain.
+   */
+  and_then_effect(effect_fn: (ok: T) => Task<any, any>): Task<T, E>;
+  /**
    * `or` composes two Tasks such that `task_b` is forked only if the first Task
    * resolves with an error. `task_b` must have the same success type as the
    * first task, but can return a new error type.
    */
   or<F>(task_b: Task<T, F>): Task<T, F>;
+  /**
+   * `or_effect` will compose a Task such that the effect is only executed
+   * if the first task resolves with an error. It will resolve with the
+   * value of the first task and execute the effect task via `Task.exec`,
+   * discarding it's return and leaving the task chain unaffected.
+   */
+  or_effect(effect: Task<any, any>): Task<T, E>;
   /**
    * `or_else` accepts a function that takes the error value of the first Task
    * and returns a new Task. This allows for sequencing tasks in the case of
@@ -712,6 +753,17 @@ declare export class Task<T, E> {
    * same success type as the first task, but can return a new error type.
    */
   or_else<F>(op: (ok: E) => Task<T, F>): Task<T, F>;
+  /**
+   * `or_else_effect` will compose a Task such that the effect func is only
+   * called and executed if the first task resolves with an error.
+   * It will resolve with the value of the first task
+   * and execute the effect task via `Task.exec`,
+   * discarding it's return and leaving the task chain unaffected.
+   *
+   * **CAUTION:**
+   * Mutating the value the effect func is called with will affect the chain.
+   */
+  or_else_effect(effect_fn: (err: E) => Task<any, any>): Task<T, E>;
   /**
    * `invert` returns a new Task with the success and error cases swapped.
    */
