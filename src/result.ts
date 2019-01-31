@@ -11,11 +11,11 @@ import {
 } from "./utils";
 import { ResultVariant } from "./variant";
 
-export type ResultType<T, E> = Ok<T> | Err<E>;
+export type ResultType<OkType, ErrType> = Ok<OkType> | Err<ErrType>;
 
-export interface ResultMatcher<T, E, Output> {
-  Ok(x: T): Output;
-  Err(e: E): Output;
+export interface ResultMatcher<OkType, ErrType, Output> {
+  Ok(x: OkType): Output;
+  Err(e: ErrType): Output;
 }
 
 /**
@@ -24,7 +24,7 @@ export interface ResultMatcher<T, E, Output> {
  * Result simultaneously holds either an `Ok` that holds any type
  * and and `Err` that also can hold any type.
  */
-export class Result<T, E> {
+export class Result<OkType, ErrType> {
   /**
    * Warning!
    * --------
@@ -32,14 +32,16 @@ export class Result<T, E> {
    * You should never construct a Result object manually. Use the `Ok` and `Err`
    * helpers to create a Result object from a value.
    */
-  constructor(readonly result: ResultType<T, E>) {}
+  constructor(readonly result: ResultType<OkType, ErrType>) {}
 
   /**
    * Perform a pseudo pattern match on the underlying Ok or Err type.
    * Matches the type and then returns the value of calling the matcher's
    * function with the value.
    */
-  public match<Output>(matcher: ResultMatcher<T, E, Output>): Output {
+  public match<Output>(
+    matcher: ResultMatcher<OkType, ErrType, Output>
+  ): Output {
     switch (this.result.variant) {
       default:
         return expect_never(this.result, "Invalid `Result` variant");
@@ -59,7 +61,7 @@ export class Result<T, E> {
    * // => true
    * ```
    */
-  public is_ok(): this is { result: Ok<T> } {
+  public is_ok(): this is { result: Ok<OkType> } {
     return this.match({
       Ok: always_true,
       Err: always_false,
@@ -75,7 +77,7 @@ export class Result<T, E> {
    * // => false
    * ```
    */
-  public is_err(): this is { result: Err<E> } {
+  public is_err(): this is { result: Err<ErrType> } {
     return !this.is_ok();
   }
 
@@ -88,7 +90,7 @@ export class Result<T, E> {
    * // => Option<string>
    * ```
    */
-  public ok(): Option<T> {
+  public ok(): Option<OkType> {
     return this.match({
       Ok: Option.Some,
       Err: Option.None,
@@ -104,7 +106,7 @@ export class Result<T, E> {
    * // => Option<Error>
    * ```
    */
-  public err(): Option<E> {
+  public err(): Option<ErrType> {
     return this.match({
       Ok: Option.None,
       Err: Option.Some,
@@ -115,7 +117,7 @@ export class Result<T, E> {
    * `tap` allows you to do side-effects with the value
    * when `Result` is `Ok<T>`.
    */
-  public tap(fn: (ok: T) => any): this {
+  public tap(fn: (ok: OkType) => any): this {
     this.match({ Err: noop, Ok: fn });
 
     return this;
@@ -125,7 +127,7 @@ export class Result<T, E> {
    * `tap_err` allows you to do side-effects with the value
    * when `Result` is `Err<E>`.
    */
-  public tap_err(fn: (err: E) => any): this {
+  public tap_err(fn: (err: ErrType) => any): this {
     this.match({ Err: fn, Ok: noop });
 
     return this;
@@ -140,8 +142,10 @@ export class Result<T, E> {
    * // => Result<number, Error>
    * ```
    */
-  public map<U>(op: Mapper<T, U>): Result<U, E> {
-    return this.match<Result<U, E>>({
+  public map<MappedOk>(
+    op: Mapper<OkType, MappedOk>
+  ): Result<MappedOk, ErrType> {
+    return this.match<Result<MappedOk, ErrType>>({
       Ok: t => Result.Ok(op(t)),
       Err: Result.Err,
     });
@@ -156,8 +160,10 @@ export class Result<T, E> {
    * // => Result<string, string>
    * ```
    */
-  public map_err<F>(op: Mapper<E, F>): Result<T, F> {
-    return this.match<Result<T, F>>({
+  public map_err<MappedErr>(
+    op: Mapper<ErrType, MappedErr>
+  ): Result<OkType, MappedErr> {
+    return this.match<Result<OkType, MappedErr>>({
       Ok: Result.Ok,
       Err: e => Result.Err(op(e)),
     });
@@ -173,10 +179,10 @@ export class Result<T, E> {
    * // => prints to stdout/stderr
    * ```
    */
-  public map_both<U, F>(
-    ok_op: Mapper<T, U>,
-    err_op: Mapper<E, F>
-  ): Result<U, F> {
+  public map_both<MappedOk, MappedErr>(
+    ok_op: Mapper<OkType, MappedOk>,
+    err_op: Mapper<ErrType, MappedErr>
+  ): Result<MappedOk, MappedErr> {
     return this.match({
       Ok: t => Result.Ok(ok_op(t)),
       Err: e => Result.Err(err_op(e)),
@@ -192,7 +198,9 @@ export class Result<T, E> {
    * // => Result<string, Error>
    * ```
    */
-  public and<U>(res: Result<U, E>): Result<U, E> {
+  public and<NextOkType>(
+    res: Result<NextOkType, ErrType>
+  ): Result<NextOkType, ErrType> {
     return this.match({
       Ok: () => res,
       Err: Result.Err,
@@ -209,7 +217,9 @@ export class Result<T, E> {
    * // => Promise<Result<string, Error>>
    * ```
    */
-  public and_await<U>(res: Promise<Result<U, E>>): Promise<Result<U, E>> {
+  public and_await<NextOkType>(
+    res: Promise<Result<NextOkType, ErrType>>
+  ): Promise<Result<NextOkType, ErrType>> {
     return this.match({
       Ok: () => res,
       Err: e => Promise.resolve(Result.Err(e)),
@@ -225,8 +235,10 @@ export class Result<T, E> {
    * // => Result<string, Error>
    * ```
    */
-  public and_then<U>(op: (t: T) => Result<U, E>): Result<U, E> {
-    return this.match<Result<U, E>>({
+  public and_then<NextOkType>(
+    op: (t: OkType) => Result<NextOkType, ErrType>
+  ): Result<NextOkType, ErrType> {
+    return this.match<Result<NextOkType, ErrType>>({
       Ok: t => op(t),
       Err: Result.Err,
     });
@@ -243,9 +255,9 @@ export class Result<T, E> {
    * // => Promise<Result<string, Error>>
    * ```
    */
-  public and_then_await<U>(
-    op: (t: T) => Promise<Result<U, E>>
-  ): Promise<Result<U, E>> {
+  public and_then_await<NextOkType>(
+    op: (t: OkType) => Promise<Result<NextOkType, ErrType>>
+  ): Promise<Result<NextOkType, ErrType>> {
     return this.match({
       Ok: op,
       Err: e => Promise.resolve(Result.Err(e)),
@@ -278,7 +290,9 @@ export class Result<T, E> {
    * expect(x.or(y)).toEqual(Ok(2));
    * ```
    */
-  public or<F>(res: Result<T, F>): Result<T, F> {
+  public or<NextErrType>(
+    res: Result<OkType, NextErrType>
+  ): Result<OkType, NextErrType> {
     return this.match({
       Ok: Result.Ok,
       Err: () => res,
@@ -289,7 +303,9 @@ export class Result<T, E> {
    * Returns the given promised result if the result an Err, or else wraps the
    * existing result in a promise.
    */
-  public or_await<F>(res: Promise<Result<T, F>>): Promise<Result<T, F>> {
+  public or_await<NextErrType>(
+    res: Promise<Result<OkType, NextErrType>>
+  ): Promise<Result<OkType, NextErrType>> {
     return this.match({
       Ok: val => Promise.resolve(Result.Ok(val)),
       Err: () => res,
@@ -312,7 +328,9 @@ export class Result<T, E> {
    * expect(Err(3).or_else(err).or_else(err)).toEqual(Err(3));
    * ```
    */
-  public or_else<F>(op: (e: E) => Result<T, F>): Result<T, F> {
+  public or_else<NextErrType>(
+    op: (e: ErrType) => Result<OkType, NextErrType>
+  ): Result<OkType, NextErrType> {
     return this.match({
       Ok: Result.Ok,
       Err: op,
@@ -323,9 +341,9 @@ export class Result<T, E> {
    * Calls the given function if the result an Err, or else wraps the
    * existing result in a promise.
    */
-  public or_else_await<F>(
-    op: (e: E) => Promise<Result<T, F>>
-  ): Promise<Result<T, F>> {
+  public or_else_await<NextErrType>(
+    op: (e: ErrType) => Promise<Result<OkType, NextErrType>>
+  ): Promise<Result<OkType, NextErrType>> {
     return this.match({
       Ok: val => Promise.resolve(Result.Ok(val)),
       Err: op,
@@ -349,7 +367,7 @@ export class Result<T, E> {
    * expect(x.unwrap_or(optb)).toEqual(optb);
    * ```
    */
-  public unwrap_or(optb: T): T {
+  public unwrap_or(optb: OkType): OkType {
     return this.match({
       Ok: identity,
       Err: () => optb,
@@ -367,7 +385,7 @@ export class Result<T, E> {
    * expect(Err("foo").unwrap_or_else(count)).toEqual(3);
    * ```
    */
-  public unwrap_or_else(op: (e: E) => T): T {
+  public unwrap_or_else(op: (e: ErrType) => OkType): OkType {
     return this.match({
       Ok: identity,
       Err: op,
@@ -377,7 +395,7 @@ export class Result<T, E> {
   /**
    * Returns the Ok type, or throws an Error.
    */
-  public unwrap(): T {
+  public unwrap(): OkType {
     return this.match({
       Ok: identity,
       Err: () => {
@@ -389,7 +407,7 @@ export class Result<T, E> {
   /**
    * Returns the Err type, or throws an Error.
    */
-  public unwrap_err(): E {
+  public unwrap_err(): ErrType {
     return this.match({
       Ok: () => {
         throw new Error(`Called 'Result.unwrap_err()' on ${this.toString()}`);
@@ -401,8 +419,8 @@ export class Result<T, E> {
   /**
    * Returns the Ok type, or throws an Error with the given message.
    */
-  public expect(msg: string): T {
-    return this.match<T>({
+  public expect(msg: string): OkType {
+    return this.match<OkType>({
       Ok: identity,
       Err() {
         throw new Error(msg);
@@ -413,8 +431,8 @@ export class Result<T, E> {
   /**
    * Returns the Err type, or throws an Error with the given message.
    */
-  public expect_err(msg: string): E {
-    return this.match<E>({
+  public expect_err(msg: string): ErrType {
+    return this.match<ErrType>({
       Ok() {
         throw new Error(msg);
       },
@@ -426,7 +444,7 @@ export class Result<T, E> {
    * Remaps the result types so the `Ok<T>` becomes `Err<T>`
    * and the `Err<E>` becomes `Ok<E>`
    */
-  public invert(): Result<E, T> {
+  public invert(): Result<ErrType, OkType> {
     return this.match({
       Ok: Result.Err,
       Err: Result.Ok,
@@ -443,14 +461,18 @@ export class Result<T, E> {
   /**
    * Returns an Ok result of the given type.
    */
-  public static Ok<T, E = any>(val: T): Result<T, E> {
+  public static Ok<OkType, ErrType = any>(
+    val: OkType
+  ): Result<OkType, ErrType> {
     return new Result(Ok(val));
   }
 
   /**
    * Returns an Err result of the given type.
    */
-  public static Err<E, T = any>(err: E): Result<T, E> {
+  public static Err<ErrType, OkType = any>(
+    err: ErrType
+  ): Result<OkType, ErrType> {
     return new Result(Err(err));
   }
 
@@ -458,7 +480,9 @@ export class Result<T, E> {
    * Calls the operation and returns an Ok result
    * or an Err result if an Error is thrown.
    */
-  public static from<T, E>(op: () => T): Result<T, E> {
+  public static from<OkType, ErrType>(
+    op: () => OkType
+  ): Result<OkType, ErrType> {
     try {
       return Result.Ok(op());
     } catch (e) {
@@ -470,7 +494,7 @@ export class Result<T, E> {
    * Calls the operation and returns an Ok result
    * or an Err result if an Error is thrown.
    */
-  public static of<T, E>(op: () => T): Result<T, E> {
+  public static of<OkType, ErrType>(op: () => OkType): Result<OkType, ErrType> {
     return Result.from(op);
   }
 
@@ -479,14 +503,16 @@ export class Result<T, E> {
    * unwrapped values or the first Err.
    * Eager return (returns upon first Err case).
    */
-  public static every<T, E>(results: Result<T, E>[]): Result<T[], E> {
-    let r: Result<T, E>;
-    let ok: T[] = [];
-    let error: E;
+  public static every<OkType, ErrType>(
+    results: Result<OkType, ErrType>[]
+  ): Result<OkType[], ErrType> {
+    let r: Result<OkType, ErrType>;
+    let ok: OkType[] = [];
+    let error: ErrType;
 
     const matcher = {
-      Ok: (t: T) => ok.push(t),
-      Err: (e: E) => {
+      Ok: (t: OkType) => ok.push(t),
+      Err: (e: ErrType) => {
         error = e;
         return 0;
       },
@@ -505,18 +531,20 @@ export class Result<T, E> {
    * Given an array shaped `Result<T, E>[]`, returns a Result of any the
    * unwrapped values or an Err with the all of the Err values.
    */
-  public static some<T, E>(results: Result<T, E>[]): Result<T[], E[]> {
+  public static some<OkType, ErrType>(
+    results: Result<OkType, ErrType>[]
+  ): Result<OkType[], ErrType[]> {
     if (results.length == 0) {
       return Result.Ok([]);
     }
 
-    let ok: T[] = [];
-    let err: E[] = [];
-    let r: Result<T, E>;
+    let ok: OkType[] = [];
+    let err: ErrType[] = [];
+    let r: Result<OkType, ErrType>;
 
     const matcher = {
-      Ok: (t: T) => ok.push(t),
-      Err: (e: E) => err.push(e),
+      Ok: (t: OkType) => ok.push(t),
+      Err: (e: ErrType) => err.push(e),
     };
 
     for (r of results) {
@@ -535,7 +563,9 @@ export class Result<T, E> {
    * Awaits the Promise and returns a Promised Ok result
    * or a Promised Err result if an Error is thrown.
    */
-  public static async await<T, E>(p: Promise<T>): Promise<Result<T, E>> {
+  public static async await<OkType, ErrType>(
+    p: Promise<OkType>
+  ): Promise<Result<OkType, ErrType>> {
     try {
       return Result.Ok(await p);
     } catch (e) {
@@ -547,17 +577,19 @@ export class Result<T, E> {
    * Calls the async operation and returns a Promised Ok result
    * or a Promised Err result if an Error is thrown.
    */
-  public static await_fn<T, E>(op: () => Promise<T>): Promise<Result<T, E>> {
-    return Result.await<T, E>(op());
+  public static await_fn<OkType, ErrType>(
+    op: () => Promise<OkType>
+  ): Promise<Result<OkType, ErrType>> {
+    return Result.await<OkType, ErrType>(op());
   }
 
   /**
    * Awaits an array of Promises and returns a Promised Ok result
    * or a Promised Err result if an Error is thrown.
    */
-  public static async await_all<T, E>(
-    ps: Array<Promise<T>>
-  ): Promise<Result<T[], E>> {
+  public static async await_all<OkType, ErrType>(
+    ps: Array<Promise<OkType>>
+  ): Promise<Result<OkType[], ErrType>> {
     try {
       return Result.Ok(await Promise.all(ps));
     } catch (e) {
@@ -569,9 +601,9 @@ export class Result<T, E> {
    * Calls the async operation and returns a Promised Ok result
    * or a Promised Err result if an Error is thrown.
    */
-  public static await_all_fn<T, E>(
-    op: () => Array<Promise<T>>
-  ): Promise<Result<T[], E>> {
+  public static await_all_fn<OkType, ErrType>(
+    op: () => Array<Promise<OkType>>
+  ): Promise<Result<OkType[], ErrType>> {
     return Result.await_all(op());
   }
 }

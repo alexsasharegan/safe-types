@@ -7,9 +7,9 @@ import { identity, Mapper, noop } from "./utils";
  * should be called with the failure value type `E`. The handler callbacks
  * can each return different value types.
  */
-export type TaskResolver<T, E, U, F> = {
-  Ok: (ok: T) => U;
-  Err: (err: E) => F;
+export type TaskResolver<OkType, ErrType, OkOutput, ErrOutput> = {
+  Ok: (ok: OkType) => OkOutput;
+  Err: (err: ErrType) => ErrOutput;
 };
 
 /**
@@ -17,36 +17,34 @@ export type TaskResolver<T, E, U, F> = {
  * `TaskResolver` object as it's first argument. One of the resolver methods
  * must be called or the Task will never complete.
  */
-export type TaskExecutorFunc<T, E> = (
-  resolver: TaskResolver<T, E, any, any>
+export type TaskExecutorFunc<OkType, ErrType> = (
+  resolver: TaskResolver<OkType, ErrType, any, any>
 ) => any;
 
 /**
  * `Task<T, E>` represents a time-based operation that can resolve with success
  * or error value types `T` or `E` respectively.
  */
-export class Task<T, E> {
+export class Task<OkType, ErrType> {
   /**
    * Construct a new Task by passing a function that performs the Task operation
    * itself. The function receives a `TaskResolver` object as it's first
    * argument. One of the resolver methods must be called or the Task will never
    * complete.
    */
-  constructor(private executor: TaskExecutorFunc<T, E>) {}
+  constructor(private executor: TaskExecutorFunc<OkType, ErrType>) {}
 
   /**
    * `fork` begins execution of the Task and returns a Promise resolving with a
    * `Result` that contains the the return value of your resolver object's
    * corresponding callback.
-   *
-   * _`resolver.Ok<U> => Promise<Ok<U>>`_
-   *
-   * _`resolver.Err<F> => Promise<Err<F>>`_
    */
-  public fork<U, F>(resolver: TaskResolver<T, E, U, F>): Promise<Result<U, F>> {
+  public fork<OkOutput, ErrOutput>(
+    resolver: TaskResolver<OkType, ErrType, OkOutput, ErrOutput>
+  ): Promise<Result<OkOutput, ErrOutput>> {
     let { Ok: map_ok, Err: map_err } = resolver;
 
-    return new Promise<Result<U, F>>(r =>
+    return new Promise<Result<OkOutput, ErrOutput>>(r =>
       this.executor({
         Ok: value => r(Result.Ok(map_ok(value))),
         Err: err => r(Result.Err(map_err(err))),
@@ -58,7 +56,7 @@ export class Task<T, E> {
    * `run` begins execution of the Task and returns a Promise resolving with a
    * `Result` that contains the success or error value of the Task.
    */
-  public run(): Promise<Result<T, E>> {
+  public run(): Promise<Result<OkType, ErrType>> {
     return this.fork({
       Err: identity,
       Ok: identity,
@@ -71,8 +69,8 @@ export class Task<T, E> {
    *
    * _NOTE: throws an Error if a callback is not invoked synchronously._
    */
-  public run_sync(): Result<T, E> {
-    let r: Result<T, E>;
+  public run_sync(): Result<OkType, ErrType> {
+    let r: Result<OkType, ErrType>;
 
     // The executor is not guaranteed to return anything.
     // We need to use the callbacks to assign our Result.
@@ -111,8 +109,8 @@ export class Task<T, E> {
    * `map` returns a new Task with the success value mapped according to the
    * map function given. `map` should be a synchronous operation.
    */
-  public map<U>(op: Mapper<T, U>): Task<U, E> {
-    return new Task<U, E>(({ Ok, Err }) =>
+  public map<MappedOk>(op: Mapper<OkType, MappedOk>): Task<MappedOk, ErrType> {
+    return new Task<MappedOk, ErrType>(({ Ok, Err }) =>
       this.executor({
         Ok: value => Ok(op(value)),
         Err,
@@ -124,8 +122,10 @@ export class Task<T, E> {
    * `map_err` returns a new Task with the error value mapped according to the
    * map function given. `map` should be a synchronous operation.
    */
-  public map_err<F>(op: Mapper<E, F>): Task<T, F> {
-    return new Task<T, F>(({ Ok, Err }) =>
+  public map_err<MappedErr>(
+    op: Mapper<ErrType, MappedErr>
+  ): Task<OkType, MappedErr> {
+    return new Task<OkType, MappedErr>(({ Ok, Err }) =>
       this.executor({
         Ok,
         Err: err => Err(op(err)),
@@ -137,8 +137,10 @@ export class Task<T, E> {
    * `map_both` returns a new Task that applies the map functions to either the
    * success case or the error case.
    */
-  public map_both<U, F>(bimap: TaskResolver<T, E, U, F>): Task<U, F> {
-    return new Task<U, F>(({ Ok, Err }) =>
+  public map_both<MappedOk, MappedErr>(
+    bimap: TaskResolver<OkType, ErrType, MappedOk, MappedErr>
+  ): Task<MappedOk, MappedErr> {
+    return new Task<MappedOk, MappedErr>(({ Ok, Err }) =>
       this.executor({
         Ok: value => Ok(bimap.Ok(value)),
         Err: err => Err(bimap.Err(err)),
@@ -151,8 +153,10 @@ export class Task<T, E> {
    * task resolves with a success. `task_b` must have the same error type as the
    * first task, but can return a new success type.
    */
-  public and<U>(task_b: Task<U, E>): Task<U, E> {
-    return new Task<U, E>(({ Ok, Err }) =>
+  public and<NextOkType>(
+    task_b: Task<NextOkType, ErrType>
+  ): Task<NextOkType, ErrType> {
+    return new Task<NextOkType, ErrType>(({ Ok, Err }) =>
       this.executor({
         Ok: () => task_b.fork({ Ok, Err }),
         Err,
@@ -166,8 +170,10 @@ export class Task<T, E> {
    * on the output of a previous task. The new Task must have the same error
    * type as the first task, but can return a new success type.
    */
-  public and_then<U>(op: (ok: T) => Task<U, E>): Task<U, E> {
-    return new Task<U, E>(({ Ok, Err }) =>
+  public and_then<NextOkType>(
+    op: (ok: OkType) => Task<NextOkType, ErrType>
+  ): Task<NextOkType, ErrType> {
+    return new Task<NextOkType, ErrType>(({ Ok, Err }) =>
       this.executor({
         Ok: value => op(value).fork({ Ok, Err }),
         Err,
@@ -180,8 +186,10 @@ export class Task<T, E> {
    * resolves with an error. `task_b` must have the same success type as the
    * first task, but can return a new error type.
    */
-  public or<F>(task_b: Task<T, F>): Task<T, F> {
-    return new Task<T, F>(({ Ok, Err }) =>
+  public or<NextErrType>(
+    task_b: Task<OkType, NextErrType>
+  ): Task<OkType, NextErrType> {
+    return new Task<OkType, NextErrType>(({ Ok, Err }) =>
       this.executor({
         Ok,
         Err: () => task_b.fork({ Ok, Err }),
@@ -195,8 +203,10 @@ export class Task<T, E> {
    * failure based on the output of a previous task. The new Task must have the
    * same success type as the first task, but can return a new error type.
    */
-  public or_else<F>(op: (err: E) => Task<T, F>): Task<T, F> {
-    return new Task<T, F>(({ Ok, Err }) =>
+  public or_else<NextErrType>(
+    op: (err: ErrType) => Task<OkType, NextErrType>
+  ): Task<OkType, NextErrType> {
+    return new Task<OkType, NextErrType>(({ Ok, Err }) =>
       this.executor({
         Ok,
         Err: err => op(err).fork({ Ok, Err }),
@@ -207,8 +217,8 @@ export class Task<T, E> {
   /**
    * `invert` returns a new Task with the success and error cases swapped.
    */
-  public invert(): Task<E, T> {
-    return new Task<E, T>(({ Ok, Err }) =>
+  public invert(): Task<ErrType, OkType> {
+    return new Task<ErrType, OkType>(({ Ok, Err }) =>
       this.executor({
         Ok: Err,
         Err: Ok,
@@ -235,7 +245,9 @@ export class Task<T, E> {
    * argument. One of the resolver methods must be called or the Task will never
    * complete.
    */
-  public static from<T, E>(executor: TaskExecutorFunc<T, E>): Task<T, E> {
+  public static from<OkType, ErrType>(
+    executor: TaskExecutorFunc<OkType, ErrType>
+  ): Task<OkType, ErrType> {
     return new Task(executor);
   }
 
@@ -243,14 +255,17 @@ export class Task<T, E> {
    * Takes any number of tasks and returns a new Task that will run all tasks
    * concurrently. The first task to fail will trigger the rest to abort.
    */
-  public static all<T, E>(tasks: Task<T, E>[]): Task<T[], E> {
-    return new Task<T[], E>(({ Ok, Err }) => {
+  public static all<OkType, ErrType>(
+    tasks: Task<OkType, ErrType>[]
+  ): Task<OkType[], ErrType> {
+    return new Task<OkType[], ErrType>(({ Ok, Err }) => {
       const matcher = {
-        Ok: (value: T) => Promise.resolve(value),
-        Err: (error: E) => Promise.reject(error),
+        Ok: (value: OkType) => Promise.resolve(value),
+        Err: (error: ErrType) => Promise.reject(error),
       };
-      const do_match: (r: Result<T, E>) => Promise<T> = r => r.match(matcher);
-      const run_task = (t: Task<T, E>) => t.run().then(do_match);
+      const do_match: (r: Result<OkType, ErrType>) => Promise<OkType> = r =>
+        r.match(matcher);
+      const run_task = (t: Task<OkType, ErrType>) => t.run().then(do_match);
 
       Promise.all(tasks.map(run_task))
         .then(Ok)
@@ -264,21 +279,23 @@ export class Task<T, E> {
    *
    * Always resolves Ok.
    */
-  public static collect<T, E>(tasks: Task<T, E>[]): Task<[T[], E[]], any> {
-    return new Task<[T[], E[]], void>(async ({ Ok }) => {
-      let oks: T[] = [];
-      let errs: E[] = [];
+  public static collect<OkType, ErrType>(
+    tasks: Task<OkType, ErrType>[]
+  ): Task<[OkType[], ErrType[]], any> {
+    return new Task<[OkType[], ErrType[]], void>(async ({ Ok }) => {
+      let oks: OkType[] = [];
+      let errs: ErrType[] = [];
 
       let resolver = {
-        Ok(value: T) {
+        Ok(value: OkType) {
           oks.push(value);
         },
-        Err(error: E) {
+        Err(error: ErrType) {
           errs.push(error);
         },
       };
 
-      const run_task: (task: Task<T, E>) => Promise<any> = t =>
+      const run_task: (task: Task<OkType, ErrType>) => Promise<any> = t =>
         t.fork(resolver);
 
       Promise.all(tasks.map(run_task)).then(() => Ok([oks, errs]));
@@ -288,14 +305,14 @@ export class Task<T, E> {
   /**
    * `of_ok` constructs a Task that resolves with a success of the given value.
    */
-  public static of_ok<T>(value: T): Task<T, any> {
+  public static of_ok<OkType>(value: OkType): Task<OkType, any> {
     return new Task(({ Ok }) => Ok(value));
   }
 
   /**
    * `of_err` constructs a Task that resolves with an error of the given value.
    */
-  public static of_err<E>(err: E): Task<any, E> {
+  public static of_err<ErrType>(err: ErrType): Task<any, ErrType> {
     return new Task(({ Err }) => Err(err));
   }
 }
