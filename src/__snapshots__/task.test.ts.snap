@@ -1,5 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Task should toString 1`] = `"[object Task]"`;
+exports[`Task Task.run_sync no sync callback Error 1`] = `"Task.run_sync expects the executor to resolve synchronously."`;
 
-exports[`Task task.run_sync (no sync callback Error) 1`] = `"Task.run_sync expects the executor to resolve synchronously."`;
+exports[`Task should toString 1`] = `"[object Task]"`;

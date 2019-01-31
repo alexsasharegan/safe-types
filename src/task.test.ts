@@ -9,78 +9,84 @@ describe("Task", async () => {
     expect(t).toBeInstanceOf(Task);
   });
 
-  it("Task.fork (success)", async () => {
-    const value = "success";
+  describe("Task.fork", async () => {
+    it("success", async () => {
+      const value = "success";
 
-    let Ok = jest.fn(x => x);
+      let Ok = jest.fn(x => x);
 
-    let t = Task.from<typeof value, void>(r => Promise.resolve(r.Ok(value)));
-    let p = t.fork({
-      Ok,
-      Err: console.error,
+      let t = Task.from<typeof value, void>(r => Promise.resolve(r.Ok(value)));
+      let p = t.fork({
+        Ok,
+        Err: console.error,
+      });
+
+      expect(p instanceof Promise).toBe(true);
+
+      let r = await p;
+      expect(Ok).toHaveBeenCalledWith(value);
+      expect(r).toEqual(Result.Ok(value));
     });
 
-    expect(p instanceof Promise).toBe(true);
+    it("error", async () => {
+      const value = "error";
 
-    let r = await p;
-    expect(Ok).toHaveBeenCalledWith(value);
-    expect(r).toEqual(Result.Ok(value));
+      let Err = jest.fn(x => x);
+
+      let t = Task.from<void, typeof value>(r => Promise.resolve(r.Err(value)));
+      let r = await t.fork({
+        Ok: console.error,
+        Err,
+      });
+
+      expect(Err).toHaveBeenCalledWith(value);
+      expect(r).toEqual(Result.Err(value));
+    });
   });
 
-  it("Task.fork (error)", async () => {
-    const value = "error";
-
-    let Err = jest.fn(x => x);
-
-    let t = Task.from<void, typeof value>(r => Promise.resolve(r.Err(value)));
-    let r = await t.fork({
-      Ok: console.error,
-      Err,
+  describe("Task.run", async () => {
+    it("success", async () => {
+      const final = "success";
+      expect(await Task.from<string, void>(r => r.Ok(final)).run()).toEqual(
+        Result.Ok(final)
+      );
     });
 
-    expect(Err).toHaveBeenCalledWith(value);
-    expect(r).toEqual(Result.Err(value));
+    it("error", async () => {
+      const final = "error";
+      expect(await Task.from<void, string>(r => r.Err(final)).run()).toEqual(
+        Result.Err(final)
+      );
+    });
   });
 
-  it("task.run (success)", async () => {
-    const final = "success";
-    expect(await Task.from<string, void>(r => r.Ok(final)).run()).toEqual(
-      Result.Ok(final)
-    );
-  });
-
-  it("task.run (error)", async () => {
-    const final = "error";
-    expect(await Task.from<void, string>(r => r.Err(final)).run()).toEqual(
-      Result.Err(final)
-    );
-  });
-
-  it("task.run_sync (success)", async () => {
-    const final = "success";
-    expect(Task.from<string, void>(r => r.Ok(final)).run_sync()).toEqual(
-      Result.Ok(final)
-    );
-  });
-
-  it("task.run_sync (error)", async () => {
-    const final = "error";
-    expect(Task.from<void, string>(r => r.Err(final)).run_sync()).toEqual(
-      Result.Err(final)
-    );
-  });
-
-  it("task.run_sync (no sync callback Error)", async () => {
-    let task_bomb = Task.from<string, void>(async r => {
-      await new Promise(r => setTimeout(r, 10));
-      r.Ok("#boom");
+  describe("Task.run_sync", async () => {
+    it("success", async () => {
+      const final = "success";
+      expect(Task.from<string, void>(r => r.Ok(final)).run_sync()).toEqual(
+        Result.Ok(final)
+      );
     });
 
-    const fn = () => {
-      task_bomb.run_sync();
-    };
+    it("error", async () => {
+      const final = "error";
+      expect(Task.from<void, string>(r => r.Err(final)).run_sync()).toEqual(
+        Result.Err(final)
+      );
+    });
 
-    expect(fn).toThrowErrorMatchingSnapshot();
+    it("no sync callback Error", async () => {
+      let task_bomb = Task.from<string, void>(async r => {
+        await new Promise(r => setTimeout(r, 10));
+        r.Ok("#boom");
+      });
+
+      const fn = () => {
+        task_bomb.run_sync();
+      };
+
+      expect(fn).toThrowErrorMatchingSnapshot();
+    });
   });
 
   it("Task.map", async () => {
