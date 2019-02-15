@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="4.15.0"></a>
+# [4.15.0](https://github.com/alexsasharegan/safe-types/compare/v4.14.0...v4.15.0) (2019-02-15)
+
+
+### Features
+
+* adds Task.retry for retriable tasks ([8ae273b](https://github.com/alexsasharegan/safe-types/commit/8ae273b))
+
+
+
 <a name="4.14.0"></a>
 # [4.14.0](https://github.com/alexsasharegan/safe-types/compare/v4.13.2...v4.14.0) (2019-02-15)
 
