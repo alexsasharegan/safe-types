@@ -1,4 +1,4 @@
-import { Err, None, Ok, Result, Some } from "./index";
+import { Err, None, Ok, Result, Some, Task } from "./index";
 
 describe("Result.Ok", async () => {
   it("should return Result of Ok", async () => {
@@ -56,6 +56,19 @@ describe("Result.err", async () => {
 
   it("should equal Some with Err", async () => {
     expect(Err("Nothing here").err()).toEqual(Some("Nothing here"));
+  });
+});
+
+describe("Result.task", async () => {
+  it("should yield Ok when Ok", async () => {
+    let task = Ok(2).task();
+    expect(task).toBeInstanceOf(Task);
+    expect(await task.run()).toEqual(Ok(2));
+  });
+  it("should yield Err when Err", async () => {
+    let task = Err(2).task();
+    expect(task).toBeInstanceOf(Task);
+    expect(await task.run()).toEqual(Err(2));
   });
 });
 

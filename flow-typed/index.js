@@ -354,6 +354,12 @@ declare export class Result<T, E> {
    */
   err(): Option<E>;
   /**
+   * Converts a result to a Task.
+   * When the Result is Ok, forking the Task yields the Ok value.
+   * When the Result is Err, forking the Task yields the Err value.
+   */
+  task(): Task<T, E>;
+  /**
    * `tap` allows you to do side-effects with the value
    * when `Result` is `Ok<T>`.
    */

@@ -10,6 +10,7 @@ import {
   noop,
 } from "./utils";
 import { ResultVariant } from "./variant";
+import { Task } from "./task";
 
 export type ResultType<OkType, ErrType> = Ok<OkType> | Err<ErrType>;
 
@@ -110,6 +111,18 @@ export class Result<OkType, ErrType> {
     return this.match({
       Ok: Option.None,
       Err: Option.Some,
+    });
+  }
+
+  /**
+   * Converts a result to a Task.
+   * When the Result is Ok, forking the Task yields the Ok value.
+   * When the Result is Err, forking the Task yields the Err value.
+   */
+  public task(): Task<OkType, ErrType> {
+    return this.match({
+      Ok: Task.of_ok,
+      Err: Task.of_err,
     });
   }
 
