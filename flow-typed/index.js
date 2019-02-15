@@ -816,4 +816,8 @@ declare export class Task<T, E> {
    * `of_err` constructs a Task that resolves with an error of the given value.
    */
   static of_err<E>(err: E): Task<any, E>;
+  /**
+   * Wraps a Task in another Task that will retry up to the given limit.
+   */
+  static retry<T, E>(retries: number, task: Task<T, E>): Task<T, E>;
 }

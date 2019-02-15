@@ -400,4 +400,51 @@ describe("Task", async () => {
   it("should toString", async () => {
     expect(String(Task.from(() => {}))).toMatchSnapshot();
   });
+
+  describe("Task.retry", async () => {
+    it("should not allow invariants", async () => {
+      let tt = [0, -1, 1.1, 0.5];
+
+      function doRetry(n: number) {
+        return () => Task.retry(n, Task.of_ok(1));
+      }
+
+      for (let tc of tt) {
+        expect(doRetry(tc)).toThrow();
+      }
+    });
+
+    it("should retry up to n times", async () => {
+      let retries = 3;
+      let err = `always error`;
+      let spy = jest.fn(() => err);
+      let task = Task.from(resolve => resolve.Err(spy()));
+
+      expect(await Task.retry(retries, task).run()).toEqual(Result.Err(err));
+      expect(spy).toHaveBeenCalledTimes(retries);
+    });
+
+    it("should skip unnecessary retries", async () => {
+      let retries = 4;
+      let x = `a value`;
+      let spy = jest.fn(() => x);
+      let i = 0;
+      let task = Task.from(resolve => {
+        if (++i < 2) {
+          return resolve.Err(spy());
+        }
+
+        resolve.Ok(spy());
+      });
+
+      expect(await Task.retry(retries, task).run()).toEqual(Result.Ok(x));
+    });
+
+    it("should not retry on initial success", async () => {
+      let spy = jest.fn(() => true);
+      let task = Task.from(resolve => resolve.Ok(spy()));
+      expect(await Task.retry(10, task).run()).toEqual(Result.Ok(true));
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+  });
 });

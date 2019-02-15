@@ -403,4 +403,31 @@ export class Task<OkType, ErrType> {
   public static of_err<ErrType>(err: ErrType): Task<any, ErrType> {
     return new Task(({ Err }) => Err(err));
   }
+
+  /**
+   * Wraps a Task in another Task that will retry up to the given limit.
+   */
+  public static retry<OkType, ErrType>(
+    retries: number,
+    task: Task<OkType, ErrType>
+  ): Task<OkType, ErrType> {
+    if (retries < 1 || !Number.isInteger(retries)) {
+      throw new RangeError(
+        `Task.retry must use an integer retry number greater than zero`
+      );
+    }
+
+    return new Task<OkType, ErrType>(async ({ Ok, Err }) => {
+      let r: Result<OkType, ErrType>;
+
+      for (let i = 0; i < retries; i++) {
+        r = await task.run();
+        if (r.is_ok()) {
+          break;
+        }
+      }
+
+      r!.match({ Ok, Err });
+    });
+  }
 }
