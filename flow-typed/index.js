@@ -817,7 +817,34 @@ declare export class Task<T, E> {
    */
   static of_err<E>(err: E): Task<any, E>;
   /**
-   * Wraps a Task in another Task that will retry up to the given limit.
+   * Wraps a Task in another Task that will be run until success
+   * up to the given limit of tries.
    */
-  static retry<T, E>(retries: number, task: Task<T, E>): Task<T, E>;
+  static retry<T, E>(tryLimit: number, task: Task<T, E>): Task<T, E>;
+  /**
+   * Wraps a Task in another Task that will be run until success
+   * up to the given limit of tries. After a failed run, exponential backoff
+   * is calculated to wait before the next run. Uses exponential backoff
+   * with equal jitter.
+   */
+  static retryWithBackoff<T, E>(
+    options: RetryWithBackoffOptions,
+    task: Task<T, E>
+  ): Task<T, E>;
+}
+
+declare export interface RetryWithBackoffOptions {
+  /**
+   * Maximum number of runs to perform if Task is not successful.
+   */
+  tryLimit: number;
+  /**
+   * The average amount of backoff
+   * by which to increase waits between retries (milliseconds).
+   */
+  msBackoffStep: number;
+  /**
+   * The maximum wait time between retries (milliseconds).
+   */
+  msBackoffCap: number;
 }

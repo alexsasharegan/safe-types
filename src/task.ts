@@ -405,22 +405,27 @@ export class Task<OkType, ErrType> {
   }
 
   /**
-   * Wraps a Task in another Task that will retry up to the given limit.
+   * Wraps a Task in another Task that will be run until success
+   * up to the given limit of tries.
    */
   public static retry<OkType, ErrType>(
-    retries: number,
+    tryLimit: number,
     task: Task<OkType, ErrType>
   ): Task<OkType, ErrType> {
-    if (retries < 1 || !Number.isInteger(retries)) {
+    if (tryLimit < 1 || !Number.isInteger(tryLimit)) {
       throw new RangeError(
-        `Task.retry must use an integer retry number greater than zero`
+        `Task.retry must use an integer try limit greater than zero`
       );
+    }
+
+    if (tryLimit === 1) {
+      return task;
     }
 
     return new Task<OkType, ErrType>(async ({ Ok, Err }) => {
       let r: Result<OkType, ErrType>;
 
-      for (let i = 0; i < retries; i++) {
+      for (let i = 0; i < tryLimit; i++) {
         r = await task.run();
         if (r.is_ok()) {
           break;
@@ -430,4 +435,67 @@ export class Task<OkType, ErrType> {
       r!.match({ Ok, Err });
     });
   }
+
+  /**
+   * Wraps a Task in another Task that will be run until success
+   * up to the given limit of tries. After a failed run, exponential backoff
+   * is calculated to wait before the next run. Uses exponential backoff
+   * with equal jitter.
+   */
+  public static retryWithBackoff<OkType, ErrType>(
+    options: RetryWithBackoffOptions,
+    task: Task<OkType, ErrType>
+  ): Task<OkType, ErrType> {
+    let { msBackoffCap, tryLimit, msBackoffStep } = options;
+    if (tryLimit < 1 || !Number.isInteger(tryLimit)) {
+      throw new RangeError(
+        `Task.retry must use an integer retry number greater than zero`
+      );
+    }
+
+    if (tryLimit === 1) {
+      return task;
+    }
+
+    function* backoff() {
+      let retries = tryLimit - 1;
+      for (let i = 0; i < retries; i++) {
+        let equalBackoff = Math.min(msBackoffCap, msBackoffStep * 2 ** i) / 2;
+        yield equalBackoff + Math.random() * equalBackoff;
+      }
+    }
+
+    return new Task<OkType, ErrType>(async ({ Ok, Err }) => {
+      let r = await task.run();
+      if (r.is_ok()) {
+        return Ok(r.unwrap());
+      }
+
+      for (let ms of backoff()) {
+        await new Promise(next => setTimeout(next, ms));
+        r = await task.run();
+        if (r.is_ok()) {
+          break;
+        }
+      }
+
+      r.match({ Ok, Err });
+    });
+  }
+}
+
+export interface RetryWithBackoffOptions {
+  /**
+   * Maximum number of runs to perform if Task is not successful.
+   */
+  tryLimit: number;
+  /**
+   * The average amount of backoff
+   * by which to increase waits between retries (milliseconds).
+   */
+  msBackoffStep: number;
+  /**
+   * The maximum wait time between retries (milliseconds).
+   */
+  msBackoffCap: number;
 }

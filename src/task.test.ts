@@ -414,18 +414,18 @@ describe("Task", async () => {
       }
     });
 
-    it("should retry up to n times", async () => {
-      let retries = 3;
+    it("should run up to n times", async () => {
+      let tryLimit = 3;
       let err = `always error`;
       let spy = jest.fn(() => err);
       let task = Task.from(resolve => resolve.Err(spy()));
 
-      expect(await Task.retry(retries, task).run()).toEqual(Result.Err(err));
-      expect(spy).toHaveBeenCalledTimes(retries);
+      expect(await Task.retry(tryLimit, task).run()).toEqual(Result.Err(err));
+      expect(spy).toHaveBeenCalledTimes(tryLimit);
     });
 
     it("should skip unnecessary retries", async () => {
-      let retries = 4;
+      let tryLimit = 4;
       let x = `a value`;
       let spy = jest.fn(() => x);
       let i = 0;
@@ -437,7 +437,7 @@ describe("Task", async () => {
         resolve.Ok(spy());
       });
 
-      expect(await Task.retry(retries, task).run()).toEqual(Result.Ok(x));
+      expect(await Task.retry(tryLimit, task).run()).toEqual(Result.Ok(x));
     });
 
     it("should not retry on initial success", async () => {
@@ -445,6 +445,90 @@ describe("Task", async () => {
       let task = Task.from(resolve => resolve.Ok(spy()));
       expect(await Task.retry(10, task).run()).toEqual(Result.Ok(true));
       expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it("should return the same task when the try limit is 1", async () => {
+      let task = Task.of_ok(1);
+      expect(Task.retry(1, task)).toBe(task);
+    });
+  });
+
+  describe("Task.retryWithBackoff", async () => {
+    let msBackoffCap = 100;
+    let msBackoffStep = 10;
+
+    it("should not allow invariants", async () => {
+      let tt = [0, -1, 1.1, 0.5];
+
+      function doRetry(n: number) {
+        return () =>
+          Task.retryWithBackoff(
+            { msBackoffCap, msBackoffStep, tryLimit: n },
+            Task.of_ok(1)
+          );
+      }
+
+      for (let tc of tt) {
+        expect(doRetry(tc)).toThrow();
+      }
+    });
+
+    it("should run up to n times", async () => {
+      let tryLimit = 3;
+      let err = `always error`;
+      let spy = jest.fn(() => err);
+      let task = Task.from(resolve => resolve.Err(spy()));
+
+      expect(
+        await Task.retryWithBackoff(
+          { tryLimit, msBackoffCap, msBackoffStep },
+          task
+        ).run()
+      ).toEqual(Result.Err(err));
+      expect(spy).toHaveBeenCalledTimes(tryLimit);
+    });
+
+    it("should skip unnecessary retries", async () => {
+      let tryLimit = 4;
+      let x = `a value`;
+      let spy = jest.fn(() => x);
+      let i = 0;
+      let task = Task.from(resolve => {
+        if (++i < 2) {
+          return resolve.Err(spy());
+        }
+
+        resolve.Ok(spy());
+      });
+
+      expect(
+        await Task.retryWithBackoff(
+          { tryLimit, msBackoffCap, msBackoffStep },
+          task
+        ).run()
+      ).toEqual(Result.Ok(x));
+    });
+
+    it("should not retry on initial success", async () => {
+      let spy = jest.fn(() => true);
+      let task = Task.from(resolve => resolve.Ok(spy()));
+      expect(
+        await Task.retryWithBackoff(
+          { msBackoffCap, msBackoffStep, tryLimit: 10 },
+          task
+        ).run()
+      ).toEqual(Result.Ok(true));
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it("should return the same task when the try limit is 1", async () => {
+      let task = Task.of_ok(1);
+      expect(
+        Task.retryWithBackoff(
+          { msBackoffCap, msBackoffStep, tryLimit: 1 },
+          task
+        )
+      ).toBe(task);
     });
   });
 });
