@@ -461,7 +461,9 @@ export class Task<OkType, ErrType> {
       let retries = tryLimit - 1;
       for (let i = 0; i < retries; i++) {
         let equalBackoff = Math.min(msBackoffCap, msBackoffStep * 2 ** i) / 2;
-        yield equalBackoff + Math.random() * equalBackoff;
+        let jitter = Math.random() * equalBackoff;
+
+        yield equalBackoff + jitter;
       }
     }
 

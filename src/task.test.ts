@@ -454,8 +454,8 @@ describe("Task", async () => {
   });
 
   describe("Task.retryWithBackoff", async () => {
-    let msBackoffCap = 100;
-    let msBackoffStep = 10;
+    let msBackoffCap = 50;
+    let msBackoffStep = 5;
 
     it("should not allow invariants", async () => {
       let tt = [0, -1, 1.1, 0.5];
@@ -486,6 +486,77 @@ describe("Task", async () => {
         ).run()
       ).toEqual(Result.Err(err));
       expect(spy).toHaveBeenCalledTimes(tryLimit);
+    });
+
+    it("should wait between tasks", async () => {
+      let tryLimit = 4;
+      let msBackoffCap = 1000;
+      // Larger steps are less flaky. 100ms seems to be the lowest stable value.
+      let msBackoffStep = 100;
+
+      let timeBuf: number[] = [];
+      let retriable = Task.retryWithBackoff(
+        { msBackoffCap, msBackoffStep, tryLimit },
+        new Task<never, number>(resolve => {
+          resolve.Err(timeBuf.push(Date.now()));
+        })
+      );
+
+      await retriable.run();
+      // Ensure all the runs generated time stamps.
+      expect(timeBuf.length).toEqual(tryLimit);
+
+      /**
+       * Exponential backoff means that we will increase our backoff step by 2^i.
+       * If our step is 10, here is what a series of 5 would look like:
+       *
+       * - [0] 10 * 2 ** 0 = 10
+       * - [1] 10 * 2 ** 1 = 20
+       * - [2] 10 * 2 ** 2 = 40
+       * - [3] 10 * 2 ** 3 = 80
+       * - [4] 10 * 2 ** 4 = 160
+       *
+       * Since we're using equal jitter, each step uses the values above,
+       * but divided in half. One half is preserved, while the other half
+       * is multiplied by a random value between 0-1. This means each step
+       * could produce a value in a range:
+       *
+       * - [0] = 5-10
+       * - [1] = 10-20
+       * - [2] = 20-40
+       * - [3] = 40-80
+       * - [4] = 80-160
+       *
+       * The range of each step is bounded by the backoff cap. With this info,
+       * we can test our timestamps to be within this range for our options.
+       */
+
+      let diffs = [];
+      // Calculate the time between each timestamp
+      for (let i = 1; i < timeBuf.length; i++) {
+        diffs.push(Math.abs(timeBuf[i] - timeBuf[i - 1]));
+      }
+
+      // Timers are highly imprecise. Incorporate a margin of error.
+      let margin = 10;
+      for (let [i, diff] of diffs.entries()) {
+        // ensure our time between runs stays properly bounded
+        expect(diff).toBeLessThanOrEqual(msBackoffCap + margin);
+
+        let expBackoff = msBackoffStep * 2 ** i;
+
+        // check our lower bound as long as it's less than our cap
+        if (expBackoff / 2 < msBackoffCap) {
+          // the step should increase by at minimum our lower half exponential backoff
+          expect(diff).toBeGreaterThanOrEqual(expBackoff / 2 - margin);
+        }
+
+        // check our upper bound as long as it's less than our cap
+        if (expBackoff < msBackoffCap) {
+          // the should increase by at maximum our upper half exponential backoff
+          expect(diff).toBeLessThanOrEqual(expBackoff + margin);
+        }
+      }
     });
 
     it("should skip unnecessary retries", async () => {
