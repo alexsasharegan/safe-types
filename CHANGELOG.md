@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [4.16.0](https://github.com/alexsasharegan/safe-types/compare/v4.15.0...v4.16.0) (2019-02-16)
+
+
+### Features
+
+* adds Task.retryWithBackoff ([b8b6bc2](https://github.com/alexsasharegan/safe-types/commit/b8b6bc2))
+
+
+
 <a name="4.15.0"></a>
 # [4.15.0](https://github.com/alexsasharegan/safe-types/compare/v4.14.0...v4.15.0) (2019-02-15)
 
