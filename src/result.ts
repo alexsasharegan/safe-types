@@ -442,6 +442,18 @@ export class Result<OkType, ErrType> {
   }
 
   /**
+   * Returns the Ok type, or throws the raw Err value.
+   */
+  public try(): OkType {
+    return this.match<OkType>({
+      Ok: identity,
+      Err(error) {
+        throw error;
+      },
+    });
+  }
+
+  /**
    * Returns the Err type, or throws an Error with the given message.
    */
   public expect_err(msg: string): ErrType {

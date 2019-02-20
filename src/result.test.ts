@@ -427,6 +427,39 @@ describe("Result.expect", async () => {
   });
 });
 
+describe("Result.try", async () => {
+  it("should not throw with Ok", async () => {
+    expect(Ok(2).try()).toBe(2);
+  });
+
+  it("should throw the raw Err value when Err", async () => {
+    let values: any[] = [
+      "an error string",
+      "",
+      true,
+      false,
+      0,
+      -1,
+      [],
+      {},
+      new Date(),
+      null,
+      undefined,
+      new Error("an error"),
+      Promise.resolve(true),
+      Promise.reject(true),
+    ];
+
+    for (let value of values) {
+      try {
+        Err(value).try();
+      } catch (error) {
+        expect(error).toBe(value);
+      }
+    }
+  });
+});
+
 describe("Result.unwrap_err", async () => {
   it("should throw with Ok", async () => {
     expect(() => Ok(2).unwrap_err()).toThrow(Error);
