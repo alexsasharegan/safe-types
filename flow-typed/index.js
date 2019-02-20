@@ -530,6 +530,10 @@ declare export class Result<T, E> {
    */
   expect(msg: string): T;
   /**
+   * Returns the Ok type, or throws the raw Err value.
+   */
+  try(): T;
+  /**
    * Returns the Err type, or throws an Error with the given message.
    */
   expect_err(msg: string): E;
