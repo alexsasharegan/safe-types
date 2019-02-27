@@ -42,12 +42,12 @@ export class Task<OkType, ErrType> {
   public fork<OkOutput, ErrOutput>(
     resolver: TaskResolver<OkType, ErrType, OkOutput, ErrOutput>
   ): Promise<Result<OkOutput, ErrOutput>> {
-    let { Ok: map_ok, Err: map_err } = resolver;
+    let { Ok: mapOk, Err: mapErr } = resolver;
 
-    return new Promise<Result<OkOutput, ErrOutput>>(r =>
+    return new Promise<Result<OkOutput, ErrOutput>>(resolve =>
       this.executor({
-        Ok: value => r(Result.Ok(map_ok(value))),
-        Err: err => r(Result.Err(map_err(err))),
+        Ok: okValue => resolve(Result.Ok(mapOk(okValue))),
+        Err: errValue => resolve(Result.Err(mapErr(errValue))),
       })
     );
   }
@@ -140,7 +140,7 @@ export class Task<OkType, ErrType> {
   public map<MappedOk>(op: Mapper<OkType, MappedOk>): Task<MappedOk, ErrType> {
     return new Task<MappedOk, ErrType>(({ Ok, Err }) =>
       this.executor({
-        Ok: value => Ok(op(value)),
+        Ok: okValue => Ok(op(okValue)),
         Err,
       })
     );
@@ -156,7 +156,7 @@ export class Task<OkType, ErrType> {
     return new Task<OkType, MappedErr>(({ Ok, Err }) =>
       this.executor({
         Ok,
-        Err: err => Err(op(err)),
+        Err: errValue => Err(op(errValue)),
       })
     );
   }
@@ -170,8 +170,8 @@ export class Task<OkType, ErrType> {
   ): Task<MappedOk, MappedErr> {
     return new Task<MappedOk, MappedErr>(({ Ok, Err }) =>
       this.executor({
-        Ok: value => Ok(bimap.Ok(value)),
-        Err: err => Err(bimap.Err(err)),
+        Ok: okValue => Ok(bimap.Ok(okValue)),
+        Err: errValue => Err(bimap.Err(errValue)),
       })
     );
   }
@@ -215,7 +215,7 @@ export class Task<OkType, ErrType> {
   ): Task<NextOkType, ErrType> {
     return new Task<NextOkType, ErrType>(({ Ok, Err }) =>
       this.executor({
-        Ok: value => op(value).fork({ Ok, Err }),
+        Ok: okValue => op(okValue).fork({ Ok, Err }),
         Err,
       })
     );
@@ -279,7 +279,7 @@ export class Task<OkType, ErrType> {
     return new Task<OkType, NextErrType>(({ Ok, Err }) =>
       this.executor({
         Ok,
-        Err: err => op(err).fork({ Ok, Err }),
+        Err: errValue => op(errValue).fork({ Ok, Err }),
       })
     );
   }
@@ -348,8 +348,8 @@ export class Task<OkType, ErrType> {
   ): Task<OkType[], ErrType> {
     return new Task<OkType[], ErrType>(({ Ok, Err }) => {
       const matcher = {
-        Ok: (value: OkType) => Promise.resolve(value),
-        Err: (error: ErrType) => Promise.reject(error),
+        Ok: (okValue: OkType) => Promise.resolve(okValue),
+        Err: (errValue: ErrType) => Promise.reject(errValue),
       };
       const do_match: (r: Result<OkType, ErrType>) => Promise<OkType> = r =>
         r.match(matcher);
@@ -375,11 +375,11 @@ export class Task<OkType, ErrType> {
       let errs: ErrType[] = [];
 
       let resolver = {
-        Ok(value: OkType) {
-          oks.push(value);
+        Ok(okValue: OkType) {
+          oks.push(okValue);
         },
-        Err(error: ErrType) {
-          errs.push(error);
+        Err(errValue: ErrType) {
+          errs.push(errValue);
         },
       };
 
@@ -393,15 +393,15 @@ export class Task<OkType, ErrType> {
   /**
    * `of_ok` constructs a Task that resolves with a success of the given value.
    */
-  public static of_ok<OkType>(value: OkType): Task<OkType, any> {
-    return new Task(({ Ok }) => Ok(value));
+  public static of_ok<OkType>(okValue: OkType): Task<OkType, any> {
+    return new Task(({ Ok }) => Ok(okValue));
   }
 
   /**
    * `of_err` constructs a Task that resolves with an error of the given value.
    */
-  public static of_err<ErrType>(err: ErrType): Task<any, ErrType> {
-    return new Task(({ Err }) => Err(err));
+  public static of_err<ErrType>(errValue: ErrType): Task<any, ErrType> {
+    return new Task(({ Err }) => Err(errValue));
   }
 
   /**
