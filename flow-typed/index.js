@@ -687,6 +687,11 @@ declare export class Task<T, E> {
    */
   exec(): void;
   /**
+   * `try` runs a task and resolves with a success value,
+   * or throws it's error value.
+   */
+  try(): Promise<T>;
+  /**
    * `tap` allows you to do side-effects with the value
    * when the Task is executed and is on the success path.
    *

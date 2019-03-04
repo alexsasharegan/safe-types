@@ -106,6 +106,14 @@ export class Task<OkType, ErrType> {
   }
 
   /**
+   * `try` runs a task and resolves with a success value,
+   * or throws it's error value.
+   */
+  public try(): Promise<OkType> {
+    return this.run().then(r => r.try());
+  }
+
+  /**
    * `tap` allows you to do side-effects with the value
    * when the Task is executed and is on the success path.
    *

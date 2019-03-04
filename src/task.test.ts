@@ -602,4 +602,16 @@ describe("Task", async () => {
       ).toBe(task);
     });
   });
+
+  describe("Task.try", async () => {
+    it("should resolve when ok", async () => {
+      let t = Task.from(async ({ Ok }) => Ok(1));
+      expect(await t.try()).toEqual(1);
+    });
+
+    it("should throw err value when err", async () => {
+      let t = Task.from(async ({ Err }) => Err(1));
+      await expect(t.try()).rejects.toEqual(1);
+    });
+  });
 });
