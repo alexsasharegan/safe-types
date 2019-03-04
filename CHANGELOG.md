@@ -2,12 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-# [4.17.0](https://github.com/alexsasharegan/safe-types/compare/v4.16.0...v4.17.0) (2019-02-20)
+# [4.18.0](https://github.com/alexsasharegan/safe-types/compare/v4.17.0...v4.18.0) (2019-03-04)
 
 
 ### Features
 
-* adds Result.try to unwrap or throw the raw Err type ([f5eeeb0](https://github.com/alexsasharegan/safe-types/commit/f5eeeb0)), closes [#3](https://github.com/alexsasharegan/safe-types/issues/3)
+* adds a `Task.try` method ([fac3107](https://github.com/alexsasharegan/safe-types/commit/fac3107))
 
 
 
