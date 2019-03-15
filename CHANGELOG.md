@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.18.1](https://github.com/alexsasharegan/safe-types/compare/v4.18.0...v4.18.1) (2019-03-15)
+
+
+### Bug Fixes
+
+* fix flow typing issue ([61b73dc](https://github.com/alexsasharegan/safe-types/commit/61b73dc))
+
+
+
 # [4.18.0](https://github.com/alexsasharegan/safe-types/compare/v4.17.0...v4.18.0) (2019-03-04)
 
 
