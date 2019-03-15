@@ -842,7 +842,7 @@ declare export class Task<T, E> {
   ): Task<T, E>;
 }
 
-declare export interface RetryWithBackoffOptions {
+export interface RetryWithBackoffOptions {
   /**
    * Maximum number of runs to perform if Task is not successful.
    */
