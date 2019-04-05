@@ -1,8 +1,8 @@
-import { Option } from "./option";
+import { Option, Nullable } from "./option";
 import { Result } from "./result";
 
 export function get_at_path(
-  obj: { [key: string]: any },
+  obj: Nullable<{ [key: string]: any }>,
   path: string[]
 ): Option<any> {
   return path.reduce(
@@ -12,7 +12,7 @@ export function get_at_path(
 }
 
 export function has_at_path(
-  obj: { [key: string]: any },
+  obj: Nullable<{ [key: string]: any }>,
   path: string[]
 ): boolean {
   return get_at_path(obj, path).is_some();
