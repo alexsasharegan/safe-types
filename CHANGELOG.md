@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.18.3](https://github.com/alexsasharegan/safe-types/compare/v4.18.2...v4.18.3) (2019-05-23)
+
+
+### Bug Fixes
+
+* Result.await error handling fixes ([ea016b5](https://github.com/alexsasharegan/safe-types/commit/ea016b5))
+
+
+
 ## [4.18.2](https://github.com/alexsasharegan/safe-types/compare/v4.18.1...v4.18.2) (2019-04-05)
 
 
