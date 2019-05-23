@@ -13,16 +13,16 @@ import {
 } from "./index";
 
 describe("Utils", () => {
-  it("is_never", async () => {
+  it("is_never", () => {
     expect(is_never).toThrow();
   });
 
-  it("expect_never", async () => {
+  it("expect_never", () => {
     let err_msg = "I should never exist";
     expect(() => expect_never(<never>0, err_msg)).toThrow(err_msg);
   });
 
-  it("is_void", async () => {
+  it("is_void", () => {
     expect(is_void(null)).toBe(true);
     expect(is_void(undefined)).toBe(true);
 
@@ -33,7 +33,7 @@ describe("Utils", () => {
     expect(is_void(false)).toBe(false);
   });
 
-  it("should safely get nested properties", async () => {
+  it("should safely get nested properties", () => {
     let obj1 = {
       a: { b: { c: { d: { e: { f: { g: { h: { i: { j: "foo" } } } } } } } } },
     };
@@ -48,7 +48,7 @@ describe("Utils", () => {
     expect(has_at_path(obj2, path)).toBe(false);
   });
 
-  it("should convert err or ok values to results", async () => {
+  it("should convert err or ok values to results", () => {
     function nodeStyleSuccess<T>(
       x: T,
       cb: (err: Error | null, value: T) => void

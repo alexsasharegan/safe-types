@@ -1,6 +1,6 @@
 import { Result, Task } from "./index";
 
-describe("Task", async () => {
+describe("Task", () => {
   it("should return Task instance", async () => {
     let t = new Task(() => {});
     expect(t).toBeInstanceOf(Task);
@@ -9,7 +9,7 @@ describe("Task", async () => {
     expect(t).toBeInstanceOf(Task);
   });
 
-  describe("Task.fork", async () => {
+  describe("Task.fork", () => {
     it("success", async () => {
       const value = "success";
 
@@ -44,7 +44,7 @@ describe("Task", async () => {
     });
   });
 
-  describe("Task.run", async () => {
+  describe("Task.run", () => {
     it("success", async () => {
       const final = "success";
       expect(await Task.from<string, void>(r => r.Ok(final)).run()).toEqual(
@@ -60,7 +60,7 @@ describe("Task", async () => {
     });
   });
 
-  describe("Task.run_sync", async () => {
+  describe("Task.run_sync", () => {
     it("success", async () => {
       const final = "success";
       expect(Task.from<string, void>(r => r.Ok(final)).run_sync()).toEqual(
@@ -89,7 +89,7 @@ describe("Task", async () => {
     });
   });
 
-  describe("Task.exec", async () => {
+  describe("Task.exec", () => {
     it("success", async () => {
       let spy = jest.fn();
       let task = new Task<any, any>(r => {
@@ -109,7 +109,7 @@ describe("Task", async () => {
     });
   });
 
-  describe("Side effect mappings", async () => {
+  describe("Side effect mappings", () => {
     it("Task.tap", async () => {
       let task = Task.of_ok(1);
       let spy = jest.fn();
@@ -238,7 +238,7 @@ describe("Task", async () => {
     });
   });
 
-  describe("Side effect Ok tasks", async () => {
+  describe("Side effect Ok tasks", () => {
     it("Task.and_effect", async () => {
       let task = Task.of_ok(1);
       let spy = jest.fn();
@@ -313,7 +313,7 @@ describe("Task", async () => {
       });
   });
 
-  describe("Side effect Err tasks", async () => {
+  describe("Side effect Err tasks", () => {
     it("Task.or_effect", async () => {
       let task = Task.of_err(1);
       let spy = jest.fn();
@@ -401,7 +401,7 @@ describe("Task", async () => {
     expect(String(Task.from(() => {}))).toMatchSnapshot();
   });
 
-  describe("Task.retry", async () => {
+  describe("Task.retry", () => {
     it("should not allow invariants", async () => {
       let tt = [0, -1, 1.1, 0.5];
 
@@ -453,7 +453,7 @@ describe("Task", async () => {
     });
   });
 
-  describe("Task.retryWithBackoff", async () => {
+  describe("Task.retryWithBackoff", () => {
     let msBackoffCap = 50;
     let msBackoffStep = 5;
 
@@ -603,7 +603,7 @@ describe("Task", async () => {
     });
   });
 
-  describe("Task.try", async () => {
+  describe("Task.try", () => {
     it("should resolve when ok", async () => {
       let t = Task.from(async ({ Ok }) => Ok(1));
       expect(await t.try()).toEqual(1);

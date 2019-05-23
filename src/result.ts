@@ -588,14 +588,10 @@ export class Result<OkType, ErrType> {
    * Awaits the Promise and returns a Promised Ok result
    * or a Promised Err result if an Error is thrown.
    */
-  public static async await<OkType, ErrType>(
+  public static await<OkType, ErrType>(
     p: Promise<OkType>
   ): Promise<Result<OkType, ErrType>> {
-    try {
-      return Result.Ok(await p);
-    } catch (e) {
-      return Result.Err(e);
-    }
+    return Promise.resolve(p).then(Result.Ok, Result.Err);
   }
 
   /**
@@ -605,7 +601,11 @@ export class Result<OkType, ErrType> {
   public static await_fn<OkType, ErrType>(
     op: () => Promise<OkType>
   ): Promise<Result<OkType, ErrType>> {
-    return Result.await<OkType, ErrType>(op());
+    try {
+      return Promise.resolve(op()).then(Result.Ok, Result.Err);
+    } catch (error) {
+      return Promise.resolve(Result.Err(error));
+    }
   }
 
   /**
@@ -615,11 +615,7 @@ export class Result<OkType, ErrType> {
   public static async await_all<OkType, ErrType>(
     ps: Array<Promise<OkType>>
   ): Promise<Result<OkType[], ErrType>> {
-    try {
-      return Result.Ok(await Promise.all(ps));
-    } catch (e) {
-      return Result.Err(e);
-    }
+    return Promise.all(ps).then(Result.Ok, Result.Err);
   }
 
   /**
@@ -629,6 +625,10 @@ export class Result<OkType, ErrType> {
   public static await_all_fn<OkType, ErrType>(
     op: () => Array<Promise<OkType>>
   ): Promise<Result<OkType[], ErrType>> {
-    return Result.await_all(op());
+    try {
+      return Promise.all(op()).then(Result.Ok, Result.Err);
+    } catch (error) {
+      return Promise.resolve(Result.Err(error));
+    }
   }
 }
