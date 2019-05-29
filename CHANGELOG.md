@@ -1,6 +1,15 @@
-# Change Log
+# Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### [4.18.4](https://github.com/alexsasharegan/safe-types/compare/v4.18.3...v4.18.4) (2019-05-29)
+
+
+### Bug Fixes
+
+* dep audit for high vulnerability deps ([e0a0a0b](https://github.com/alexsasharegan/safe-types/commit/e0a0a0b))
+
+
 
 ## [4.18.3](https://github.com/alexsasharegan/safe-types/compare/v4.18.2...v4.18.3) (2019-05-23)
 
