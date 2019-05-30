@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.18.5](https://github.com/alexsasharegan/safe-types/compare/v4.18.4...v4.18.5) (2019-05-30)
+
+
+### Bug Fixes
+
+* updates rollup dev dep ([1763a5f](https://github.com/alexsasharegan/safe-types/commit/1763a5f))
+
+
+
 ### [4.18.4](https://github.com/alexsasharegan/safe-types/compare/v4.18.3...v4.18.4) (2019-05-29)
 
 
