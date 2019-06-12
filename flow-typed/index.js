@@ -708,6 +708,11 @@ declare export class Task<T, E> {
    */
   tap_err(fn: (err: E) => any): Task<T, E>;
   /**
+   * `finally` allows you to run a side-effect function
+   * in either Ok/Err cases, but does not receive a value.
+   */
+  finally(fn: () => any): Task<T, E>;
+  /**
    * `map` returns a new Task with the success value mapped according to the
    * map function given. `map` should be a synchronous operation.
    */

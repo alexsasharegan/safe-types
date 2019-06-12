@@ -142,6 +142,25 @@ export class Task<OkType, ErrType> {
   }
 
   /**
+   * `finally` allows you to run a side-effect function
+   * in either Ok/Err cases, but does not receive a value.
+   */
+  public finally(fn: () => any): Task<OkType, ErrType> {
+    return new Task(({ Ok, Err }) =>
+      this.fork({
+        Ok(ok) {
+          fn();
+          Ok(ok);
+        },
+        Err(err) {
+          fn();
+          Err(err);
+        },
+      })
+    );
+  }
+
+  /**
    * `map` returns a new Task with the success value mapped according to the
    * map function given. `map` should be a synchronous operation.
    */

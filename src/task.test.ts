@@ -127,6 +127,17 @@ describe("Task", () => {
       expect(spy).toHaveBeenCalledWith(1);
       expect(r).toEqual(Result.Err(1));
     });
+
+    it("Task.finally", async () => {
+      let spy = jest.fn();
+      await Task.of_err(1)
+        .finally(spy)
+        .run();
+      await Task.of_ok(1)
+        .finally(spy)
+        .run();
+      expect(spy).toHaveBeenCalledTimes(2);
+    });
   });
 
   it("Task.map", async () => {
