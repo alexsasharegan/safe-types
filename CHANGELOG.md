@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.19.0](https://github.com/alexsasharegan/safe-types/compare/v4.18.5...v4.19.0) (2019-06-12)
+
+
+### Features
+
+* adds Task.finally operator ([475ffa5](https://github.com/alexsasharegan/safe-types/commit/475ffa5))
+
+
+
 ### [4.18.5](https://github.com/alexsasharegan/safe-types/compare/v4.18.4...v4.18.5) (2019-05-30)
 
 
