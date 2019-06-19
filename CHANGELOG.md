@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.20.0](https://github.com/alexsasharegan/safe-types/compare/v4.19.0...v4.20.0) (2019-06-19)
+
+
+### Features
+
+* adds `map_to` & `map_err_to` combinators ([74731d5](https://github.com/alexsasharegan/safe-types/commit/74731d5))
+
+
+
 ## [4.19.0](https://github.com/alexsasharegan/safe-types/compare/v4.18.5...v4.19.0) (2019-06-12)
 
 
