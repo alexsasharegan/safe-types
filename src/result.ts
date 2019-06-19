@@ -165,6 +165,13 @@ export class Result<OkType, ErrType> {
   }
 
   /**
+   * `map_to` converts the inner value when Ok.
+   */
+  public map_to<OkVal>(value: OkVal): Result<OkVal, ErrType> {
+    return this.map(() => value);
+  }
+
+  /**
    * Perform a transformation on the possible Err type.
    *
    * ```
@@ -180,6 +187,13 @@ export class Result<OkType, ErrType> {
       Ok: Result.Ok,
       Err: e => Result.Err(op(e)),
     });
+  }
+
+  /**
+   * `map_err_to` converts the inner value when Err.
+   */
+  public map_err_to<ErrVal>(error: ErrVal): Result<OkType, ErrVal> {
+    return this.map_err(() => error);
   }
 
   /**

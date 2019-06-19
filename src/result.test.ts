@@ -124,6 +124,20 @@ describe("Result.map", () => {
   });
 });
 
+describe("Result.map_to", () => {
+  it("should transform the inner ok value", () => {
+    expect(Ok(1).map_to(2)).toEqual(Ok(2));
+    expect(Err(1).map_to(2)).not.toEqual(Ok(2));
+  });
+});
+
+describe("Result.map_err_to", () => {
+  it("should transform the inner err value", () => {
+    expect(Err(1).map_err_to(2)).toEqual(Err(2));
+    expect(Ok(1).map_err_to(2)).not.toEqual(Err(2));
+  });
+});
+
 describe("Result.map_err", () => {
   it("should not transform with Ok", () => {
     let x = Ok(2);

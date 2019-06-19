@@ -174,6 +174,14 @@ export class Task<OkType, ErrType> {
   }
 
   /**
+   * `map_to` returns a new Task with the success value mapped to the static
+   * value given.
+   */
+  public map_to<OkValue>(value: OkValue): Task<OkValue, ErrType> {
+    return this.map(() => value);
+  }
+
+  /**
    * `map_err` returns a new Task with the error value mapped according to the
    * map function given. `map` should be a synchronous operation.
    */
@@ -186,6 +194,14 @@ export class Task<OkType, ErrType> {
         Err: errValue => Err(op(errValue)),
       })
     );
+  }
+
+  /**
+   * `map_err_to` returns a new Task with the success value mapped to the static
+   * value given.
+   */
+  public map_err_to<ErrValue>(error: ErrValue): Task<OkType, ErrValue> {
+    return this.map_err(() => error);
   }
 
   /**

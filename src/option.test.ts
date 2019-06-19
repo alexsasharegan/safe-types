@@ -148,6 +148,13 @@ describe("Option.map", () => {
   });
 });
 
+describe("Option.map_to", () => {
+  it("should transform the inner value when Some", () => {
+    expect(Some(1).map_to(2)).toEqual(Some(2));
+    expect(None().map_to(2)).not.toEqual(Some(2));
+  });
+});
+
 describe("Option.map_or", () => {
   it("should use mapped value with Some", () => {
     let x = 10;

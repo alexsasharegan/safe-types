@@ -239,6 +239,13 @@ export class Option<T> {
   }
 
   /**
+   * `map_to` transforms the inner value when Some.
+   */
+  public map_to<U>(value: U): Option<U> {
+    return this.map(() => value);
+  }
+
+  /**
    * Safely transform the wrapped Some value from `T` => `U`
    * and return the transformed value or a default if wrapped value is None.
    */

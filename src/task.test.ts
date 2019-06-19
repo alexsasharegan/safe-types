@@ -156,6 +156,14 @@ describe("Task", () => {
     expect(never).not.toHaveBeenCalled();
   });
 
+  it("Task.map_to", async () => {
+    let ok = Task.of_ok(1);
+    let err = Task.of_err(1);
+    let mapTo = 2;
+    expect(await ok.map_to(mapTo).run()).toEqual(Result.Ok(mapTo));
+    expect(await err.map_to(mapTo).run()).not.toEqual(Result.Ok(mapTo));
+  });
+
   it("Task.map_err", async () => {
     const a = "a test";
     let t = Task.from<void, string>(r => r.Err(a)).map_err(s => new Error(s));
@@ -170,6 +178,14 @@ describe("Task", () => {
     });
 
     expect(never).not.toHaveBeenCalled();
+  });
+
+  it("Task.map_err_to", async () => {
+    let ok = Task.of_ok(1);
+    let err = Task.of_err(1);
+    let mapTo = 2;
+    expect(await err.map_err_to(mapTo).run()).toEqual(Result.Err(mapTo));
+    expect(await ok.map_err_to(mapTo).run()).not.toEqual(Result.Err(mapTo));
   });
 
   it("Task.map_both", async () => {

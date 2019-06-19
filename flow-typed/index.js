@@ -88,6 +88,10 @@ declare export class Option<T> {
    */
   map<U>(fn: Mapper<T, U>): Option<U>;
   /**
+   * `map_to` transforms the inner value when Some.
+   */
+  map_to<U>(value: U): Option<U>;
+  /**
    * Safely transform the wrapped Some value from `T` => `U`
    * and return the transformed value or a default if wrapped value is None.
    */
@@ -380,6 +384,10 @@ declare export class Result<T, E> {
    */
   map<U>(op: Mapper<T, U>): Result<U, E>;
   /**
+   * `map_to` converts the inner value when Ok.
+   */
+  map_to<U>(value: U): Result<U, E>;
+  /**
    * Perform a transformation on the possible Err type.
    *
    * ```
@@ -389,6 +397,10 @@ declare export class Result<T, E> {
    * ```
    */
   map_err<F>(op: Mapper<E, F>): Result<T, F>;
+  /**
+   * `map_err_to` converts the inner value when Err.
+   */
+  map_err_to<F>(error: F): Result<T, F>;
   /**
    * Perform transformations on both of the possible types.
    *
@@ -718,10 +730,20 @@ declare export class Task<T, E> {
    */
   map<U>(op: Mapper<T, U>): Task<U, E>;
   /**
+   * `map_to` returns a new Task with the success value mapped to the static
+   * value given.
+   */
+  map_to<U>(value: U): Task<U, E>;
+  /**
    * `map_err` returns a new Task with the error value mapped according to the
    * map function given. `map` should be a synchronous operation.
    */
   map_err<F>(op: Mapper<E, F>): Task<T, F>;
+  /**
+   * `map_err_to` returns a new Task with the success value mapped to the static
+   * value given.
+   */
+  map_err_to<F>(error: F): Task<T, F>;
   /**
    * `map_both` returns a new Task that applies the map functions to either the
    * success case or the error case.
