@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.21.0](https://github.com/alexsasharegan/safe-types/compare/v4.20.0...v4.21.0) (2019-08-19)
+
+
+### Features
+
+* **option:** adds 2 Option helpers ([d559c37](https://github.com/alexsasharegan/safe-types/commit/d559c37))
+* **task:** adds 2 Task static helpers ([bb8a29b](https://github.com/alexsasharegan/safe-types/commit/bb8a29b))
+
 ## [4.20.0](https://github.com/alexsasharegan/safe-types/compare/v4.19.0...v4.20.0) (2019-06-19)
 
 
