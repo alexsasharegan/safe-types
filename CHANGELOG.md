@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.21.1](https://github.com/alexsasharegan/safe-types/compare/v4.21.0...v4.21.1) (2019-08-19)
+
+
+### Bug Fixes
+
+* **task:** adds flow types for new task helpers ([c9ea084](https://github.com/alexsasharegan/safe-types/commit/c9ea084))
+
 ## [4.21.0](https://github.com/alexsasharegan/safe-types/compare/v4.20.0...v4.21.0) (2019-08-19)
 
 
