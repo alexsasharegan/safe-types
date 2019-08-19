@@ -376,6 +376,26 @@ export class Option<T> {
   }
 
   /**
+   * Unwraps the optional value, returning `null` when `None`.
+   */
+  public or_null(): null | T {
+    return this.match({
+      None: () => null,
+      Some: identity,
+    });
+  }
+
+  /**
+   * Unwraps the optional value, returning `undefined` when `None`.
+   */
+  public or_void(): undefined | T {
+    return this.match({
+      None: () => undefined,
+      Some: identity,
+    });
+  }
+
+  /**
    * `or_await` returns the Option wrapped in a Promise if it contains a value,
    * or else returns the given promised Option.
    */

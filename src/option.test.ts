@@ -606,3 +606,17 @@ describe("Option.toString", () => {
     expect(Some([1, 2, 3]).toString()).toMatchSnapshot("toString");
   });
 });
+
+describe("Option.or_null", () => {
+  it("with None", () => {
+    expect(None().or_null()).toBe(null);
+    expect(Some(1).or_null()).toBe(1);
+  });
+});
+
+describe("Option.or_void", () => {
+  it("with None", () => {
+    expect(None().or_void()).toBe(undefined);
+    expect(Some(1).or_void()).toBe(1);
+  });
+});

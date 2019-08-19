@@ -215,6 +215,14 @@ declare export class Option<T> {
    */
   or(optb: Option<T>): Option<T>;
   /**
+   * Unwraps the optional value, returning `null` when `None`.
+   */
+  or_null(): null | T;
+  /**
+   * Unwraps the optional value, returning `undefined` when `None`.
+   */
+  or_void(): void | T;
+  /**
    * Returns the option if it contains a value, otherwise calls `f` and
    * returns the result.
    *
