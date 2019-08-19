@@ -405,15 +405,64 @@ export class Task<OkType, ErrType> {
   }
 
   /**
+   * Takes any number of tasks and returns a new Task that will run all tasks
+   * with the specified concurrency.
+   * The first task to fail will trigger the rest to abort.
+   */
+  public static all_concurrent<OkType, ErrType>(
+    options: { concurrency: number },
+    tasks: Task<OkType, ErrType>[]
+  ): Task<OkType[], ErrType> {
+    return new Task<OkType[], ErrType>(({ Ok, Err }) => {
+      let { concurrency } = options;
+      let results: OkType[] = new Array(tasks.length);
+
+      let completed = 0;
+      let started = 0;
+      let running = 0;
+      let error = 0;
+
+      replenish();
+
+      function worker(index: number) {
+        tasks[index]
+          .tap(ok => {
+            running--;
+            completed++;
+            results[index] = ok;
+            replenish();
+          })
+          .tap_err(err => {
+            Err(err);
+            error++;
+          })
+          .exec();
+      }
+
+      function replenish() {
+        if (completed >= tasks.length) {
+          return Ok(results);
+        }
+
+        while (running < concurrency && started < tasks.length && error === 0) {
+          running++;
+          started++;
+          worker(started - 1);
+        }
+      }
+    });
+  }
+
+  /**
    * `collect` returns a new Task that will run an array of Tasks concurrently,
    * collecting all resolved values in a tuple of `[T[], E[]]`.
    *
-   * Always resolves Ok.
+   * **NOTE:** Order is not preserved. Always resolves `Ok`.
    */
   public static collect<OkType, ErrType>(
     tasks: Task<OkType, ErrType>[]
-  ): Task<[OkType[], ErrType[]], any> {
-    return new Task<[OkType[], ErrType[]], void>(async ({ Ok }) => {
+  ): Task<[OkType[], ErrType[]], never> {
+    return new Task<[OkType[], ErrType[]], never>(async ({ Ok }) => {
       let oks: OkType[] = [];
       let errs: ErrType[] = [];
 
@@ -430,6 +479,58 @@ export class Task<OkType, ErrType> {
         t.fork(resolver);
 
       Promise.all(tasks.map(run_task)).then(() => Ok([oks, errs]));
+    });
+  }
+
+  /**
+   * `collect_concurrent` returns a new Task that will run an array of Tasks
+   * with the specified concurrency,
+   * collecting all resolved values in a tuple of `[T[], E[]]`.
+   *
+   * **NOTE:** Order is not preserved. Always resolves `Ok`.
+   */
+  public static collect_concurrent<OkType, ErrType>(
+    options: { concurrency: number },
+    tasks: Task<OkType, ErrType>[]
+  ): Task<[OkType[], ErrType[]], never> {
+    return new Task(({ Ok }) => {
+      let { concurrency } = options;
+      let successes: OkType[] = [];
+      let errors: ErrType[] = [];
+      let succeed = (ok: OkType) => {
+        successes.push(ok);
+      };
+      let fail = (err: ErrType) => {
+        errors.push(err);
+      };
+
+      let completed = 0;
+      let started = 0;
+      let running = 0;
+
+      replenish();
+
+      function worker(t: Task<OkType, ErrType>) {
+        t.map_both({ Ok: succeed, Err: fail })
+          .finally(() => {
+            running--;
+            completed++;
+            replenish();
+          })
+          .exec();
+      }
+
+      function replenish() {
+        if (completed >= tasks.length) {
+          return Ok([successes, errors]);
+        }
+
+        while (running < concurrency && started < tasks.length) {
+          running++;
+          started++;
+          worker(tasks[started - 1]);
+        }
+      }
     });
   }
 

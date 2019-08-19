@@ -641,4 +641,94 @@ describe("Task", () => {
       await expect(t.try()).rejects.toEqual(1);
     });
   });
+
+  describe("Task.all_concurrent", () => {
+    it("should not exceed concurrency", async () => {
+      let running = 0;
+      let max = 0;
+      let concurrency = 4;
+      let duration = 100;
+      let length = 32;
+      let numbers = Array.from({ length }).map((_, i) => i);
+
+      let tasks = numbers.map(index =>
+        new Task<number, never>(({ Ok }) => {
+          running++;
+          max = Math.max(max, running);
+          setTimeout(() => Ok(index), duration);
+        }).finally(() => {
+          running--;
+        })
+      );
+
+      let start = Date.now();
+      let results = await Task.all_concurrent({ concurrency }, tasks).try();
+      let time = Date.now() - start;
+
+      expect(results).toEqual(numbers);
+      expect(running).toBe(0);
+      expect(max).toBe(concurrency);
+      expect(time).toBeGreaterThanOrEqual((length / concurrency) * duration);
+      expect(time).toBeLessThanOrEqual(
+        (length / concurrency) * duration + duration
+      );
+    });
+
+    it("should fail when 1 task fails", async () => {
+      let length = 32;
+      let numbers = Array.from({ length }).map((_, i) => i + 1);
+
+      let t1 = numbers.map(i => (i == 32 ? Task.of_err(i) : Task.of_ok(i)));
+      let t2 = numbers.map(i => (i == 1 ? Task.of_err(i) : Task.of_ok(i)));
+      let t3 = numbers.map(i => (i == 17 ? Task.of_err(i) : Task.of_ok(i)));
+
+      let r1 = await Task.all_concurrent({ concurrency: 4 }, t1).run();
+      expect(r1).toEqual(Result.Err(32));
+
+      let r2 = await Task.all_concurrent({ concurrency: 4 }, t2).run();
+      expect(r2).toEqual(Result.Err(1));
+
+      let r3 = await Task.all_concurrent({ concurrency: 4 }, t3).run();
+      expect(r3).toEqual(Result.Err(17));
+    });
+  });
+
+  describe("Task.collect_concurrent", () => {
+    it("should not exceed concurrency", async () => {
+      let running = 0;
+      let max = 0;
+      let concurrency = 4;
+      let duration = 100;
+      let length = 32;
+      let numbers = Array.from({ length }).map((_, i) => i);
+
+      let tasks = numbers.map(index =>
+        new Task<number, number>(({ Ok, Err }) => {
+          running++;
+          max = Math.max(max, running);
+          setTimeout(() => {
+            index % 2 === 0 ? Ok(index) : Err(index);
+          }, duration);
+        }).finally(() => {
+          running--;
+        })
+      );
+
+      let start = Date.now();
+      let [oks, errs] = await Task.collect_concurrent(
+        { concurrency },
+        tasks
+      ).try();
+      let time = Date.now() - start;
+
+      expect(oks.length).toEqual(length / 2);
+      expect(errs.length).toEqual(length / 2);
+      expect(running).toBe(0);
+      expect(max).toBe(concurrency);
+      expect(time).toBeGreaterThanOrEqual((length / concurrency) * duration);
+      expect(time).toBeLessThanOrEqual(
+        (length / concurrency) * duration + duration
+      );
+    });
+  });
 });
