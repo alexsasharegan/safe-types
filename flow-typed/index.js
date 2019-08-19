@@ -839,12 +839,32 @@ declare export class Task<T, E> {
    */
   static all<T, E>(tasks: Task<T, E>[]): Task<T[], E>;
   /**
+   * Takes any number of tasks and returns a new Task that will run all tasks
+   * with the specified concurrency.
+   * The first task to fail will trigger the rest to abort.
+   */
+  static all_concurrent<T, E>(
+    options: { concurrency: number },
+    tasks: Task<T, E>[]
+  ): Task<T[], E>;
+  /**
    * `collect` returns a new Task that will run an array of Tasks concurrently,
    * collecting all resolved values in a tuple of `[T[], E[]]`.
    *
    * Always resolves Ok.
    */
   static collect<T, E>(tasks: Task<T, E>[]): Task<[T[], E[]], any>;
+  /**
+   * `collect_concurrent` returns a new Task that will run an array of Tasks
+   * with the specified concurrency,
+   * collecting all resolved values in a tuple of `[T[], E[]]`.
+   *
+   * **NOTE:** Order is not preserved. Always resolves `Ok`.
+   */
+  static collect_concurrent<T, E>(
+    options: { concurrency: number },
+    tasks: Task<T, E>[]
+  ): Task<[T[], E[]], empty>;
   /**
    * Construct a new Task by passing a function that performs the Task operation
    * itself. The function receives a `TaskResolver` object as it's first
