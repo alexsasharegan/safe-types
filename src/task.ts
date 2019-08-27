@@ -32,7 +32,7 @@ export class Task<OkType, ErrType> {
    * argument. One of the resolver methods must be called or the Task will never
    * complete.
    */
-  constructor(private executor: TaskExecutorFunc<OkType, ErrType>) {}
+  constructor(public executor: TaskExecutorFunc<OkType, ErrType>) {}
 
   /**
    * `fork` begins execution of the Task and returns a Promise resolving with a

@@ -671,7 +671,7 @@ declare type TaskExecutorFunc<T, E> = (
  * or error value types `T` or `E` respectively.
  */
 declare export class Task<T, E> {
-  +executor: TaskExecutorFunc<T, E>;
+  executor: TaskExecutorFunc<T, E>;
   /**
    * Construct a new Task by passing a function that performs the Task operation
    * itself. The function receives a `TaskResolver` object as it's first
