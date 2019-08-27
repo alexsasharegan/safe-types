@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.23.0](https://github.com/alexsasharegan/safe-types/compare/v4.22.0...v4.23.0) (2019-08-27)
+
+
+### Features
+
+* **Task:** reduces Promise allocation ([43fd50b](https://github.com/alexsasharegan/safe-types/commit/43fd50b))
+
 ## [4.22.0](https://github.com/alexsasharegan/safe-types/compare/v4.21.1...v4.22.0) (2019-08-27)
 
 
