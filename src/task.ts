@@ -110,7 +110,9 @@ export class Task<OkType, ErrType> {
    * or throws it's error value.
    */
   public try(): Promise<OkType> {
-    return this.run().then(r => r.try());
+    return new Promise((Ok, Err) => {
+      this.executor({ Ok, Err });
+    });
   }
 
   /**
@@ -147,7 +149,7 @@ export class Task<OkType, ErrType> {
    */
   public finally(fn: () => any): Task<OkType, ErrType> {
     return new Task(({ Ok, Err }) =>
-      this.fork({
+      this.executor({
         Ok(ok) {
           fn();
           Ok(ok);
@@ -229,7 +231,7 @@ export class Task<OkType, ErrType> {
   ): Task<NextOkType, ErrType> {
     return new Task<NextOkType, ErrType>(({ Ok, Err }) =>
       this.executor({
-        Ok: () => task_b.fork({ Ok, Err }),
+        Ok: () => task_b.executor({ Ok, Err }),
         Err,
       })
     );
@@ -258,7 +260,7 @@ export class Task<OkType, ErrType> {
   ): Task<NextOkType, ErrType> {
     return new Task<NextOkType, ErrType>(({ Ok, Err }) =>
       this.executor({
-        Ok: okValue => op(okValue).fork({ Ok, Err }),
+        Ok: okValue => op(okValue).executor({ Ok, Err }),
         Err,
       })
     );
@@ -293,7 +295,7 @@ export class Task<OkType, ErrType> {
     return new Task<OkType, NextErrType>(({ Ok, Err }) =>
       this.executor({
         Ok,
-        Err: () => task_b.fork({ Ok, Err }),
+        Err: () => task_b.executor({ Ok, Err }),
       })
     );
   }
@@ -322,7 +324,7 @@ export class Task<OkType, ErrType> {
     return new Task<OkType, NextErrType>(({ Ok, Err }) =>
       this.executor({
         Ok,
-        Err: errValue => op(errValue).fork({ Ok, Err }),
+        Err: errValue => op(errValue).executor({ Ok, Err }),
       })
     );
   }
@@ -420,9 +422,21 @@ export class Task<OkType, ErrType> {
       let completed = 0;
       let started = 0;
       let running = 0;
-      let error = 0;
+      let didError = false;
 
       replenish();
+
+      function replenish() {
+        if (completed >= tasks.length) {
+          return Ok(results);
+        }
+
+        while (running < concurrency && started < tasks.length && !didError) {
+          running++;
+          started++;
+          worker(started - 1);
+        }
+      }
 
       function worker(index: number) {
         tasks[index]
@@ -433,22 +447,10 @@ export class Task<OkType, ErrType> {
             replenish();
           })
           .tap_err(err => {
+            didError = true;
             Err(err);
-            error++;
           })
           .exec();
-      }
-
-      function replenish() {
-        if (completed >= tasks.length) {
-          return Ok(results);
-        }
-
-        while (running < concurrency && started < tasks.length && error === 0) {
-          running++;
-          started++;
-          worker(started - 1);
-        }
       }
     });
   }
@@ -463,22 +465,30 @@ export class Task<OkType, ErrType> {
     tasks: Task<OkType, ErrType>[]
   ): Task<[OkType[], ErrType[]], never> {
     return new Task<[OkType[], ErrType[]], never>(async ({ Ok }) => {
+      let running = tasks.length;
       let oks: OkType[] = [];
       let errs: ErrType[] = [];
 
       let resolver = {
         Ok(okValue: OkType) {
           oks.push(okValue);
+          running--;
+          if (running === 0) {
+            Ok([oks, errs]);
+          }
         },
         Err(errValue: ErrType) {
           errs.push(errValue);
+          running--;
+          if (running === 0) {
+            Ok([oks, errs]);
+          }
         },
       };
 
-      const run_task: (task: Task<OkType, ErrType>) => Promise<any> = t =>
-        t.fork(resolver);
-
-      Promise.all(tasks.map(run_task)).then(() => Ok([oks, errs]));
+      for (let t of tasks) {
+        t.executor(resolver);
+      }
     });
   }
 
@@ -497,28 +507,27 @@ export class Task<OkType, ErrType> {
       let { concurrency } = options;
       let successes: OkType[] = [];
       let errors: ErrType[] = [];
-      let succeed = (ok: OkType) => {
-        successes.push(ok);
-      };
-      let fail = (err: ErrType) => {
-        errors.push(err);
-      };
 
       let completed = 0;
       let started = 0;
       let running = 0;
 
-      replenish();
+      let resolver: TaskResolver<OkType, ErrType, void, void> = {
+        Ok(okValue) {
+          successes.push(okValue);
+          running--;
+          completed++;
+          replenish();
+        },
+        Err(errValue) {
+          errors.push(errValue);
+          running--;
+          completed++;
+          replenish();
+        },
+      };
 
-      function worker(t: Task<OkType, ErrType>) {
-        t.map_both({ Ok: succeed, Err: fail })
-          .finally(() => {
-            running--;
-            completed++;
-            replenish();
-          })
-          .exec();
-      }
+      replenish();
 
       function replenish() {
         if (completed >= tasks.length) {
@@ -530,6 +539,10 @@ export class Task<OkType, ErrType> {
           started++;
           worker(tasks[started - 1]);
         }
+      }
+
+      function worker(t: Task<OkType, ErrType>) {
+        t.executor(resolver);
       }
     });
   }
