@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.22.0](https://github.com/alexsasharegan/safe-types/compare/v4.21.1...v4.22.0) (2019-08-27)
+
+
+### Features
+
+* make the task.executor public ([bb6614a](https://github.com/alexsasharegan/safe-types/commit/bb6614a))
+
 ### [4.21.1](https://github.com/alexsasharegan/safe-types/compare/v4.21.0...v4.21.1) (2019-08-19)
 
 
