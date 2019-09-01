@@ -712,6 +712,13 @@ declare export class Task<T, E> {
    */
   try(): Promise<T>;
   /**
+   * Conforms to the Promise A+ spec.
+   */
+  then<TResult1 = T, TResult2 = empty>(
+    onfulfilled?: ?((value: T) => TResult1 | Promise<TResult1>),
+    onrejected?: ?((reason: any) => TResult2 | Promise<TResult2>)
+  ): Promise<TResult1 | TResult2>;
+  /**
    * `tap` allows you to do side-effects with the value
    * when the Task is executed and is on the success path.
    *
