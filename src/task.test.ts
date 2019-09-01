@@ -381,6 +381,9 @@ describe("Task", () => {
     r = await Task.all(Array.from({ length: 10 }, task_mapper)).run();
     expect(r.is_err()).toBe(true);
     expect(r.unwrap_err()).toBeGreaterThan(5);
+
+    // Test base empty case
+    expect(await Task.all([]).try()).toEqual([]);
   });
 
   it("Task.collect", async () => {
@@ -400,6 +403,8 @@ describe("Task", () => {
     r = await Task.collect(Array.from({ length: 10 }, task_mapper)).run();
     expect(r.is_err()).toBe(false);
     expect(r.unwrap()).toEqual([[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]]);
+    // Test base empty case
+    expect(await Task.collect([]).try()).toEqual([[], []]);
   });
 
   it("Task.of_ok", async () => {
@@ -691,6 +696,11 @@ describe("Task", () => {
       let r3 = await Task.all_concurrent({ concurrency: 4 }, t3).run();
       expect(r3).toEqual(Result.Err(17));
     });
+
+    it("should work with an empty array", async () => {
+      let task = Task.all_concurrent({ concurrency: 12 }, []);
+      expect(await task.try()).toEqual([]);
+    });
   });
 
   describe("Task.collect_concurrent", () => {
@@ -729,6 +739,11 @@ describe("Task", () => {
       expect(time).toBeLessThanOrEqual(
         (length / concurrency) * duration + duration
       );
+    });
+
+    it("should resolve with an empty array", async () => {
+      let task = Task.collect_concurrent({ concurrency: 12 }, []);
+      expect(await task.try()).toEqual([[], []]);
     });
   });
 });

@@ -469,6 +469,10 @@ export class Task<OkType, ErrType> {
       let oks: OkType[] = [];
       let errs: ErrType[] = [];
 
+      if (running === 0) {
+        Ok([oks, errs]);
+      }
+
       let resolver = {
         Ok(okValue: OkType) {
           oks.push(okValue);
