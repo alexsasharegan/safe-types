@@ -408,17 +408,18 @@ export class Task<OkType, ErrType> {
     tasks: Task<OkType, ErrType>[]
   ): Task<OkType[], ErrType> {
     return new Task<OkType[], ErrType>(({ Ok, Err }) => {
-      const matcher = {
-        Ok: (okValue: OkType) => Promise.resolve(okValue),
-        Err: (errValue: ErrType) => Promise.reject(errValue),
-      };
-      const do_match: (r: Result<OkType, ErrType>) => Promise<OkType> = r =>
-        r.match(matcher);
-      const run_task = (t: Task<OkType, ErrType>) => t.run().then(do_match);
-
-      Promise.all(tasks.map(run_task))
+      Promise.all(tasks.map(task_all_executor))
         .then(Ok)
         .catch(Err);
+
+      function task_all_executor(t: Task<OkType, ErrType>) {
+        return new Promise<OkType>((resolve, reject) =>
+          t.executor({
+            Ok: resolve,
+            Err: reject,
+          })
+        );
+      }
     });
   }
 
