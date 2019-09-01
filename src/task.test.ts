@@ -647,6 +647,24 @@ describe("Task", () => {
     });
   });
 
+  describe("Task.then (Promise A+)", () => {
+    it("should be coercible to a Promise", async () => {
+      let t1: Task<1, any> = Task.of_ok(1);
+      expect(await t1).toBe(1);
+
+      let t2: Task<any, 1> = Task.of_err(1);
+      await expect(t2).rejects.toBe(1);
+    });
+
+    it("should chain .then", async () => {
+      let t1: Task<1, any> = Task.of_ok(1);
+
+      expect(await t1.then(x => x + 1)).toBe(2);
+      expect(await t1.then(x => `${x}`)).toBe("1");
+      expect(await t1.then(x => `${x}`)).not.toBe(1);
+    });
+  });
+
   describe("Task.all_concurrent", () => {
     it("should not exceed concurrency", async () => {
       let running = 0;

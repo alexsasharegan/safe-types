@@ -64,6 +64,22 @@ export class Task<OkType, ErrType> {
   }
 
   /**
+   * Conforms to the Promise A+ spec.
+   */
+  public then<TResult1 = OkType, TResult2 = never>(
+    onfulfilled?:
+      | ((value: OkType) => TResult1 | PromiseLike<TResult1>)
+      | undefined
+      | null,
+    onrejected?:
+      | ((reason: any) => TResult2 | PromiseLike<TResult2>)
+      | undefined
+      | null
+  ): Promise<TResult1 | TResult2> {
+    return this.try().then(onfulfilled, onrejected);
+  }
+
+  /**
    * `run_sync` executes the Task synchronously and returns a `Result` that
    * contains the success or error value of the Task.
    *
