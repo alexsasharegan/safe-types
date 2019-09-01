@@ -658,10 +658,21 @@ describe("Task", () => {
 
     it("should chain .then", async () => {
       let t1: Task<1, any> = Task.of_ok(1);
+      let t2: Task<any, 1> = Task.of_err(1);
 
       expect(await t1.then(x => x + 1)).toBe(2);
-      expect(await t1.then(x => `${x}`)).toBe("1");
-      expect(await t1.then(x => `${x}`)).not.toBe(1);
+
+      let success = jest.fn();
+      let fail = jest.fn();
+
+      await t1.then(success, fail);
+      expect(success).toHaveBeenCalledWith(1);
+
+      await t2.then(success, fail);
+      expect(fail).toHaveBeenCalledWith(1);
+
+      expect(success).toHaveBeenCalledTimes(1);
+      expect(fail).toHaveBeenCalledTimes(1);
     });
   });
 
