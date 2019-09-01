@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.24.0](https://github.com/alexsasharegan/safe-types/compare/v4.23.1...v4.24.0) (2019-09-01)
+
+
+### Features
+
+* **flow:** adds Task#then flow types ([75079a0](https://github.com/alexsasharegan/safe-types/commit/75079a0))
+* **task:** makes Task conform to Promise A+ spec ([c8a07a6](https://github.com/alexsasharegan/safe-types/commit/c8a07a6))
+* **task:** simplified Task.all implementation ([3ea0b13](https://github.com/alexsasharegan/safe-types/commit/3ea0b13))
+
 ### [4.23.1](https://github.com/alexsasharegan/safe-types/compare/v4.23.0...v4.23.1) (2019-09-01)
 
 
