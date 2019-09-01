@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.23.1](https://github.com/alexsasharegan/safe-types/compare/v4.23.0...v4.23.1) (2019-09-01)
+
+
+### Bug Fixes
+
+* **task:** fix empty list task resolve ([27db46d](https://github.com/alexsasharegan/safe-types/commit/27db46d))
+
 ## [4.23.0](https://github.com/alexsasharegan/safe-types/compare/v4.22.0...v4.23.0) (2019-08-27)
 
 
