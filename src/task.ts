@@ -25,7 +25,7 @@ export type TaskExecutorFunc<OkType, ErrType> = (
  * `Task<T, E>` represents a time-based operation that can resolve with success
  * or error value types `T` or `E` respectively.
  */
-export class Task<OkType, ErrType> {
+export class Task<OkType, ErrType> implements PromiseLike<OkType> {
   /**
    * Construct a new Task by passing a function that performs the Task operation
    * itself. The function receives a `TaskResolver` object as it's first
