@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.25.0](https://github.com/alexsasharegan/safe-types/compare/v4.24.0...v4.25.0) (2019-09-12)
+
+
+### Features
+
+* **Option:** adds Option#is_eq to compare 2 optional types ([8989733](https://github.com/alexsasharegan/safe-types/commit/8989733))
+* **task:** marks Task as implementing PromiseLike<T> ([d890139](https://github.com/alexsasharegan/safe-types/commit/d890139))
+
 ## [4.24.0](https://github.com/alexsasharegan/safe-types/compare/v4.23.1...v4.24.0) (2019-09-01)
 
 
