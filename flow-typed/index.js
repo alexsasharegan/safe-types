@@ -277,6 +277,28 @@ declare export class Option<T> {
    */
   into_result_err(): Result<void, T>;
   /**
+   * Helper to compare 2 optional types.
+   *
+   * The compare function defaults to
+   * `(a, b) => a === b`.
+   *
+   * ```rust
+   * match (this, option) => {
+   *   (None, None) => true,
+   *   (Some(a), Some(b)) => compare(a, b),
+   *   _ => false
+   * }
+   * ```
+   *
+   * **Abstract Truth Table**
+   *
+   * - `None && None = true`
+   * - `Some<T> && None = false`
+   * - `None && Some<U> = false`
+   * - `Some<T> && Some<U> = compare(T, U)`
+   */
+  is_eq<U: T>(option: Option<U>, compare?: ?(a: T, b: U) => boolean): boolean;
+  /**
    * Given a nullable value of T (`T | undefined | null`),
    * returns an Option<T>
    */

@@ -620,3 +620,58 @@ describe("Option.or_void", () => {
     expect(Some(1).or_void()).toBe(1);
   });
 });
+
+describe("Option#is_eq", () => {
+  it("None && None = true", () => {
+    let a: Option<number> = Option.None();
+    let b: Option<number> = Option.None();
+
+    expect(a.is_eq(b)).toBe(true);
+  });
+
+  it("None && Some<U> = false", () => {
+    let a: Option<number> = Option.None();
+    let b: Option<number> = Option.Some(1);
+
+    expect(a.is_eq(b)).toBe(false);
+  });
+
+  it("Some<T> && None = false", () => {
+    let a: Option<number> = Option.Some(1);
+    let b: Option<number> = Option.None();
+
+    expect(a.is_eq(b)).toBe(false);
+  });
+
+  it("Some<T> && Some<U> = T === U", () => {
+    let a: Option<number> = Option.Some(1);
+    // Tests type inference for a subtype of the first optional.
+    let b: Option<1> = Option.Some(1);
+
+    expect(a.is_eq(b)).toBe(true);
+
+    a = Option.Some(2);
+    b = Option.Some(1);
+
+    expect(a.is_eq(b)).toBe(false);
+
+    let x: Option<any> = Option.Some(1);
+    let y: Option<any> = Option.Some("1");
+
+    // Tests strict equality.
+    expect(x.is_eq(y)).toBe(false);
+  });
+
+  it("Some<T> && Some<U> = compare(T, U)", () => {
+    let a: Option<{ id: number }> = Option.Some({ id: 1 });
+    // Tests type inference for a subtype of the first optional.
+    let b: Option<{ id: 1 }> = Option.Some({ id: 1 });
+
+    expect(a.is_eq(b, (a, b) => a.id === b.id)).toBe(true);
+
+    a = Option.Some({ id: 2 });
+    b = Option.Some({ id: 1 });
+
+    expect(a.is_eq(b, (a, b) => a.id === b.id)).toBe(false);
+  });
+});

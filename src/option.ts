@@ -501,6 +501,48 @@ export class Option<T> {
   }
 
   /**
+   * Helper to compare 2 optional types.
+   *
+   * The compare function defaults to
+   * `(a, b) => a === b`.
+   *
+   * ```rust
+   * match (this, option) => {
+   *   (None, None) => true,
+   *   (Some(a), Some(b)) => compare(a, b),
+   *   _ => false
+   * }
+   * ```
+   *
+   * **Abstract Truth Table**
+   *
+   * - `None && None = true`
+   * - `Some<T> && None = false`
+   * - `None && Some<U> = false`
+   * - `Some<T> && Some<U> = compare(T, U)`
+   */
+  public is_eq<U extends T>(
+    option: Option<U>,
+    compare?: (a: T, b: U) => boolean
+  ) {
+    if (this.is_none() && option.is_none()) {
+      return true;
+    }
+
+    if (this.is_some() && option.is_some()) {
+      let a = this.unwrap();
+      let b = option.unwrap();
+      if (compare) {
+        return compare(a, b);
+      }
+
+      return a === b;
+    }
+
+    return false;
+  }
+
+  /**
    * Given a nullable value of T (`T | undefined | null`),
    * returns an Option<T>
    */
