@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.26.0](https://github.com/alexsasharegan/safe-types/compare/v4.25.0...v4.26.0) (2020-02-27)
+
+
+### Features
+
+* **Option:** give None() constructor optional generic ([8c3de9a](https://github.com/alexsasharegan/safe-types/commit/8c3de9a4f8afb878206885a32f3c9a3e3e2dc7ba))
+
 ## [4.25.0](https://github.com/alexsasharegan/safe-types/compare/v4.24.0...v4.25.0) (2019-09-12)
 
 
