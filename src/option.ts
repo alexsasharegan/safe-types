@@ -625,7 +625,7 @@ export class Option<T> {
   /**
    * Creates an Option<any> from nothing.
    */
-  public static None(): Option<any> {
+  public static None<T = any>(): Option<T> {
     return new Option(None());
   }
 }
