@@ -153,3 +153,44 @@ let luckyNumber = Option.of(list.find(num => num > 100)).match({
   },
 });
 ```
+
+## Convert Tasks to Observables
+
+The Task object is similar to RxJS observables, and can be converted in just a
+few lines of code.
+
+```ts
+const fetchTask = new Task(async ({ Ok, Err }) => {
+  try {
+    const response = await fetch("https://example.test/some/url");
+    const data = await response.json();
+    return Ok(data);
+  } catch (error) {
+    return Err(error);
+  }
+});
+
+const fetchStream = new Observable(async subscriber => {
+  await fetchTask.fork({
+    Ok: data => subscriber.next(data),
+    Err: error => subscriber.error(error),
+  });
+
+  subscriber.complete();
+});
+```
+
+It is important to note that while the Task model maps nicely to Observables, it
+is missing the mechanisms to cancel its work. For this reason, there is no
+teardown function returned from the subscribe function passed to the
+Observable's constructor.
+
+The lack of cancellation gets at the key differences between Tasks and
+Observables.
+
+- Tasks model a single chain of asynchronous work that may produce a value;
+  Observables model a stream of asynchronous values/signals.
+- Tasks do not cancel since they are more like lazy promises; Observables manage
+  a resource lifecycle including their construction, completion, & destruction.
+- Tasks model type-safe errors; Observables treat errors opaquely since they are
+  caught and therefore cannot provide type guarantees.
