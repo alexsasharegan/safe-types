@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.27.0](https://github.com/alexsasharegan/safe-types/compare/v4.26.0...v4.27.0) (2020-07-14)
+
+
+### Features
+
+* adds type helpers ([f2d23eb](https://github.com/alexsasharegan/safe-types/commit/f2d23eb8d66239ee1ac7381c488d83e31393807b))
+
 ## [4.26.0](https://github.com/alexsasharegan/safe-types/compare/v4.25.0...v4.26.0) (2020-02-27)
 
 
