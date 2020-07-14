@@ -19,6 +19,9 @@ export interface ResultMatcher<OkType, ErrType, Output> {
   Err(e: ErrType): Output;
 }
 
+export type UnwrapResultOk<R> = R extends Result<infer T, any> ? T : never;
+export type UnwrapResultErr<R> = R extends Result<any, infer E> ? E : never;
+
 /**
  * Result is a wrapper type for operations that can succeed or fail.
  * Not all operations throw errors in failure cases. Any value can be an Err.
@@ -159,7 +162,7 @@ export class Result<OkType, ErrType> {
     op: Mapper<OkType, MappedOk>
   ): Result<MappedOk, ErrType> {
     return this.match<Result<MappedOk, ErrType>>({
-      Ok: t => Result.Ok(op(t)),
+      Ok: (t) => Result.Ok(op(t)),
       Err: Result.Err,
     });
   }
@@ -185,7 +188,7 @@ export class Result<OkType, ErrType> {
   ): Result<OkType, MappedErr> {
     return this.match<Result<OkType, MappedErr>>({
       Ok: Result.Ok,
-      Err: e => Result.Err(op(e)),
+      Err: (e) => Result.Err(op(e)),
     });
   }
 
@@ -211,8 +214,8 @@ export class Result<OkType, ErrType> {
     err_op: Mapper<ErrType, MappedErr>
   ): Result<MappedOk, MappedErr> {
     return this.match({
-      Ok: t => Result.Ok(ok_op(t)),
-      Err: e => Result.Err(err_op(e)),
+      Ok: (t) => Result.Ok(ok_op(t)),
+      Err: (e) => Result.Err(err_op(e)),
     });
   }
 
@@ -249,7 +252,7 @@ export class Result<OkType, ErrType> {
   ): Promise<Result<NextOkType, ErrType>> {
     return this.match({
       Ok: () => res,
-      Err: e => Promise.resolve(Result.Err(e)),
+      Err: (e) => Promise.resolve(Result.Err(e)),
     });
   }
 
@@ -266,7 +269,7 @@ export class Result<OkType, ErrType> {
     op: (t: OkType) => Result<NextOkType, ErrType>
   ): Result<NextOkType, ErrType> {
     return this.match<Result<NextOkType, ErrType>>({
-      Ok: t => op(t),
+      Ok: (t) => op(t),
       Err: Result.Err,
     });
   }
@@ -287,7 +290,7 @@ export class Result<OkType, ErrType> {
   ): Promise<Result<NextOkType, ErrType>> {
     return this.match({
       Ok: op,
-      Err: e => Promise.resolve(Result.Err(e)),
+      Err: (e) => Promise.resolve(Result.Err(e)),
     });
   }
 
@@ -334,7 +337,7 @@ export class Result<OkType, ErrType> {
     res: Promise<Result<OkType, NextErrType>>
   ): Promise<Result<OkType, NextErrType>> {
     return this.match({
-      Ok: val => Promise.resolve(Result.Ok(val)),
+      Ok: (val) => Promise.resolve(Result.Ok(val)),
       Err: () => res,
     });
   }
@@ -372,7 +375,7 @@ export class Result<OkType, ErrType> {
     op: (e: ErrType) => Promise<Result<OkType, NextErrType>>
   ): Promise<Result<OkType, NextErrType>> {
     return this.match({
-      Ok: val => Promise.resolve(Result.Ok(val)),
+      Ok: (val) => Promise.resolve(Result.Ok(val)),
       Err: op,
     });
   }
@@ -492,8 +495,8 @@ export class Result<OkType, ErrType> {
 
   public toString(): string {
     return this.match({
-      Ok: t => `Ok<${JSON.stringify(t)}>`,
-      Err: e => `Err<${JSON.stringify(e)}>`,
+      Ok: (t) => `Ok<${JSON.stringify(t)}>`,
+      Err: (e) => `Err<${JSON.stringify(e)}>`,
     });
   }
 

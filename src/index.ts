@@ -1,15 +1,39 @@
-import { Option } from "./option";
-const Some = Option.Some;
-const None = Option.None;
+import { Option, UnwrapSome } from "./option";
 
-import { Result } from "./result";
-const Ok = Result.Ok;
-const Err = Result.Err;
+const { Some, None } = Option;
 
-export { Task, TaskExecutorFunc, TaskResolver } from "./task";
+import {
+  Result,
+  ResultMatcher,
+  UnwrapResultErr,
+  UnwrapResultOk,
+} from "./result";
+
+const { Ok, Err } = Result;
+
+export {
+  Task,
+  TaskExecutorFunc,
+  TaskResolver,
+  UnwrapTaskErr,
+  UnwrapTaskOk,
+  RetryWithBackoffOptions,
+} from "./task";
+
 export { OptionVariant, ResultVariant } from "./variant";
 
-export { Option, Some, None, Result, Ok, Err };
+export {
+  Option,
+  Some,
+  None,
+  UnwrapSome,
+  Result,
+  Ok,
+  Err,
+  ResultMatcher,
+  UnwrapResultErr,
+  UnwrapResultOk,
+};
 
 export { is_void, is_never, expect_never, Mapper } from "./utils";
 export { get_at_path, has_at_path, err_or_ok } from "./helpers";

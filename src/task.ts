@@ -21,6 +21,9 @@ export type TaskExecutorFunc<OkType, ErrType> = (
   resolver: TaskResolver<OkType, ErrType, any, any>
 ) => any;
 
+export type UnwrapTaskOk<T> = T extends Task<infer U, any> ? U : never;
+export type UnwrapTaskErr<T> = T extends Task<any, infer E> ? E : never;
+
 /**
  * `Task<T, E>` represents a time-based operation that can resolve with success
  * or error value types `T` or `E` respectively.
@@ -44,10 +47,10 @@ export class Task<OkType, ErrType> implements PromiseLike<OkType> {
   ): Promise<Result<OkOutput, ErrOutput>> {
     let { Ok: mapOk, Err: mapErr } = resolver;
 
-    return new Promise<Result<OkOutput, ErrOutput>>(resolve =>
+    return new Promise<Result<OkOutput, ErrOutput>>((resolve) =>
       this.executor({
-        Ok: okValue => resolve(Result.Ok(mapOk(okValue))),
-        Err: errValue => resolve(Result.Err(mapErr(errValue))),
+        Ok: (okValue) => resolve(Result.Ok(mapOk(okValue))),
+        Err: (errValue) => resolve(Result.Err(mapErr(errValue))),
       })
     );
   }
@@ -139,7 +142,7 @@ export class Task<OkType, ErrType> implements PromiseLike<OkType> {
    * returns the value it's called with after performing a side-effect.
    */
   public tap(fn: (ok: OkType) => any): Task<OkType, ErrType> {
-    return this.map(ok => {
+    return this.map((ok) => {
       fn(ok);
       return ok;
     });
@@ -153,7 +156,7 @@ export class Task<OkType, ErrType> implements PromiseLike<OkType> {
    * returns the value it's called with after performing a side-effect.
    */
   public tap_err(fn: (err: ErrType) => any): Task<OkType, ErrType> {
-    return this.map_err(err => {
+    return this.map_err((err) => {
       fn(err);
       return err;
     });
@@ -185,7 +188,7 @@ export class Task<OkType, ErrType> implements PromiseLike<OkType> {
   public map<MappedOk>(op: Mapper<OkType, MappedOk>): Task<MappedOk, ErrType> {
     return new Task<MappedOk, ErrType>(({ Ok, Err }) =>
       this.executor({
-        Ok: okValue => Ok(op(okValue)),
+        Ok: (okValue) => Ok(op(okValue)),
         Err,
       })
     );
@@ -209,7 +212,7 @@ export class Task<OkType, ErrType> implements PromiseLike<OkType> {
     return new Task<OkType, MappedErr>(({ Ok, Err }) =>
       this.executor({
         Ok,
-        Err: errValue => Err(op(errValue)),
+        Err: (errValue) => Err(op(errValue)),
       })
     );
   }
@@ -231,8 +234,8 @@ export class Task<OkType, ErrType> implements PromiseLike<OkType> {
   ): Task<MappedOk, MappedErr> {
     return new Task<MappedOk, MappedErr>(({ Ok, Err }) =>
       this.executor({
-        Ok: okValue => Ok(bimap.Ok(okValue)),
-        Err: errValue => Err(bimap.Err(errValue)),
+        Ok: (okValue) => Ok(bimap.Ok(okValue)),
+        Err: (errValue) => Err(bimap.Err(errValue)),
       })
     );
   }
@@ -276,7 +279,7 @@ export class Task<OkType, ErrType> implements PromiseLike<OkType> {
   ): Task<NextOkType, ErrType> {
     return new Task<NextOkType, ErrType>(({ Ok, Err }) =>
       this.executor({
-        Ok: okValue => op(okValue).executor({ Ok, Err }),
+        Ok: (okValue) => op(okValue).executor({ Ok, Err }),
         Err,
       })
     );
@@ -295,7 +298,7 @@ export class Task<OkType, ErrType> implements PromiseLike<OkType> {
   public and_then_effect(
     effect_fn: (ok: OkType) => Task<any, any>
   ): Task<OkType, ErrType> {
-    return this.tap(x => {
+    return this.tap((x) => {
       effect_fn(x).exec();
     });
   }
@@ -340,7 +343,7 @@ export class Task<OkType, ErrType> implements PromiseLike<OkType> {
     return new Task<OkType, NextErrType>(({ Ok, Err }) =>
       this.executor({
         Ok,
-        Err: errValue => op(errValue).executor({ Ok, Err }),
+        Err: (errValue) => op(errValue).executor({ Ok, Err }),
       })
     );
   }
@@ -358,7 +361,7 @@ export class Task<OkType, ErrType> implements PromiseLike<OkType> {
   public or_else_effect(
     effect_fn: (err: ErrType) => Task<any, any>
   ): Task<OkType, ErrType> {
-    return this.tap_err(x => {
+    return this.tap_err((x) => {
       effect_fn(x).exec();
     });
   }
@@ -408,9 +411,7 @@ export class Task<OkType, ErrType> implements PromiseLike<OkType> {
     tasks: Task<OkType, ErrType>[]
   ): Task<OkType[], ErrType> {
     return new Task<OkType[], ErrType>(({ Ok, Err }) => {
-      Promise.all(tasks.map(task_all_executor))
-        .then(Ok)
-        .catch(Err);
+      Promise.all(tasks.map(task_all_executor)).then(Ok).catch(Err);
 
       function task_all_executor(t: Task<OkType, ErrType>) {
         return new Promise<OkType>((resolve, reject) =>
@@ -457,13 +458,13 @@ export class Task<OkType, ErrType> implements PromiseLike<OkType> {
 
       function worker(index: number) {
         tasks[index]
-          .tap(ok => {
+          .tap((ok) => {
             running--;
             completed++;
             results[index] = ok;
             replenish();
           })
-          .tap_err(err => {
+          .tap_err((err) => {
             didError = true;
             Err(err);
           })
@@ -652,7 +653,7 @@ export class Task<OkType, ErrType> implements PromiseLike<OkType> {
       }
 
       for (let ms of backoff()) {
-        await new Promise(next => setTimeout(next, ms));
+        await new Promise((next) => setTimeout(next, ms));
         r = await task.run();
         if (r.is_ok()) {
           break;

@@ -21,6 +21,8 @@ export interface OptionMatcher<T, Output> {
   None(): Output;
 }
 
+export type UnwrapSome<O> = O extends Option<infer T> ? T : never;
+
 /**
  * Option is a wrapper type for nullable values (`undefined|null`). `Option.of`
  * will consume a nullable value `T` into an `Option<T>` for conducting safe
@@ -144,7 +146,7 @@ export class Option<T> {
   public filter(predicate: (t: T) => boolean): Option<T> {
     return this.match<Option<T>>({
       None: Option.None,
-      Some: value => {
+      Some: (value) => {
         if (!predicate(value)) {
           return Option.None();
         }
@@ -161,7 +163,7 @@ export class Option<T> {
   public narrow<U extends T>(predicate: (t: T) => t is U): Option<U> {
     return this.match<Option<U>>({
       None: Option.None,
-      Some: value => {
+      Some: (value) => {
         if (!predicate(value)) {
           return Option.None();
         }
@@ -401,7 +403,7 @@ export class Option<T> {
    */
   public or_await(optb: Promise<Option<T>>): Promise<Option<T>> {
     return this.match({
-      Some: value => Promise.resolve(Option.Some(value)),
+      Some: (value) => Promise.resolve(Option.Some(value)),
       None: () => optb,
     });
   }
@@ -432,7 +434,7 @@ export class Option<T> {
    */
   public or_else_await(fn: () => Promise<Option<T>>): Promise<Option<T>> {
     return this.match({
-      Some: value => Promise.resolve(Option.Some(value)),
+      Some: (value) => Promise.resolve(Option.Some(value)),
       None: fn,
     });
   }
@@ -488,7 +490,7 @@ export class Option<T> {
 
   public toString(): string {
     return this.match({
-      Some: x => `Some<${JSON.stringify(x)}>`,
+      Some: (x) => `Some<${JSON.stringify(x)}>`,
       None: () => `None`,
     });
   }
