@@ -46,17 +46,17 @@
     "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)$"
   },
   "devDependencies": {
-    "@types/jest": "^24.9.1",
-    "@types/node": "^12.12.50",
+    "@types/jest": "^26.0.4",
+    "@types/node": "^14.0.23",
     "axios": "^0.19.2",
-    "babel-jest": "^24.9.0",
+    "babel-jest": "^26.1.0",
     "coveralls": "^3.1.0",
-    "jest": "^24.9.0",
-    "rollup": "^1.32.1",
-    "standard-version": "^7.1.0",
-    "ts-jest": "^24.3.0",
+    "jest": "^26.1.0",
+    "rollup": "^2.21.0",
+    "standard-version": "^8.0.2",
+    "ts-jest": "^26.1.2",
     "ts-node": "^8.10.2",
-    "typedoc": "^0.15.8",
+    "typedoc": "^0.17.8",
     "typescript": "^3.9.6"
   },
   "dependencies": {}
